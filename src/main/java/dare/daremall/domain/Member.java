@@ -1,8 +1,6 @@
 package dare.daremall.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import dare.daremall.domain.item.Item;
-import dare.daremall.domain.item.MemberRole;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;

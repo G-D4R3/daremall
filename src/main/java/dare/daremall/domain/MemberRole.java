@@ -1,4 +1,4 @@
-package dare.daremall.domain.item;
+package dare.daremall.domain;
 
 public enum MemberRole {
     USER, ADMIN
