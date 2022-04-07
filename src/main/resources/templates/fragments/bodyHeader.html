@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <div class="header" th:fragment="bodyHeader">
     <a href="/">
         <h3 class="text-muted">DARE MALL</h3>
     </a>
     <ul class="nav nav-pills pull-right">
-        <li>
+        <li sec:authorize="isAuthenticated()">
+            <a th:text="${#authentication.name}" href="/userinfo">회원님 안녕하세요</a>
+            <a href="/logout">로그아웃</a>
+        </li>
+        <li sec:authorize="!isAuthenticated()">
             <a href="/members/login">Login</a>
             <a href="/members/new">회원가입</a>
         </li>
