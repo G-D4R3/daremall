@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -37,7 +38,10 @@ public class MemberController {
     }
 
     @PostMapping(value = "/members/new")
-    public String createMember(@Valid MemberSignupRequestDto memberDto, BindingResult result) {
+    public String createMember(@Validated @ModelAttribute("memberDto") MemberSignupRequestDto memberDto, BindingResult result) {
+        if(result.hasErrors()) {
+            return "user/createMemberForm";
+        }
         memberService.join(memberDto);
         return "redirect:/";
     }
