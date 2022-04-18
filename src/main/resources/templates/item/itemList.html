@@ -7,15 +7,14 @@
     <div>
         <table class="table table-striped">
             <thead> <tr>
-                <th>#</th> <th>상품명</th> <th>가격</th> <th>재고수량</th> <th></th>
+                <th>#</th> <th>상품명</th> <th>가격</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="item : ${items}">
                 <td th:text="${item.id}"></td>
-                <td th:text="${item.name}"></td>
+                <td><a th:text="${item.name}" th:href="@{/items/detail(itemId=${item.id})}"></a></td>
                 <td th:text="${item.price}"></td>
-                <td th:text="${item.stockQuantity}"></td>
             </tr>
             </tbody>
         </table>

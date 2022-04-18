@@ -13,7 +13,7 @@
             <tbody>
             <tr th:each="album : ${albums}">
                 <td th:text="${album.id}"></td>
-                <td th:text="${album.name}"></td>
+                <td><a th:text="${album.name}" th:href="@{/items/detail(itemId=${album.id})}"></a></td>
                 <td th:text="${album.price}"></td>
                 <td th:text="${album.artist}"></td>
             </tr>
