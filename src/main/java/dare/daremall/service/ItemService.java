@@ -1,5 +1,7 @@
 package dare.daremall.service;
 
+import dare.daremall.domain.item.Album;
+import dare.daremall.domain.item.Book;
 import dare.daremall.domain.item.Item;
 import dare.daremall.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,5 +48,13 @@ public class ItemService {
 
     public List<Item> findByName(String name) {
         return itemRepository.findByName(name);
+    }
+
+    public List<Album> findAlbums() {
+        return itemRepository.findByType("album");
+    }
+
+    public List<Book> findBooks() {
+        return itemRepository.findByType("book");
     }
 }

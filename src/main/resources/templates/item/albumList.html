@@ -7,15 +7,15 @@
     <div>
         <table class="table table-striped">
             <thead> <tr>
-                <th>#</th> <th>상품명</th> <th>가격</th> <th>재고수량</th> <th></th>
+                <th>#</th> <th>상품명</th> <th>가격</th> <th>가수</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="item : ${items}">
-                <td th:text="${item.id}"></td>
-                <td th:text="${item.name}"></td>
-                <td th:text="${item.price}"></td>
-                <td th:text="${item.stockQuantity}"></td>
+            <tr th:each="album : ${albums}">
+                <td th:text="${album.id}"></td>
+                <td th:text="${album.name}"></td>
+                <td th:text="${album.price}"></td>
+                <td th:text="${album.artist}"></td>
             </tr>
             </tbody>
         </table>

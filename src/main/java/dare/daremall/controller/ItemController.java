@@ -26,6 +26,27 @@ public class ItemController {
         return "item/itemList";
     }
 
+    @GetMapping(value = "/albums")
+    public String albums(Model model) {
+        List<Album> albums = itemService.findAlbums();
+        model.addAttribute("albums", albums);
+        return "item/albumList";
+    }
+
+    @GetMapping(value = "/books")
+    public String books(Model model) {
+        List<Book> books = itemService.findBooks();
+        model.addAttribute("books", books);
+        return "item/bookList";
+    }
+
+    @GetMapping(value = "/detail")
+    public String itemDetails(@RequestParam("itemId") Long itemId, Model model) {
+        Item item = itemService.findOne(itemId);
+        model.addAttribute("item", item);
+        return "item/detail";
+    }
+
 
     // 관리자 추가용
     @PostMapping(value = "/new")

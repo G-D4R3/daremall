@@ -1,6 +1,8 @@
 package dare.daremall.repository;
 
 import dare.daremall.domain.Member;
+import dare.daremall.domain.item.Album;
+import dare.daremall.domain.item.Book;
 import dare.daremall.domain.item.Item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -40,5 +42,15 @@ public class ItemRepository {
 
     public List<Item> findAll() {
         return em.createQuery("select i from Item i", Item.class).getResultList();
+    }
+
+    public List findByType(String type) {
+        if(type.equals("album")) {
+            return em.createQuery("select a from Album a", Album.class).getResultList();
+        }
+        else if(type.equals("book")) {
+            return em.createQuery("select b from Book b", Book.class).getResultList();
+        }
+        else return em.createQuery("select i from Item i", Item.class).getResultList();
     }
 }
