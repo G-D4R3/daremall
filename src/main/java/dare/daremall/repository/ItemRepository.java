@@ -1,6 +1,5 @@
 package dare.daremall.repository;
 
-import dare.daremall.domain.Member;
 import dare.daremall.domain.item.Album;
 import dare.daremall.domain.item.Book;
 import dare.daremall.domain.item.Item;

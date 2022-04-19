@@ -42,7 +42,13 @@ public class ItemController {
 
     @GetMapping(value = "/detail")
     public String itemDetails(@RequestParam("itemId") Long itemId, Model model) {
-        Item item = itemService.findOne(itemId);
+        Item findItem = itemService.findOne(itemId);
+        ItemDetailDto item = new ItemDetailDto();
+        item.setId(findItem.getId());
+        item.setName(findItem.getName());
+        item.setPrice(findItem.getPrice());
+        item.setStockQuantity(findItem.getStockQuantity());
+        item.setImageUrl("/images/"+findItem.getId()+".png");
         model.addAttribute("item", item);
         return "item/detail";
     }

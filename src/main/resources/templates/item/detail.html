@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"/>
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <div class="jumbotron" th:object="${item}" style="overflow: hidden">
+        <div style="height: 100%; width: 45%; float: left; text-align: center;">
+            <img th:src="@{${item.imageUrl}}" style="height: 260px; width: 200px">
+        </div>
+        <div style="height: 100%; width: 50%; float: left">
+            <tr>
+                <h3>
+                    <td th:text="${item.name}"></td>
+                </h3>
+                <p>가격 : <td th:text="${item.price}"></td>원</p>
+                <p>재고 수량 : <td th:text="${item.stockQuantity}"></td>개</p>
+            </tr>
+            <form role="form" method="post" th:action="@{/order/new}">
+                <div class="form-group">
+                    <label for="item">옵션 선택</label>
+                    <select name="itemId" id="item" class="form-control">
+                        <option value="option">옵션 선택</option>
+                        <option th:each="item : ${item}"
+                                th:value="${item.id}"
+                                th:text="${item.name}"
+                                th:selected="${item}"/>
+                    </select>
+
+                </div>
+                <div class="form-group">
+                    <label th:for="count">주문 수량</label>
+                    <input name="count" th:data-suffix="개" th:value="1" th:min="1" th:max="${item.stockQuantity}" type="number" class="form-control" id="count"/>
+                </div>
+                <button type="submit" class="btn btn-primary">주문하기</button>
+                <button type="submit" class="btn btn-outline-primary" th:formaction="@{/shop/add}">장바구니</button>
+                <button type="submit" class="btn btn-outline-primary" th:formaction="@{/like/add}"><i class="material-icons">favorite</i>찜</button>
+            </form>
+        </div>
+
+    </div>
+    <div style="clear: both" th:replace="fragments/footer :: footer"/>
+</div> <!-- /container -->
+</body>
+</html>
