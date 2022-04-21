@@ -1,10 +1,14 @@
 package dare.daremall.controller.member;
 
 import dare.daremall.controller.LoginForm;
-import dare.daremall.controller.member.MemberSignupRequestDto;
+import dare.daremall.domain.Member;
+import dare.daremall.domain.item.Item;
+import dare.daremall.repository.ItemRepository;
+import dare.daremall.repository.MemberRepository;
 import dare.daremall.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,12 +16,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
+    private final ItemRepository itemRepository;
 
     @GetMapping(value = "/members/login")
     public String loginForm(Model model) {
