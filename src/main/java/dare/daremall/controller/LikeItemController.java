@@ -51,7 +51,7 @@ public class LikeItemController {
         }
         else {
             findMember.removeLikeItem(findLikeItem);
-            likeItemService.remove(findLikeItem);
+            likeItemService.remove(findLikeItem.getId());
         }
         return "redirect:/items/detail?itemId="+itemId;
     }
@@ -63,7 +63,7 @@ public class LikeItemController {
         Member findMember = memberService.findUser(member.getUsername());
         LikeItem likeItem = likeItemService.findOne(findMember.getId(), itemId);
         findMember.removeLikeItem(likeItem);
-        likeItemService.remove(likeItem);
+        likeItemService.remove(likeItem.getId());
 
         return "redirect:/likes";
     }

@@ -40,7 +40,7 @@ public class LikeItemRepository {
                 .getResultList().stream().findAny();
     }
 
-    public void remove(LikeItem likeItem) {
-        em.remove(likeItem);
+    public void remove(Long likeItemId) {
+        em.remove(em.find(LikeItem.class, likeItemId));
     }
 }

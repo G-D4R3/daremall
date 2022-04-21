@@ -24,7 +24,7 @@ public class LikeItemService {
     }
 
     @Transactional
-    public void remove(LikeItem likeItem) {
-        likeItemRepository.remove(likeItem);
+    public void remove(Long likeItemId) {
+        likeItemRepository.remove(likeItemId);
     }
 }
