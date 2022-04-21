@@ -1,10 +1,15 @@
 package dare.daremall.controller;
 
+import dare.daremall.controller.member.LoginUserDetails;
+import dare.daremall.domain.LikeItem;
+import dare.daremall.domain.Member;
 import dare.daremall.domain.item.Album;
 import dare.daremall.domain.item.Book;
 import dare.daremall.domain.item.Item;
+import dare.daremall.repository.MemberRepository;
 import dare.daremall.service.ItemService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -18,6 +23,7 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService itemService;
+    private final MemberRepository memberRepository;
 
     @GetMapping(value = "")
     public String items(Model model) {
@@ -41,7 +47,7 @@ public class ItemController {
     }
 
     @GetMapping(value = "/detail")
-    public String itemDetails(@RequestParam("itemId") Long itemId, Model model) {
+    public String itemDetailsWithMember(@AuthenticationPrincipal LoginUserDetails member, @RequestParam("itemId") Long itemId, Model model) {
         Item findItem = itemService.findOne(itemId);
         ItemDetailDto item = new ItemDetailDto();
         item.setId(findItem.getId());
@@ -50,6 +56,18 @@ public class ItemController {
         item.setStockQuantity(findItem.getStockQuantity());
         item.setImageUrl("/images/"+findItem.getId()+".png");
         model.addAttribute("item", item);
+
+        if(member!=null) {
+            Member findMember = memberRepository.findByLoginId(member.getUsername()).get();
+            List<LikeItem> likes = findMember.getLikes();
+            for(LikeItem likeItem : likes) {
+                if(likeItem.getItem().getId()==itemId) {
+                    model.addAttribute("isLikeItem", "btn-primary");
+                    return "item/detail";
+                }
+            }
+        }
+        model.addAttribute("isLikeItem", "btn-outline-primary");
         return "item/detail";
     }
 

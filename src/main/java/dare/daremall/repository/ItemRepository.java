@@ -27,9 +27,7 @@ public class ItemRepository {
     }
 
     public Optional<Item> findById(Long itemId) {
-        Optional<Item> item = Optional.ofNullable(em.find(Item.class, itemId));
-        if(item==null) return Optional.empty();
-        else return item;
+        return Optional.ofNullable(em.find(Item.class, itemId));
     }
 
     public List<Item> findByName(String name) {

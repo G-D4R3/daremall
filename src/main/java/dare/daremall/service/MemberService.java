@@ -57,22 +57,5 @@ public class MemberService {
         return memberRepository.findByLoginId(loginId).orElse(null);
     }
 
-    @Transactional
-    public void addLike(String loginId, Long itemId) {
-        Member member = memberRepository.findByLoginId(loginId).orElse(null);
-        Item item = itemRepository.findById(itemId).orElse(null);
-
-        if(!alreadyLiked(member.getLikes(), itemId)) {
-            member.getLikes().add(item);
-            memberRepository.save(member);
-        }
-    }
-
-    private boolean alreadyLiked(List<Item> likes, Long itemId) {
-        for(Item like : likes) {
-            if(like.getId()==itemId) return true;
-        }
-        return false;
-    }
 
 }

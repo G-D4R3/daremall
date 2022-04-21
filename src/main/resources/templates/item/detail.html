@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="fragments/header :: header"/>
 <body>
 <div class="container">
@@ -34,7 +34,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary">주문하기</button>
                 <button type="submit" class="btn btn-outline-primary" th:formaction="@{/shop/add}">장바구니</button>
-                <button type="submit" class="btn btn-outline-primary" th:formaction="@{/like/add}"><i class="material-icons">favorite</i>찜</button>
+                <button type="submit" class="btn" th:classappend="${isLikeItem}" th:formaction="@{/like}">찜</button>
             </form>
         </div>
 
@@ -42,4 +42,9 @@
     <div style="clear: both" th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->
 </body>
+<script>
+    function cancel(id) {
+        return "btn-outline-primary";
+    }
+</script>
 </html>
