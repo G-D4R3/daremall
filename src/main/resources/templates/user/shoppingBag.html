@@ -58,21 +58,5 @@
         document.body.appendChild(form);
         form.submit();
     }
-
-    function update(id, count) {
-        var form = document.createElement("form");
-        form.setAttribute("method", "post");
-        form.setAttribute("action", "/shop/" + id + "/update");
-        var hiddenField = document.createElement("input");
-        hiddenField.setAttribute("type", "hidden");
-        hiddenField.setAttribute("name", "count");
-        //count = document.getElementsByName("count");
-        hiddenField.setAttribute("value", count);
-        form.appendChild(hiddenField);
-
-        document.body.appendChild(form);
-        form.submit();
-    }
-
 </script>
 </html>
