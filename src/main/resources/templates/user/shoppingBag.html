@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <div>
+        <h3>장바구니</h3>
+
+        <div th:if="${orderForm.list.size()==0}" class="jumbotron">
+            <h3>장바구니에 추가한 상품이 없습니다.</h3>
+        </div>
+        <table class="table table-striped" th:if="${orderForm.list.size()>0}">
+                <thead>
+                <tr>
+                    <th></th> <th>#</th> <th>상품명</th> <th>가격</th> <th>수량</th> <th>합계</th> <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item, stat : ${orderForm.list}">
+                    <td>
+                        <form th:action="@{/shop/check(id=${item.id})}" method="post">
+                            <input type="checkbox" th:checked="${item.checked}" onclick="submit();"/>
+                        </form>
+                    </td>
+                    <td th:text="${item.itemId}"></td>
+                    <td><a th:text="${item.name}" th:href="@{/items/detail(itemId=${item.itemId})}"></a></td>
+                    <td th:text="${item.price}"></td>
+                    <td>
+                        <form th:action="@{/shop/update}" method="post">
+                            <input type="hidden" th:value="${item.id}" name="id">
+                            <input name="count" type="number" class="form-control" th:min="1" th:max="${item.stockQuantity}>10? 10:${item.stockQuantity}" th:value="${item.count}"/>
+                            <button type="submit" class="btn btn-primary">변경</button>
+                        </form>
+
+                    </td>
+                    <td th:text="${item.totalPrice}"></td>
+                    <td>
+                        <a href="#" th:href="'javascript:cancel('+${item.id}+')'">취소</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <br/>
+            <h3 style="float: right">총 금액 : <a th:text="${totalPrice}"></a> 원</h3>
+            <form method="post" action="@{order/all}">
+                <button style="width: 100%; margin-bottom: 5px" class="btn btn-primary" type="submit" th:formaction="@{order/select}">선택 상품 주문</button>
+                <button style="width: 100%" class="btn btn-primary" type="submit" >전체 상품 주문</button>
+            </form>
+    </div>
+    <div th:replace="fragments/footer :: footer"/>
+</div> <!-- /container -->
+</body>
+<script th:inline="javascript">
+    function cancel(id) {
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/shop/" + id + "/delete");
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function update(id, count) {
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/shop/" + id + "/update");
+        var hiddenField = document.createElement("input");
+        hiddenField.setAttribute("type", "hidden");
+        hiddenField.setAttribute("name", "count");
+        //count = document.getElementsByName("count");
+        hiddenField.setAttribute("value", count);
+        form.appendChild(hiddenField);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+</script>
+</html>

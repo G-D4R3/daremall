@@ -1,4 +1,4 @@
-package dare.daremall.controller;
+package dare.daremall.controller.item;
 
 import dare.daremall.controller.member.LoginUserDetails;
 import dare.daremall.domain.LikeItem;

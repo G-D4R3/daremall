@@ -2,11 +2,12 @@ package dare.daremall.domain;
 
 import dare.daremall.domain.item.Item;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
-@Getter
+@Getter @Setter
 public class OrderItem {
 
     @Id @GeneratedValue
@@ -24,4 +25,13 @@ public class OrderItem {
     private int orderPrice;
 
     private int count;
+
+    public static OrderItem createOrderItem(Item item, int orderPrice, int count) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setItem(item);
+        orderItem.setOrderPrice(orderPrice);
+        orderItem.setCount(count);
+
+        return orderItem;
+    }
 }

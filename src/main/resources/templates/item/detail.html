@@ -30,7 +30,8 @@
                 </div>
                 <div class="form-group">
                     <label th:for="count">주문 수량</label>
-                    <input name="count" th:data-suffix="개" th:value="1" th:min="1" th:max="${item.stockQuantity}" type="number" class="form-control" id="count"/>
+                    <input name="count" th:data-suffix="개" th:value="1" th:min="1" th:max="${item.stockQuantity}>10? 10:${item.stockQuantity}" type="number" class="form-control"/>
+                    <p style="color: #888888">* 최대 주문 수량은 10개입니다.</p>
                 </div>
                 <button type="submit" class="btn btn-primary">주문하기</button>
                 <button type="submit" class="btn btn-outline-primary" th:formaction="@{/shop/add}">장바구니</button>
@@ -42,9 +43,4 @@
     <div style="clear: both" th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->
 </body>
-<script>
-    function cancel(id) {
-        return "btn-outline-primary";
-    }
-</script>
 </html>

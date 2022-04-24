@@ -2,8 +2,10 @@ package dare.daremall.service;
 
 import dare.daremall.controller.member.MemberSignupRequestDto;
 import dare.daremall.domain.Address;
+import dare.daremall.domain.BaggedItem;
 import dare.daremall.domain.Member;
 import dare.daremall.domain.item.Item;
+import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.repository.ItemRepository;
 import dare.daremall.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     private final ItemRepository itemRepository;
+    private final BaggedItemRepository baggedItemRepository;
 
     @Transactional
     public Long join(MemberSignupRequestDto memberDto) {
@@ -57,5 +60,31 @@ public class MemberService {
         return memberRepository.findByLoginId(loginId).orElse(null);
     }
 
+    @Transactional
+    public void addShoppingBag(Long itemId, String loginId, int count) {
+        Item item = itemRepository.findById(itemId).orElse(null); //  나중에 예외처리 필요
+        Member member = memberRepository.findByLoginId(loginId).orElse(null);
+        BaggedItem baggedItem = BaggedItem.createBaggedItem(member, item, item.getPrice(), count);
+        member.addBaggedItem(baggedItem);
+    }
 
+    @Transactional
+    public void removeShoppingBag(String loginId, Long baggedItemId) {
+        Member member = memberRepository.findByLoginId(loginId).orElse(null);
+        BaggedItem baggedItem = baggedItemRepository.findById(baggedItemId);
+        member.removeBaggedItem(baggedItem);
+        baggedItemRepository.remove(baggedItemId);
+    }
+
+    @Transactional
+    public void updateBaggedItemCount(Long bagItemId, int count) {
+        BaggedItem item = baggedItemRepository.findById(bagItemId);
+        item.setCount(count);
+    }
+
+    @Transactional
+    public void updateBaggedItemCheck(Long bagItemId) {
+        BaggedItem item = baggedItemRepository.findById(bagItemId);
+        item.setChecked(!item.getChecked());
+    }
 }

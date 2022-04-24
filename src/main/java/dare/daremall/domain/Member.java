@@ -38,11 +38,11 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Order> orders = new ArrayList<>();
 
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private ShoppingBag shoppingBag;
-
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<LikeItem> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<BaggedItem> shoppingBag = new ArrayList<>();
 
 
     public Member(String name, String loginId, String password, Address address) {
@@ -68,5 +68,21 @@ public class Member {
     public void removeLikeItem(LikeItem likeItem) {
         likes.remove(likeItem);
         likeItem.setMember(null);
+    }
+
+    public void addBaggedItem(BaggedItem baggedItem) {
+        for(BaggedItem item:shoppingBag) {
+            if(item.getItem() == baggedItem.getItem()) {
+                item.setCount(item.getCount()+ baggedItem.getCount());
+                return;
+            }
+        }
+        shoppingBag.add(baggedItem);
+        baggedItem.setMember(this);
+    }
+
+    public void removeBaggedItem(BaggedItem baggedItem) {
+        shoppingBag.remove(baggedItem);
+        baggedItem.setMember(null);
     }
 }

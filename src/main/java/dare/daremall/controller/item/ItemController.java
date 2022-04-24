@@ -1,4 +1,4 @@
-package dare.daremall.controller;
+package dare.daremall.controller.item;
 
 import dare.daremall.controller.member.LoginUserDetails;
 import dare.daremall.domain.LikeItem;
@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

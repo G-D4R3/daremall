@@ -1,4 +1,4 @@
-package dare.daremall.controller;
+package dare.daremall.controller.member;
 
 import lombok.Getter;
 import lombok.Setter;
