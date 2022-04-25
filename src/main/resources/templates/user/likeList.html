@@ -6,7 +6,10 @@
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
     <div>
         <h3>내가 찜한 목록</h3>
-        <table class="table table-striped">
+        <div th:if="${items.size()==0}" class="jumbotron">
+            <h3>찜한 상품이 없습니다.</h3>
+        </div>
+        <table class="table table-striped" th:if="${items.size()>0}">
             <thead>
             <tr>
                 <th>#</th> <th>상품명</th> <th>가격</th> <th></th>

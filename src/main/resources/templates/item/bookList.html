@@ -7,15 +7,21 @@
     <div>
         <table class="table table-striped">
             <thead> <tr>
-                <th>#</th> <th>상품명</th> <th>가격</th> <th>저자</th>
+                <th></th> <th>상품</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="book : ${books}">
-                <td th:text="${book.id}"></td>
-                <td><a th:text="${book.name}" th:href="@{/items/detail(itemId=${book.id})}"></a></td>
-                <td th:text="${book.price}"></td>
-                <td th:text="${book.author}"></td>
+                <td>
+                    <img th:src="@{${book.imageUrl}}" style="height: 160px; width: 120px">
+                </td>
+                <td>
+                    <div style="padding-top: 3%; padding-bottom: 3%;">
+                        <p><a style="font-size: 14pt" th:text="${book.name}" th:href="@{/items/detail(itemId=${book.id})}"></a></p>
+                        <p style="color: #777777" th:text="${book.etc}"></p>
+                        <p th:text="${book.price}+'원'"></p>
+                    </div>
+                </td>
             </tr>
             </tbody>
         </table>

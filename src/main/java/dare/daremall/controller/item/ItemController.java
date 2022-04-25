@@ -1,6 +1,7 @@
 package dare.daremall.controller.item;
 
 import dare.daremall.controller.member.LoginUserDetails;
+import dare.daremall.controller.order.OrderDto;
 import dare.daremall.domain.LikeItem;
 import dare.daremall.domain.Member;
 import dare.daremall.domain.item.Album;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(value = "/items")
@@ -26,21 +29,36 @@ public class ItemController {
 
     @GetMapping(value = "")
     public String items(Model model) {
-        List<Item> items = itemService.findItems();
+        List<ItemListDto> items = itemService.findAlbums().stream().map(i -> {
+            return new ItemListDto(i);
+        }).collect(Collectors.toList());
+        items.addAll(itemService.findBooks().stream().map(i -> {
+            return new ItemListDto(i);
+        }).collect(Collectors.toList()));
+        items.sort(new Comparator<ItemListDto>() {
+            @Override
+            public int compare(ItemListDto o1, ItemListDto o2) {
+                return Long.compare(o1.getId(),o2.getId());
+            }
+        });
         model.addAttribute("items", items);
         return "item/itemList";
     }
 
     @GetMapping(value = "/albums")
     public String albums(Model model) {
-        List<Album> albums = itemService.findAlbums();
+        List<ItemListDto> albums = itemService.findAlbums().stream().map(i -> {
+            return new ItemListDto(i);
+        }).collect(Collectors.toList());
         model.addAttribute("albums", albums);
         return "item/albumList";
     }
 
     @GetMapping(value = "/books")
     public String books(Model model) {
-        List<Book> books = itemService.findBooks();
+        List<ItemListDto> books = itemService.findBooks().stream().map(i -> {
+            return new ItemListDto(i);
+        }).collect(Collectors.toList());
         model.addAttribute("books", books);
         return "item/bookList";
     }
