@@ -87,4 +87,8 @@ public class MemberService {
         BaggedItem item = baggedItemRepository.findById(bagItemId);
         item.setChecked(!item.getChecked());
     }
+
+    public List<BaggedItem> getSelectedBaggedItem(String loginId) {
+        return baggedItemRepository.findSelected(loginId);
+    }
 }

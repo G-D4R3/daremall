@@ -1,4 +1,4 @@
-package dare.daremall.controller;
+package dare.daremall.controller.order;
 
 import dare.daremall.controller.member.BaggedItemDto;
 import lombok.Data;

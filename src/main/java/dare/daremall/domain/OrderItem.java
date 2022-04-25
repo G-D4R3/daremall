@@ -32,6 +32,16 @@ public class OrderItem {
         orderItem.setOrderPrice(orderPrice);
         orderItem.setCount(count);
 
+        item.removeStock(count);
+
         return orderItem;
+    }
+
+    public int getTotalPrice() {
+        return getOrderPrice() * getCount();
+    }
+
+    public void cancel() {
+        getItem().addStock(count); // 재고수량 원복
     }
 }

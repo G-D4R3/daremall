@@ -1,15 +1,11 @@
 package dare.daremall.controller.member;
 
-import dare.daremall.controller.OrderForm;
+import dare.daremall.controller.order.OrderForm;
 import dare.daremall.domain.BaggedItem;
-import dare.daremall.domain.LikeItem;
 import dare.daremall.domain.Member;
-import dare.daremall.domain.Order;
-import dare.daremall.domain.item.Item;
 import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.service.ItemService;
 import dare.daremall.service.MemberService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -70,7 +66,7 @@ public class ShoppingBagController {
             }
             else return 0;
         }).sum());
-        model.addAttribute("orderForm", orderForm);
+        model.addAttribute("orderForm", orderForm); // 그냥 shoppingBag list 바로 넣기
 
         return "/user/shoppingBag";
     }

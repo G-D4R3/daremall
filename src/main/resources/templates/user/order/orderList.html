@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <div>
+        <h3>주문 내역</h3>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>주문 내역</th> <th>주문 상태</th> <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td>
+                    <div>
+                        <p><a href="/order" th:text="${order.title}"></a></p>
+                        <div><a th:text="${order.price}"></a>원</div>
+                        <a style="color: #777777" th:text="${order.orderDate}"></a>
+                    </div>
+                </td>
+                <td>
+                    <p th:text="${order.status}"></p>
+                </td>
+                <td><a th:if="${order.status}=='주문완료'" href="#" th:href="'javascript:cancel('+${order.id}+')'">취소</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:replace="fragments/footer :: footer"/>
+</div> <!-- /container -->
+</body>
+<script>
+    function cancel(id) {
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/order/" + id + "/cancel");
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+</html>
