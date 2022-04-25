@@ -7,15 +7,21 @@
     <div>
         <table class="table table-striped">
             <thead> <tr>
-                <th>#</th> <th>상품명</th> <th>가격</th> <th>가수</th>
+                <th></th> <th>상품</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="album : ${albums}">
-                <td th:text="${album.id}"></td>
-                <td><a th:text="${album.name}" th:href="@{/items/detail(itemId=${album.id})}"></a></td>
-                <td th:text="${album.price}"></td>
-                <td th:text="${album.artist}"></td>
+                <td>
+                    <img th:src="@{${album.imageUrl}}" style="height: 160px; width: 120px">
+                </td>
+                <td>
+                    <div style="padding-top: 3%; padding-bottom: 3%">
+                        <p><a style="font-size: 14pt" th:text="${album.name}" th:href="@{/items/detail(itemId=${album.id})}"></a></p>
+                        <p style="color: #777777;" th:text="${album.etc}"></p>
+                        <p th:text="${album.price}+'원'"></p>
+                    </div>
+                </td>
             </tr>
             </tbody>
         </table>
