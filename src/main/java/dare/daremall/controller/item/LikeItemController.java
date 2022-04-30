@@ -28,16 +28,13 @@ public class LikeItemController {
     private final ItemService itemService;
     private final LikeItemService likeItemService;
 
-//    @PostMapping(value = "/like/add")
-//    public String addLike(@AuthenticationPrincipal LoginUserDetails member,
-//                          @RequestParam("itemId") Long itemId){
-//        memberService.addLike(member.getUsername(), itemId);
-//        return "redirect:/items/detail?itemId="+itemId;
-//    }
 
     @PostMapping(value = "/like")
     public String addLike(@AuthenticationPrincipal LoginUserDetails member,
                           @RequestParam("itemId") Long itemId){
+
+        if(member==null) return "redirect:/members/login";
+
         Member findMember = memberService.findUser(member.getUsername());
         Item findItem = itemService.findOne(itemId);
 
@@ -60,6 +57,8 @@ public class LikeItemController {
     public String cancelLike(@AuthenticationPrincipal LoginUserDetails member,
                               @PathVariable("itemId") Long itemId) {
 
+        if(member==null) return "redirect:/members/login";
+
         Member findMember = memberService.findUser(member.getUsername());
         LikeItem likeItem = likeItemService.findOne(findMember.getId(), itemId);
         findMember.removeLikeItem(likeItem);
@@ -70,6 +69,9 @@ public class LikeItemController {
 
     @GetMapping(value = "/likes")
     public String likes(@AuthenticationPrincipal LoginUserDetails member, Model model) {
+
+        if(member==null) return "redirect:/members/login";
+
         Member findMember = memberService.findUser(member.getUsername());
         List<LikeItem> likeItems = findMember.getLikes();
         List<Item> items = likeItems.stream().map(likeItem -> likeItem.getItem()).collect(Collectors.toList());

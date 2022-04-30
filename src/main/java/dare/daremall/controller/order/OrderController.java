@@ -29,12 +29,14 @@ public class OrderController {
 
     @GetMapping(value = "/all")
     public String orderAll(@AuthenticationPrincipal LoginUserDetails member) {
+        if(member==null) return "redirect:/members/login";
         orderService.orderAll(member.getUsername());
         return "redirect:/order";
     }
 
     @GetMapping(value = "/select")
     public String orderSelect(@AuthenticationPrincipal LoginUserDetails member) {
+        if(member==null) return "redirect:/members/login";
         orderService.orderSelect(member.getUsername());
         return "redirect:/order";
     }
@@ -42,6 +44,8 @@ public class OrderController {
     @GetMapping(value = "")
     public String orderList(@AuthenticationPrincipal LoginUserDetails member,
                             Model model) {
+
+        if(member==null) return "redirect:/members/login";
 
         List<Order> orders = orderService.findOrders(member.getUsername());
         List<OrderDto> orderDtos = orders.stream().map(o -> new OrderDto(o)).collect(Collectors.toList());
@@ -54,6 +58,7 @@ public class OrderController {
     @PostMapping(value = "/{orderId}/cancel")
     public String cancelOrder(@AuthenticationPrincipal LoginUserDetails member,
                               @PathVariable("orderId") Long orderId) {
+        if(member==null) return "redirect:/members/login";
         orderService.cancelOrder(orderId);
         return "redirect:/order";
     }

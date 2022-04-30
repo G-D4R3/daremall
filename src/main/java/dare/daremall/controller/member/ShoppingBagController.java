@@ -1,6 +1,5 @@
 package dare.daremall.controller.member;
 
-import dare.daremall.controller.order.OrderForm;
 import dare.daremall.domain.BaggedItem;
 import dare.daremall.domain.Member;
 import dare.daremall.repository.BaggedItemRepository;
@@ -29,6 +28,8 @@ public class ShoppingBagController {
                          @RequestParam(value = "itemId") Long itemId,
                          @RequestParam(value = "count", defaultValue = "1") int count) {
 
+        if(member==null) return "redirect:/members/login";
+
         memberService.addShoppingBag(itemId, member.getUsername(), count);
         return "redirect:/items/detail?itemId="+itemId;
     }
@@ -36,6 +37,8 @@ public class ShoppingBagController {
     @PostMapping(value = "/{bagItemId}/delete")
     public String cancel(@AuthenticationPrincipal LoginUserDetails member,
                              @PathVariable("bagItemId") Long bagItemId) {
+
+        if(member==null) return "redirect:/members/login";
 
         memberService.removeShoppingBag(member.getUsername(), bagItemId);
 
@@ -48,6 +51,8 @@ public class ShoppingBagController {
                          @RequestParam("id") Long id,
                          @RequestParam("count") int count) {
 
+        if(member==null) return "redirect:/members/login";
+
         memberService.updateBaggedItemCount(id, count);
 
         return "redirect:/shop";
@@ -55,18 +60,20 @@ public class ShoppingBagController {
 
     @GetMapping("")
     public String shoppingBag(@AuthenticationPrincipal LoginUserDetails member, Model model) {
+
+        if(member==null) return "redirect:/members/login";
+
         Member findMember = memberService.findUser(member.getUsername());
         List<BaggedItem> shoppingBag = findMember.getShoppingBag();
-        OrderForm orderForm = new OrderForm();
-        orderForm.setList(shoppingBag.stream().map(b->new BaggedItemDto(b)).collect(Collectors.toList()));
+        List<BaggedItemDto> list = shoppingBag.stream().map(b -> new BaggedItemDto(b)).collect(Collectors.toList());
 
-        model.addAttribute("totalPrice", orderForm.getList().stream().mapToInt(i-> {
+        model.addAttribute("totalPrice", list.stream().mapToInt(i-> {
             if(i.getChecked()==true) {
                 return i.getTotalPrice();
             }
             else return 0;
         }).sum());
-        model.addAttribute("orderForm", orderForm); // 그냥 shoppingBag list 바로 넣기
+        model.addAttribute("list", list);
 
         return "/user/shoppingBag";
     }
@@ -74,6 +81,8 @@ public class ShoppingBagController {
     @PostMapping(value = "/check")
     public String check(@AuthenticationPrincipal LoginUserDetails member,
                         @RequestParam("id") Long id) {
+
+        if(member==null) return "redirect:/members/login";
 
         memberService.updateBaggedItemCheck(id);
 
