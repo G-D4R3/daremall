@@ -13,7 +13,9 @@
             <tbody>
             <tr th:each="item : ${items}">
                 <td>
-                    <img th:src="@{${item.imageUrl}}" style="height: 160px; width: 120px">
+                    <a th:href="@{/items/detail(itemId=${item.id})}">
+                        <img th:src="@{${item.imageUrl}}" style="height: 160px; width: 120px">
+                    </a>
                 </td>
                 <td>
                     <div style="padding-top: 3%; padding-bottom: 3%">
