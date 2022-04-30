@@ -12,12 +12,11 @@
         <table class="table table-striped" th:if="${items.size()>0}">
             <thead>
             <tr>
-                <th>#</th> <th>상품명</th> <th>가격</th> <th></th>
+                <th>상품명</th> <th>가격</th> <th></th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="item : ${items}">
-                <td th:text="${item.id}"></td>
                 <td><a th:text="${item.name}" th:href="@{/items/detail(itemId=${item.id})}"></a></td>
                 <td th:text="${item.price}"></td>
                 <td>

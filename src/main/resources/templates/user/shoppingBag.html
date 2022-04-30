@@ -7,23 +7,22 @@
     <div>
         <h3>장바구니</h3>
 
-        <div th:if="${orderForm.list.size()==0}" class="jumbotron">
+        <div th:if="${list.size()==0}" class="jumbotron">
             <h3>장바구니에 추가한 상품이 없습니다.</h3>
         </div>
-        <table class="table table-striped" th:if="${orderForm.list.size()>0}">
+        <table class="table table-striped" th:if="${list.size()>0}">
                 <thead>
                 <tr>
-                    <th></th> <th>#</th> <th>상품명</th> <th>가격</th> <th>수량</th> <th>합계</th> <th></th>
+                    <th></th> <th>상품명</th> <th>가격</th> <th>수량</th> <th>합계</th> <th></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="item, stat : ${orderForm.list}">
+                <tr th:each="item : ${list}">
                     <td>
                         <form th:action="@{/shop/check(id=${item.id})}" method="post">
                             <input type="checkbox" th:checked="${item.checked}" onclick="submit();"/>
                         </form>
                     </td>
-                    <td th:text="${item.itemId}"></td>
                     <td><a th:text="${item.name}" th:href="@{/items/detail(itemId=${item.itemId})}"></a></td>
                     <td th:text="${item.price}"></td>
                     <td>
@@ -41,7 +40,7 @@
                 </tbody>
             </table>
             <br/>
-        <div th:if="${orderForm.list.size()>0}">
+        <div th:if="${list.size()>0}">
             <h3 style="float: right">총 금액 : <a th:text="${totalPrice}"></a> 원</h3>
             <form method="get">
                 <button style="width: 100%; margin-bottom: 5px" class="btn btn-primary" type="submit" th:formaction="@{order/select}">선택 상품 주문</button>
