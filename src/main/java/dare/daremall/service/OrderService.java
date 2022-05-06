@@ -1,5 +1,6 @@
 package dare.daremall.service;
 
+import dare.daremall.controller.order.OrderDto;
 import dare.daremall.domain.*;
 import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.repository.ItemRepository;
@@ -76,5 +77,9 @@ public class OrderService {
     public void cancelOrder(Long orderId) {
         Order order = orderRepository.findOne(orderId);
         order.cancel();
+    }
+
+    public Order findOne(Long orderId) {
+        return orderRepository.findOne(orderId);
     }
 }
