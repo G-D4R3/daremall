@@ -21,7 +21,7 @@
             <tr th:each="order : ${orders}">
                 <td>
                     <div>
-                        <p><a href="/order" th:text="${order.title}"></a></p>
+                        <p><a th:href="@{/order/detail(orderId=${order.id})}" th:text="${order.title}"></a></p>
                         <div><a th:text="${order.price}"></a>원</div>
                         <a style="color: #777777" th:text="${order.orderDate}"></a>
                     </div>
