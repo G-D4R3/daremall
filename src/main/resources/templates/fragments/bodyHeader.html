@@ -8,7 +8,7 @@
         <li sec:authorize="isAuthenticated()">
             <a><a th:text="${#authentication.name}" href="/userinfo">회원</a>님 안녕하세요!</a>
             <a href="/shop">장바구니</a>
-            <a href="/order">주문내역</a>
+            <a href="/order/myOrder">주문내역</a>
             <a href="/likes">찜 목록</a>
             <a href="/logout">로그아웃</a>
         </li>
