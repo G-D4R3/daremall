@@ -43,8 +43,8 @@
         <div th:if="${list.size()>0}">
             <h3 style="float: right">총 금액 : <a th:text="${totalPrice}"></a> 원</h3>
             <form method="get">
-                <button style="width: 100%; margin-bottom: 5px" class="btn btn-primary" type="submit" th:formaction="@{order/select}">선택 상품 주문</button>
-                <button style="width: 100%" class="btn btn-primary" type="submit" th:formaction="@{order/all}">전체 상품 주문</button>
+                <button style="width: 100%; margin-bottom: 5px" class="btn btn-primary" type="submit" th:formaction="@{order/new/select}">선택 상품 주문</button>
+                <button style="width: 100%" class="btn btn-primary" type="submit" th:formaction="@{order/new/all}">전체 상품 주문</button>
             </form>
         </div>
     </div>
