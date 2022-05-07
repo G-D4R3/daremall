@@ -18,6 +18,9 @@ public class Delivery {
     @JsonIgnore
     private Order order;
 
+    private String name;
+    private String phone;
+
     @Embedded
     private Address address;
 
