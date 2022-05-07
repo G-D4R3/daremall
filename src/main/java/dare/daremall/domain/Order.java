@@ -35,6 +35,8 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
+    private boolean shippingFee;
+
     public void addOrderItem(OrderItem orderItem) {
         orderItems.add(orderItem);
         orderItem.setOrder(this);
@@ -54,6 +56,8 @@ public class Order {
         }
         order.setStatus(OrderStatus.ORDER);
         order.setOrderDate(LocalDateTime.now());
+        if(order.getOrderItems().stream().mapToInt(oi->oi.getTotalPrice()).sum() >= 50000) order.setShippingFee(false);
+        else order.setShippingFee(true);
         return order;
     }
 
@@ -66,5 +70,11 @@ public class Order {
         for (OrderItem orderItem : this.orderItems) {
             orderItem.cancel();
         }
+    }
+
+    public int getTotalPrice() {
+        int res = this.orderItems.stream().mapToInt(oi -> oi.getTotalPrice()).sum();
+        if(res >= 50000) return res;
+        else return res + 2500; // 배송비 추가
     }
 }
