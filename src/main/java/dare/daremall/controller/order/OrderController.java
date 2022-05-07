@@ -2,10 +2,13 @@ package dare.daremall.controller.order;
 
 import dare.daremall.controller.member.BaggedItemDto;
 import dare.daremall.controller.member.LoginUserDetails;
+import dare.daremall.controller.member.ShoppingBagController;
 import dare.daremall.domain.BaggedItem;
 import dare.daremall.domain.Member;
 import dare.daremall.domain.Order;
 import dare.daremall.domain.OrderItem;
+import dare.daremall.domain.discountPolicy.DiscountPolicy;
+import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.service.MemberService;
 import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -26,22 +29,10 @@ public class OrderController {
 
     private final MemberService memberService;
     private final OrderService orderService;
+    private final BaggedItemRepository baggedItemRepository;
+    private final DiscountPolicy discountPolicy;
 
-    @GetMapping(value = "/all")
-    public String orderAll(@AuthenticationPrincipal LoginUserDetails member) {
-        if(member==null) return "redirect:/members/login";
-        orderService.orderAll(member.getUsername());
-        return "redirect:/order";
-    }
-
-    @GetMapping(value = "/select")
-    public String orderSelect(@AuthenticationPrincipal LoginUserDetails member) {
-        if(member==null) return "redirect:/members/login";
-        orderService.orderSelect(member.getUsername());
-        return "redirect:/order";
-    }
-
-    @GetMapping(value = "")
+    @GetMapping(value = "myOrder")
     public String orderList(@AuthenticationPrincipal LoginUserDetails member,
                             Model model) {
 
@@ -61,6 +52,43 @@ public class OrderController {
         if(member==null) return "redirect:/members/login";
         orderService.cancelOrder(orderId);
         return "redirect:/order";
+    }
+
+    @GetMapping(value = "/new/{orderOption}")
+    public String orderForm(@AuthenticationPrincipal LoginUserDetails member,
+                            @PathVariable("orderOption") String option,
+                            Model model) {
+        List<BaggedItemOrderDto> baggedItem = null;
+        if(option.equals("all")) {
+            baggedItem = baggedItemRepository.findByMember(member.getUsername())
+                    .stream().map(bi -> new BaggedItemOrderDto(bi))
+                    .collect(Collectors.toList());
+        }
+        else if(option.equals("select")) {
+            baggedItem = baggedItemRepository.findSelected(member.getUsername())
+                    .stream().map(bi -> new BaggedItemOrderDto(bi))
+                    .collect(Collectors.toList());
+        }
+
+        model.addAttribute("items", baggedItem);
+        int totalItemPrice = baggedItem.stream().mapToInt(bi->bi.getTotalPrice()).sum();
+        int shippingFee = discountPolicy.isDiscountShip(totalItemPrice)==true? 0:2500;
+        model.addAttribute("shippingFee", shippingFee);
+
+        model.addAttribute("totalItemPrice", totalItemPrice);
+        model.addAttribute("totalPrice", totalItemPrice+shippingFee);
+        model.addAttribute("orderForm", new OrderForm());
+
+        return "/user/order/orderForm";
+    }
+
+    @PostMapping(value = "/new")
+    public String orderFormWithItem(@AuthenticationPrincipal LoginUserDetails member,
+                            @RequestParam(value = "itemId", required = false) Long itemId,
+                            @RequestParam(value = "count", required = false, defaultValue = "0") int count) {
+
+        memberService.addShoppingBag(itemId, member.getUsername(), count);
+        return "redirect:/order/new/all";
     }
 
 }
