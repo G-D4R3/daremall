@@ -4,10 +4,10 @@
 <body>
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <div>
+        <h3>결제</h3>
+    </div>
     <div style="overflow: hidden">
-        <div>
-            <h3>결제</h3>
-        </div>
         <div style="margin-top: 20px">
             <h4>상품 확인</h4>
             <table class="table table-striped" style="text-align: center">
@@ -44,6 +44,7 @@
                     <p th:text="${totalPrice}" style="font-size: 24pt"></p>
                 </div>
             </div>
+            <p style="color: #AAAAAA; font-size: 9pt">주문 금액 5만원 이상 배송비 무료</p>
         </div>
         <div style="margin-top: 20px;">
             <h4>배송주소</h4>
