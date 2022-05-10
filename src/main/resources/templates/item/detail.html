@@ -9,11 +9,10 @@
             <img th:src="@{${item.imageUrl}}" style="height: 260px; width: 200px">
         </div>
         <div style="height: 100%; width: 50%; float: left">
-            <tr>
-                <h3>
-                    <td th:text="${item.name}"></td>
-                </h3>
-                <p>가격 : <td th:text="${item.price}"></td>원</p>
+                <h3 th:text="${item.name}"></h3>
+                <p>
+                    가격 : <a style="color: #c0183a; font-weight: bolder; font-size: 16pt" th:text="${item.price}+' 원'"></a>
+                </p>
                 <p>재고 수량 : <td th:text="${item.stockQuantity}"></td>개</p>
             </tr>
             <form role="form" method="post" th:action="@{/order/new}">
