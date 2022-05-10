@@ -47,14 +47,14 @@ public class Order {
         delivery.setOrder(this);
     }
 
-    public static Order createOrder(Member member, Delivery delivery, List<OrderItem> orderItems) {
+    public static Order createOrder(Member member, Delivery delivery, List<OrderItem> orderItems, OrderStatus orderStatus) {
         Order order = new Order();
         order.setMember(member);
         order.setDelivery(delivery);
         for(OrderItem orderItem: orderItems) {
             order.addOrderItem(orderItem);
         }
-        order.setStatus(OrderStatus.ORDER);
+        order.setStatus(orderStatus);
         order.setOrderDate(LocalDateTime.now());
         if(order.getOrderItems().stream().mapToInt(oi->oi.getTotalPrice()).sum() >= 50000) order.setShippingFee(false);
         else order.setShippingFee(true);

@@ -1,6 +1,7 @@
 package dare.daremall.service;
 
 import dare.daremall.controller.order.OrderDto;
+import dare.daremall.controller.order.OrderForm;
 import dare.daremall.domain.*;
 import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.repository.ItemRepository;
@@ -25,50 +26,6 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final BaggedItemRepository baggedItemRepository;
 
-    @Transactional
-    public Order orderSelect(String loginId) {
-        Member member = memberRepository.findByLoginId(loginId).get();
-
-        Delivery delivery = new Delivery();
-        delivery.setAddress(member.getAddress());
-        delivery.setStatus(DeliveryStatus.READY);
-
-        List<BaggedItem> selected = baggedItemRepository.findSelected(loginId);
-
-        List<OrderItem> orderItems = selected.stream().map(bi -> {
-            return OrderItem.createOrderItem(bi.getItem(), bi.getPrice(), bi.getCount());
-        }).collect(Collectors.toList());
-
-        Order order = Order.createOrder(member, delivery, orderItems);
-
-        for(BaggedItem item:selected) member.removeBaggedItem(item);
-
-        orderRepository.save(order);
-        return order;
-    }
-
-    @Transactional
-    public Order orderAll(String loginId) {
-        Member member = memberRepository.findByLoginId(loginId).get();
-
-        Delivery delivery = new Delivery();
-        delivery.setAddress(member.getAddress());
-        delivery.setStatus(DeliveryStatus.READY);
-
-        List<BaggedItem> baggedItems = baggedItemRepository.findByMember(loginId);
-
-        List<OrderItem> orderItems = baggedItems.stream().map(bi -> {
-            return OrderItem.createOrderItem(bi.getItem(), bi.getPrice(), bi.getCount());
-        }).collect(Collectors.toList());
-
-        Order order = Order.createOrder(member, delivery, orderItems);
-
-        for(BaggedItem item:baggedItems) member.removeBaggedItem(item);
-
-        orderRepository.save(order);
-        return order;
-    }
-
     public List<Order> findOrders(String loginId) {
         return orderRepository.findByLoginId(loginId);
     }
@@ -81,5 +38,29 @@ public class OrderService {
 
     public Order findOne(Long orderId) {
         return orderRepository.findOne(orderId);
+    }
+
+    @Transactional
+    public Long createOrder(String loginId, OrderForm orderForm, OrderStatus orderStatus) {
+        Member member = memberRepository.findByLoginId(loginId).get();
+
+        Delivery delivery = new Delivery();
+        delivery.setName(orderForm.getName());
+        delivery.setPhone(orderForm.getPhone());
+        delivery.setAddress(new Address(orderForm.getCity(), orderForm.getStreet(), orderForm.getZipcode()));
+        delivery.setStatus(DeliveryStatus.NONE);
+
+        List<BaggedItem> baggedItems = baggedItemRepository.findSelected(loginId);
+
+        List<OrderItem> orderItems = baggedItems.stream().map(bi -> {
+            return OrderItem.createOrderItem(bi.getItem(), bi.getPrice(), bi.getCount());
+        }).collect(Collectors.toList());
+
+        Order order = Order.createOrder(member, delivery, orderItems, orderStatus);
+
+        for(BaggedItem item:baggedItems) member.removeBaggedItem(item);
+
+        orderRepository.save(order);
+        return order.getId();
     }
 }

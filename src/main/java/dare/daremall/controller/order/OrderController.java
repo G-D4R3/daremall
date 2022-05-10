@@ -3,10 +3,7 @@ package dare.daremall.controller.order;
 import dare.daremall.controller.member.BaggedItemDto;
 import dare.daremall.controller.member.LoginUserDetails;
 import dare.daremall.controller.member.ShoppingBagController;
-import dare.daremall.domain.BaggedItem;
-import dare.daremall.domain.Member;
-import dare.daremall.domain.Order;
-import dare.daremall.domain.OrderItem;
+import dare.daremall.domain.*;
 import dare.daremall.domain.discountPolicy.DiscountPolicy;
 import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.service.MemberService;
@@ -15,9 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.util.StringUtils;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,7 +50,7 @@ public class OrderController {
                               @PathVariable("orderId") Long orderId) {
         if(member==null) return "redirect:/members/login";
         orderService.cancelOrder(orderId);
-        return "redirect:/order";
+        return "redirect:/order/myOrder";
     }
 
     @GetMapping(value = "/new/{orderOption}")
@@ -63,6 +62,7 @@ public class OrderController {
             baggedItem = baggedItemRepository.findByMember(member.getUsername())
                     .stream().map(bi -> new BaggedItemOrderDto(bi))
                     .collect(Collectors.toList());
+            baggedItemRepository.setAllChecked(member.getUsername());
         }
         else if(option.equals("select")) {
             baggedItem = baggedItemRepository.findSelected(member.getUsername())
@@ -89,6 +89,41 @@ public class OrderController {
 
         memberService.addShoppingBag(itemId, member.getUsername(), count);
         return "redirect:/order/new/all";
+    }
+
+    @PostMapping(value = "/createOrder")
+    public String createOrder(@AuthenticationPrincipal LoginUserDetails member,
+                              @Valid OrderForm orderForm, BindingResult result) {
+        if(result.hasErrors()) {
+            return "redirect:/shop";
+        }
+
+        System.out.println(orderForm.getPayment());
+
+        Long orderId = orderForm.getPayment().equals("pay")? orderService.createOrder(member.getUsername(), orderForm, OrderStatus.PAY)
+                :orderService.createOrder(member.getUsername(), orderForm, OrderStatus.ORDER);
+
+        return "redirect:/order/success/"+orderId;
+    }
+
+    @GetMapping(value = "/success/{orderId}")
+    public String orderSuccess(@AuthenticationPrincipal LoginUserDetails member,
+                               @PathVariable("orderId") Long orderId, Model model) {
+
+        OrderDto orderDto = new OrderDto(orderService.findOne(orderId));
+        model.addAttribute("order", orderDto);
+
+        return "/user/order/orderSuccess";
+    }
+
+    @GetMapping(value = "/detail")
+    public String orderDetail(@AuthenticationPrincipal LoginUserDetails member,
+                              @RequestParam("orderId") Long orderId, Model model) {
+
+        OrderDetailDto orderDetailDto = new OrderDetailDto(orderService.findOne(orderId));
+        model.addAttribute("order", orderDetailDto);
+
+        return "/user/order/orderDetail";
     }
 
 }
