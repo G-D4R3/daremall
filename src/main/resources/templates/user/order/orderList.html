@@ -29,7 +29,7 @@
                 <td>
                     <p th:text="${order.status}"></p>
                 </td>
-                <td><a th:if="${order.status}=='주문완료'" href="#" th:href="'javascript:cancel('+${order.id}+')'">취소</a></td>
+                <td><a th:if="${order.status}=='주문 완료' or ${order.status}=='결제 완료'" href="#" th:href="'javascript:cancel('+${order.id}+')'">취소</a></td>
             </tr>
             </tbody>
         </table>
