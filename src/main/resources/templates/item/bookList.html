@@ -18,10 +18,10 @@
                     </a>
                 </td>
                 <td>
-                    <div style="padding-top: 3%; padding-bottom: 3%;">
+                    <div style="padding-top: 3%; padding-bottom: 3%">
                         <p><a style="font-size: 14pt" th:text="${book.name}" th:href="@{/items/detail(itemId=${book.id})}"></a></p>
+                        <p th:text="'판매가 : '+${book.price}+'원'" style="color: #d82c50; font-weight: bolder; font-size: 12pt"></p>
                         <p style="color: #777777" th:text="${book.etc}"></p>
-                        <p th:text="${book.price}+'원'"></p>
                     </div>
                 </td>
             </tr>
