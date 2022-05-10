@@ -53,6 +53,14 @@ public class OrderController {
         return "redirect:/order/myOrder";
     }
 
+    @PostMapping(value = "/{orderId}/delete")
+    public String deleteOrder(@AuthenticationPrincipal LoginUserDetails member,
+                              @PathVariable("orderId") Long orderId) {
+        if(member==null) return "redirect:/members/login";
+        orderService.deleteOrder(orderId);
+        return "redirect:/order/myOrder";
+    }
+
     @GetMapping(value = "/new/{orderOption}")
     public String orderForm(@AuthenticationPrincipal LoginUserDetails member,
                             @PathVariable("orderOption") String option,

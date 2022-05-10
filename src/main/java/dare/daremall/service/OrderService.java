@@ -63,4 +63,11 @@ public class OrderService {
         orderRepository.save(order);
         return order.getId();
     }
+
+    @Transactional
+    public void deleteOrder(Long orderId) {
+        Order order = orderRepository.findOne(orderId);
+        order.delete();
+        orderRepository.remove(order);
+    }
 }

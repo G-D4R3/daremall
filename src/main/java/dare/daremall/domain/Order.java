@@ -23,7 +23,7 @@ public class Order {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -76,5 +76,16 @@ public class Order {
         int res = this.orderItems.stream().mapToInt(oi -> oi.getTotalPrice()).sum();
         if(res >= 50000) return res;
         else return res + 2500; // 배송비 추가
+    }
+
+    public void delete() {
+        if( this.status != OrderStatus.CANCEL ) {
+            throw new IllegalStateException("취소된 주문이 아니면 주문 목록에서 삭제할 수 없습니다.");
+        }
+
+        for(OrderItem orderItem: this.orderItems) {
+            orderItem.cancel();
+        }
+        this.orderItems.clear();
     }
 }

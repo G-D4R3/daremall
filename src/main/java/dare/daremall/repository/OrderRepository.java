@@ -28,4 +28,8 @@ public class OrderRepository {
                 .setParameter("loginId", loginId)
                 .getResultList();
     }
+
+    public void remove(Order order) {
+        em.remove(order);
+    }
 }

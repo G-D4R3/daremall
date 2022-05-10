@@ -12,6 +12,7 @@
                 <a>주문 번호 : <a th:text="${order.id}" style="font-weight: bold; margin-right: 20px"></a></a>
                 <a>주문 상태 : <a th:text="${order.status}" style="font-weight: bold; margin-right: 20px"></a></a>
                 <a th:if="${order.status}=='주문 완료' or ${order.status}=='결제 완료'" href="#" th:href="'javascript:cancel('+${order.id}+')'">주문 취소</a>
+                <a th:if="${order.status}=='주문 취소'" href="#" th:href="'javascript:deleteOrder('+${order.id}+')'">주문 목록에서 삭제</a>
             </div>
         </div>
         <div style="padding-top: 20px">
@@ -56,6 +57,14 @@
         var form = document.createElement("form");
         form.setAttribute("method", "post");
         form.setAttribute("action", "/order/" + id + "/cancel");
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function deleteOrder(id) {
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/order/" + id + "/delete");
         document.body.appendChild(form);
         form.submit();
     }
