@@ -3,6 +3,7 @@ package dare.daremall.service;
 import dare.daremall.domain.item.Album;
 import dare.daremall.domain.item.Book;
 import dare.daremall.domain.item.Item;
+import dare.daremall.domain.item.ItemSearch;
 import dare.daremall.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,5 +57,17 @@ public class ItemService {
 
     public List<Book> findBooks() {
         return itemRepository.findByType("book");
+    }
+
+    public List<Item> findItems(ItemSearch itemSearch) {
+        return itemRepository.findByName(itemSearch.getName());
+    }
+
+    public List<Book> findBooks(ItemSearch itemSearch) {
+        return itemRepository.findBookByName(itemSearch.getName());
+    }
+
+    public List<Album> findAlbums(ItemSearch itemSearch) {
+        return itemRepository.findAlbumByName(itemSearch.getName());
     }
 }

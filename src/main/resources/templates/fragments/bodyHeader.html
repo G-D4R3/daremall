@@ -25,10 +25,10 @@
             </a>
         </div>
         <div style="margin-left: 10%; margin-top: auto; margin-bottom: auto; display: flex; flex-direction: row; width: fit-content; height: fit-content; border: 2px solid #666666">
-            <form method="post" action="/item/search" th:object="${itemSearch}"
+            <form role="form" method="get" th:action="@{/items/search}"
                     style="display: flex; flex-direction: row;">
                 <div style="width: 100px; margin: 0">
-                    <select name="option" id="option" class="form-control" style="border: none">
+                    <select name="option" class="form-control" style="border: none">
                         <option value="all">통합검색</option>
                         <option value="book">도서</option>
                         <option value="album">앨범</option>
@@ -36,9 +36,9 @@
                 </div>
                 <div style="width: 300px; height: 40px; margin-left: 10px">
                     <input style="width: 300px; height: 40px; border: none"
-                           type="text" placeholder="제목/작가 검색"/>
+                           type="text" placeholder="책 제목 / 작가 / 앨범 검색" name="name" th:value="${name}"/>
                 </div>
-                <img onclick="submit()" th:src="@{/images/find.png}" style="padding: 5px; width: 40px; height: 40px; background-color: #666666;"/>
+                <img onclick="submit();" th:src="@{/images/find.png}" style="padding: 5px; width: 40px; height: 40px; background-color: #666666;"/>
             </form>
         </div>
     </div>

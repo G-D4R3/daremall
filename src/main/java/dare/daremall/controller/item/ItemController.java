@@ -7,6 +7,7 @@ import dare.daremall.domain.Member;
 import dare.daremall.domain.item.Album;
 import dare.daremall.domain.item.Book;
 import dare.daremall.domain.item.Item;
+import dare.daremall.domain.item.ItemSearch;
 import dare.daremall.repository.MemberRepository;
 import dare.daremall.service.ItemService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -114,5 +116,43 @@ public class ItemController {
 
 
         return "item/itemList"; // 임시
+    }
+
+    @GetMapping(value = "/search")
+    public String itemSearch(@RequestParam(value = "option") String option,
+                             @RequestParam(value = "name") String name,
+                             Model model) {
+
+        List<ItemListDto> items = null;
+        ItemSearch itemSearch = new ItemSearch(name, option);
+
+        if(itemSearch.getOption().equals("all")) {
+            items = itemService.findAlbums(itemSearch).stream().map(i -> new ItemListDto(i)).collect(Collectors.toList());
+            items.addAll(itemService.findBooks(itemSearch).stream().map(i -> new ItemListDto(i)).collect(Collectors.toList()));
+            items.sort(new Comparator<ItemListDto>() {
+                @Override
+                public int compare(ItemListDto o1, ItemListDto o2) {
+                    return Long.compare(o1.getId(),o2.getId());
+                }
+            });
+        }
+        else if(itemSearch.getOption().equals("album")) {
+            items = itemService.findAlbums(itemSearch).stream().map(i -> new ItemListDto(i)).collect(Collectors.toList());
+        }
+        else if(itemSearch.getOption().equals("book")) {
+            items = itemService.findBooks(itemSearch).stream().map(i -> new ItemListDto(i)).collect(Collectors.toList());
+        }
+
+        items.sort(new Comparator<ItemListDto>() {
+            @Override
+            public int compare(ItemListDto o1, ItemListDto o2) {
+                return Long.compare(o1.getId(),o2.getId());
+            }
+        });
+        model.addAttribute("items", items);
+        model.addAttribute("option", option);
+        model.addAttribute("name", name);
+
+        return "item/searchList";
     }
 }
