@@ -8,11 +8,13 @@
         <div>
             <h3>주문 상세 정보</h3>
             <div style="background-color: #EEEEEE; padding: 2%;">
-                <a>주문 일자 : <a th:text="${order.orderDate}" style="font-weight: bold"></a></a>
-                <a>주문 번호 : <a th:text="${order.id}" style="font-weight: bold"></a></a>
+                <a>주문 일자 : <a th:text="${order.orderDate}" style="font-weight: bold; margin-right: 20px"></a></a>
+                <a>주문 번호 : <a th:text="${order.id}" style="font-weight: bold; margin-right: 20px"></a></a>
+                <a>주문 상태 : <a th:text="${order.status}" style="font-weight: bold; margin-right: 20px"></a></a>
+                <a th:if="${order.status}=='주문 완료' or ${order.status}=='결제 완료'" href="#" th:href="'javascript:cancel('+${order.id}+')'">주문 취소</a>
             </div>
         </div>
-        <div style="margin-top: 20px">
+        <div style="padding-top: 20px">
             <table class="table table-striped" th:object="${order}" style="text-align: center">
                 <thead>
                 <tr>
@@ -31,12 +33,31 @@
                 </tbody>
             </table>
         </div>
-        <div>
+        <div style="padding-top: 20px;">
             <h4>배송지 정보</h4>
-
+            <div style="background-color: #EEEEEE; padding: 3%; color:#4082d9; height: fit-content">
+                <p th:text="'수령인 이름 : '+${order.delivery.name}"></p>
+                <p th:text="'휴대폰 번호 : '+${order.delivery.phone}"></p>
+                <p th:text="'주소 : ('+${order.delivery.address.zipcode}+') '+${order.delivery.address.city}+'시 '+${order.delivery.address.street}"></p>
+            </div>
+        </div>
+        <div style="padding-top: 20px; padding-bottom: 50px">
+            <h4>결제 정보</h4>
+            <div style="background-color: #EEEEEE; padding: 3%; color:#4082d9; height: fit-content">
+                <p th:text="'총 결제 금액 : '+${order.totalPrice}"></p>
+            </div>
         </div>
     </div>
     <div style="clear: both" th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->
 </body>
+<script>
+    function cancel(id) {
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/order/" + id + "/cancel");
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
 </html>
