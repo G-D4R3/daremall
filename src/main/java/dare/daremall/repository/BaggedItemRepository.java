@@ -35,4 +35,11 @@ public class BaggedItemRepository {
                 .setParameter("loginId", loginId)
                 .getResultList();
     }
+
+    // 선택한 item이 있을 때 전체 주문을 위함
+    // 이후에 item check는 결제할 당시에만 사용하고, all checked로 사용하기
+    public void setAllChecked(String loginId) {
+        List<BaggedItem> baggedItems = findByMember(loginId);
+        for(BaggedItem item : baggedItems) item.setChecked(true);
+    }
 }
