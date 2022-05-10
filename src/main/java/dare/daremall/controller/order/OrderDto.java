@@ -22,6 +22,24 @@ public class OrderDto {
         if(order.getOrderItems().size()>1) this.title += " 외 " + (order.getOrderItems().size()-1);
         this.price = order.getOrderItems().stream().mapToInt(i->i.getTotalPrice()).sum();
         this.orderDate = order.getOrderDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
-        this.status = order.getStatus()== OrderStatus.ORDER? "주문완료":"주문취소";
+        if(order.getStatus()==OrderStatus.PAY) {
+            switch (order.getDelivery().getStatus()) {
+                case NONE:
+                    this.status = "결제 완료";
+                    break;
+                case READY:
+                    this.status = "배송 준비 중";
+                    break;
+                case SHIP:
+                    this.status = "배송 중";
+                    break;
+                case COMP:
+                    this.status = "배송 완료";
+                    break;
+            }
+        }
+        else {
+            this.status = order.getStatus()==OrderStatus.ORDER? "주문 완료":"주문 취소";
+        }
     }
 }
