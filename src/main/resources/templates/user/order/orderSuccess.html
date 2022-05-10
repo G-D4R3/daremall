@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header :: header"/>
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <div style="overflow: hidden" class="jumbotron">
+        <div style="text-align: center">
+            <h3>주문이 완료되었습니다.</h3>
+            <div>
+                <p><a th:text="${order.title}" style="font-weight: bold; font-size: 14pt" th:href="@{/order/detail(orderId=${order.id})}"></a></p>
+                <p>주문 일자 : <a th:text="${order.orderDate}" style="font-weight: bold"></a></p>
+                <p>주문 번호 : <a th:text="${order.id}" style="font-weight: bold"></a></p>
+            </div>
+        </div>
+        <div style="margin-top: 20px">
+
+        </div>
+    </div>
+    <div style="clear: both" th:replace="fragments/footer :: footer"/>
+</div> <!-- /container -->
+</body>
+</html>
