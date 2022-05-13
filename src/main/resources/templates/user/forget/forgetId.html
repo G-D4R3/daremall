@@ -45,10 +45,9 @@
         const phone = $('#phone').val();
 
         $.ajax ({
-            url: '/members/forgetId/getCertificateNumber',
+            url: '/members/getCertificateNumber',
             type: 'GET',
             data: {
-                "name" : name,
                 "phone" : phone
             },
             success: function(data) {

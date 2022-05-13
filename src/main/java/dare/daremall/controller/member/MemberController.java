@@ -66,11 +66,9 @@ public class MemberController {
         return "/user/forget/forgetId";
     }
 
-    @GetMapping(value = "/forgetId/getCertificateNumber")
-    public @ResponseBody String getCertificateNumber(@RequestParam(value = "name", required = false) String name,
-                                       @RequestParam(value = "phone", required = false) String phone,
+    @GetMapping(value = "/getCertificateNumber")
+    public @ResponseBody String getCertificateNumber(@RequestParam(value = "phone", required = false) String phone,
                                        RedirectAttributes redirectAttributes) throws CoolsmsException {
-        redirectAttributes.addAttribute("name", name);
         redirectAttributes.addAttribute("phone", phone);
 
         //return certificationService.PhoneNumberCheck(phone);
