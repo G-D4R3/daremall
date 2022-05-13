@@ -33,6 +33,7 @@ public class MemberService {
         Member newMember = new Member(memberDto.getName(),
                                         memberDto.getLoginId(),
                                         memberDto.getPassword(),
+                                        memberDto.getPhone(),
                                         new Address(memberDto.getCity(),
                                                 memberDto.getStreet(),
                                                 memberDto.getZipcode()));
@@ -91,4 +92,9 @@ public class MemberService {
     public List<BaggedItem> getSelectedBaggedItem(String loginId) {
         return baggedItemRepository.findSelected(loginId);
     }
+
+    public String findId(String name, String phone) {
+        return memberRepository.findByNameAndPhone(name, phone).orElse(null).getLoginId();
+    }
 }
+

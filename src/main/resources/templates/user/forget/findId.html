@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<style>
+    .fieldError {
+        border-color: #bd2130;
+    }
+</style>
+<body>
+
+<div class="container">
+    <div th:replace="fragments/forgetHeader :: forgetHeader"/>
+    <div style="margin: auto; padding-top: 50px; padding-bottom: 50px; text-align: center">
+        <div style="text-align: center; margin-bottom: 20px">
+            <h3>아이디 찾기</h3>
+        </div>
+        <div class="jumbotron" style="width: 60%; margin: auto">
+            <p>고객님의 아이디는</p>
+            <p><a th:text="${userId}" style="font-weight: bolder; color: #268aff"></a>입니다.</p>
+            <p style="margin-top: 40px"><a href="/members/forgetPassword" style="text-decoration: none">비밀번호 찾기</a></p>
+        </div>
+        <div style="display: flex; flex-direction: row; width: 60%; text-align: center; margin: auto; margin-top: 20px">
+            <a style="flex: 1" type="button" href="/userinfo" class="btn btn-outline-primary">마이페이지</a>
+            <a style="flex: 1; margin-left: 10px" type="button" href="/members/login" class="btn btn-outline-primary">로그인</a>
+        </div>
+    </div>
+
+    <br/>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+
+</body>
+</html>

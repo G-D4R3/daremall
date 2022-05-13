@@ -16,6 +16,9 @@ public class MemberSignupRequestDto {
     @NotEmpty(message = "비밀번호를 입력해주세요")
     private String password;
 
+    @NotEmpty(message = "휴대폰 번호를 입력해주세요")
+    private String phone;
+
     private String city;
     private String street;
     private String zipcode;

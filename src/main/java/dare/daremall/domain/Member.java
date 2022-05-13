@@ -28,6 +28,8 @@ public class Member {
     private String loginId;
     private String password;
 
+    private String phone;
+
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
@@ -45,10 +47,11 @@ public class Member {
     private List<BaggedItem> shoppingBag = new ArrayList<>();
 
 
-    public Member(String name, String loginId, String password, Address address) {
+    public Member(String name, String loginId, String password, String phone, Address address) {
         this.name = name;
         this.loginId = loginId;
         this.password = password;
+        this.phone = phone;
         this.address = address;
         this.role = MemberRole.USER;
     }

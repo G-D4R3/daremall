@@ -42,4 +42,12 @@ public class MemberRepository {
     }
 
 
+    public Optional<Member> findByNameAndPhone(String name, String phone) {
+        return em.createQuery("select m from Member m" +
+                " where m.name = :name" +
+                " and m.phone = :phone", Member.class)
+                .setParameter("name", name)
+                .setParameter("phone", phone)
+                .getResultList().stream().findAny();
+    }
 }

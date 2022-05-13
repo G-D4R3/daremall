@@ -29,11 +29,17 @@
                        th:class="${#fields.hasErrors('loginId')}? 'form-control fieldError' : 'form-control'">
                 <p th:if="${#fields.hasErrors('loginId')}" th:errors="*{loginId}">Incorrect date</p>
             </div>
-            <div class="form-group"  style="display: flex; flex-direction: row; margin-bottom: 40px">
+            <div class="form-group"  style="display: flex; flex-direction: row;">
                 <label th:for="password" style="flex: 1; padding-top: 5px">비밀번호</label>
                 <input style="flex: 3" type="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요"
                        th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'">
                 <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect date</p>
+            </div>
+            <div class="form-group"  style="display: flex; flex-direction: row; margin-bottom: 40px">
+                <label th:for="password" style="flex: 1; padding-top: 5px">휴대폰 번호</label>
+                <input style="flex: 3" type="text" th:field="*{phone}" class="form-control" placeholder="휴대폰 번호를 입력하세요"
+                       th:class="${#fields.hasErrors('phone')}? 'form-control fieldError' : 'form-control'">
+                <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Incorrect date</p>
             </div>
             <p style="color: #268aff">배송 정보</p>
             <div class="form-group"  style="display: flex; flex-direction: row">
