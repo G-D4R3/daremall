@@ -1,6 +1,8 @@
 package dare.daremall.controller.member;
 
+import dare.daremall.controller.member.forget.ChangePasswordForm;
 import dare.daremall.controller.member.forget.ForgetIdDto;
+import dare.daremall.domain.Member;
 import dare.daremall.repository.ItemRepository;
 import dare.daremall.repository.MemberRepository;
 import dare.daremall.service.CertificationService;
@@ -55,35 +57,58 @@ public class MemberController {
         return "redirect:/";
     }
 
-    /*@GetMapping(value = "/forgetId")
-    public String forgetId(Model model) {
-        model.addAttribute("member", new ForgetIdDto());
-        return "/user/forget/forgetId";
-    }*/
-
-    @GetMapping(value = "/forgetId")
-    public String forgetId(Model model) {
-        return "/user/forget/forgetId";
-    }
-
     @GetMapping(value = "/getCertificateNumber")
     public @ResponseBody String getCertificateNumber(@RequestParam(value = "phone", required = false) String phone,
-                                       RedirectAttributes redirectAttributes) throws CoolsmsException {
+                                                     RedirectAttributes redirectAttributes) throws CoolsmsException {
         redirectAttributes.addAttribute("phone", phone);
 
         //return certificationService.PhoneNumberCheck(phone);
         return "1234";
     }
 
-    @GetMapping(value = "/findId")
-    public @ResponseBody String findId(@RequestParam("name") String name, @RequestParam("phone") String phone) {
-        return memberService.findId(name, phone);
+    @GetMapping(value = "/forgetId")
+    public String forgetId(Model model) {
+        return "/user/forget/forgetId";
     }
 
-    @GetMapping(value = "findIdSuccess")
-    public String findIdSuccess(Model model, @RequestParam("userId") String userId) {
-        model.addAttribute("userId", userId);
+    @GetMapping(value = "/findId")
+    public @ResponseBody String findId(@RequestParam("phone") String phone) {
+        return memberService.findLoginId(phone);
+    }
+
+    @GetMapping(value = "/findIdSuccess")
+    public String findIdSuccess(Model model, @RequestParam("loginId") String loginId) {
+        model.addAttribute("loginId", loginId);
         return "/user/forget/findId";
+    }
+
+    @GetMapping(value = "/forgetPassword")
+    public String forgetPassword(Model model) {
+        return "/user/forget/forgetPassword";
+    }
+
+    @GetMapping(value = "/forgetPassword/changePassword")
+    public String changePasswordForm(Model model, @RequestParam("loginId") String loginId) {
+
+        Member member = memberService.findUser(loginId);
+        if(member==null) return "redirect:/user/forget/forgetPassword";
+
+        model.addAttribute("changePasswordForm", new ChangePasswordForm(loginId));
+
+        return "/user/forget/changePassword";
+    }
+
+    @PostMapping(value = "/changePassword")
+    public String changePassword(ChangePasswordForm form) {
+
+        memberService.passwordChange(form);
+
+        return "redirect:/members/findPasswordSuccess";
+    }
+
+    @GetMapping(value = "/findPasswordSuccess")
+    public String findPasswordSuccess(Model model) {
+        return "/user/forget/findPassword";
     }
 
 }

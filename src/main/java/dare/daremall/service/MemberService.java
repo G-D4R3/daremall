@@ -1,6 +1,7 @@
 package dare.daremall.service;
 
 import dare.daremall.controller.member.MemberSignupRequestDto;
+import dare.daremall.controller.member.forget.ChangePasswordForm;
 import dare.daremall.domain.Address;
 import dare.daremall.domain.BaggedItem;
 import dare.daremall.domain.Member;
@@ -93,8 +94,16 @@ public class MemberService {
         return baggedItemRepository.findSelected(loginId);
     }
 
-    public String findId(String name, String phone) {
-        return memberRepository.findByNameAndPhone(name, phone).orElse(null).getLoginId();
+
+    public String findLoginId(String phone) {
+        return memberRepository.findLoginIdByPhone(phone).orElse(null).getLoginId();
+    }
+
+    @Transactional
+    public void passwordChange(ChangePasswordForm form) {
+        Member member = memberRepository.findByLoginId(form.getLoginId()).orElse(null);
+        member.setPassword(form.getPassword());
+        member.encryptPassword(passwordEncoder);
     }
 }
 
