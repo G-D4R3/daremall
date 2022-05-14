@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <div style="display: flex; flex-direction: row; margin-bottom: 20px">
+        <a href="/userinfo" style="text-decoration: none; color: black"><h3>마이페이지</h3></a>
+    </div>
+    <div style="display: flex; flex-direction: row">
+        <div style="flex: 1;" th:replace="fragments/myPageMenu :: myPageMenu"/>
+        <div style="margin-left: 30px; flex: 5">
+            <div style="display: flex; flex-direction: row">
+                <h4>최근 주문 내역</h4>
+                <a href="/userinfo/orderList" style="text-decoration: none; color: #444444; height: fit-content; margin-left: 15px;">더보기</a>
+            </div>
+            <div>
+                <div th:if="${orders.size()==0}" class="jumbotron">
+                    <p>아직 주문한 내역이 없습니다.</p>
+                </div>
+                <table class="table table-striped" th:if="${orders.size()>0}" style="text-align: center">
+                    <thead>
+                    <tr style="color: #37a3e3">
+                        <th>주문 일자</th> <th>주문 번호</th> <th>주문 내역</th> <th>주문 상태</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="order : ${orders}">
+                        <td>
+                            <p th:text="${order.orderDate}"></p>
+                        </td>
+                        <td>
+                            <p th:text="${order.id}"></p>
+                        </td>
+                        <td>
+                            <p><a th:href="@{/order/detail(orderId=${order.id})}" th:text="${order.title}"></a></p>
+                        </td>
+                        <td>
+                            <p th:text="${order.status}"></p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div th:replace="fragments/footer :: footer"/>
+</div> <!-- /container -->
+</body>
+
+</html>
