@@ -58,6 +58,15 @@ public class MemberController {
         return "redirect:/";
     }
 
+    @GetMapping(value = "/new/getCertificateNumber")
+    public @ResponseBody String getCertificateNumberByName(@RequestParam(value = "phone") String phone,
+                                                           RedirectAttributes redirectAttributes) throws CoolsmsException {
+        redirectAttributes.addAttribute("phone", phone);
+
+        //return certificationService.PhoneNumberCheck(phone);
+        return "1234";
+    }
+
     @GetMapping(value = "/getCertificateNumberByName")
     public @ResponseBody String getCertificateNumberByName(@RequestParam(value = "name", required = false) String name,
                                                      @RequestParam(value = "phone", required = false) String phone,

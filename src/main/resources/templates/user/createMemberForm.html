@@ -14,7 +14,7 @@
         <div style="text-align: center; margin-bottom: 20px">
             <h3>회원가입</h3>
         </div>
-        <form role="form" action="/members/new" th:object="${memberDto}" method="post" style="color: #444444">
+        <form onsubmit="return onSubmit()" role="form" action="/members/new" th:object="${memberDto}" method="post" style="color: #444444">
             <p style="color: #268aff">필수 정보 *</p>
             <div class="form-group"  style="display: flex; flex-direction: row">
                 <label th:for="name" style="flex: 1; padding-top: 5px">이름</label>
@@ -35,12 +35,20 @@
                        th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'">
                 <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect date</p>
             </div>
-            <div class="form-group"  style="display: flex; flex-direction: row; margin-bottom: 40px">
-                <label th:for="password" style="flex: 1; padding-top: 5px">휴대폰 번호</label>
-                <input style="flex: 3" type="text" th:field="*{phone}" class="form-control" placeholder="휴대폰 번호를 입력하세요"
+            <div style="display: flex; flex-direction: row;">
+                <label th:for="phone" style="flex: 1; padding-top: 5px">휴대폰 번호</label>
+                <input id="phone" style="flex: 2; margin-right: 15px" type="text" th:field="*{phone}" class="form-control" placeholder="휴대폰 번호를 입력하세요"
                        th:class="${#fields.hasErrors('phone')}? 'form-control fieldError' : 'form-control'">
                 <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Incorrect date</p>
+                <button type="button" id="send" class="btn btn-outline-primary">인증번호 요청</button>
             </div>
+            <div style="display: flex; flex-direction: row;  margin-bottom: 40px">
+                <input style="flex: 2" id="certificateNum" type="text" name="certificateNumber" class="form-control" placeholder="인증 번호를 입력하세요"
+                       th:class="form-control">
+                <button type="button" id="enterBtn" class="btn btn-outline-primary" style="flex: 1">확인</button>
+            </div>
+
+
             <p style="color: #268aff">배송 정보</p>
             <div class="form-group"  style="display: flex; flex-direction: row">
                 <label th:for="city" style="flex: 1; padding-top: 5px">도시</label>
@@ -63,4 +71,47 @@
 </div> <!-- /container -->
 
 </body>
+
+<script>
+
+    var isCertificated = false;
+
+    $('#send').click(function() {
+
+        const phone = $('#phone').val();
+
+        $.ajax ({
+            url: '/members/new/getCertificateNumber',
+            type: 'GET',
+            data: {
+                "phone" : phone
+            },
+            success: function(data) {
+                const checkNum = data;
+                alert("인증번호가 전송되었습니다.");
+
+                $('#enterBtn').click(function() {
+                    const userNum = $('#certificateNum').val();
+                    if(checkNum === userNum) {
+                        alert('인증 성공하였습니다.');
+                        isCertificated = true;
+                    }
+                    else {
+                        alert('인증 실패하였습니다. 다시 입력해주세요.');
+                    }
+                });
+            }
+        });
+
+    });
+
+    function onSubmit() {
+        if(isCertificated==false){
+            alert("휴대폰 번호가 인증되지 않았습니다.");
+            return false;
+        }
+        return true;
+    }
+
+</script>
 </html>
