@@ -1,7 +1,9 @@
-package dare.daremall.controller.member;
+package dare.daremall.controller.member.mypage;
 
+import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.controller.order.OrderDto;
-import dare.daremall.domain.Order;
+import dare.daremall.domain.Member;
+import dare.daremall.service.MemberService;
 import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
 public class MyPageController {
 
     private final OrderService orderService;
-
+    private final MemberService memberService;
     /**
      * 마이페이지
      */
@@ -45,5 +47,22 @@ public class MyPageController {
         model.addAttribute("orders", orderDtos);
 
         return "/user/userinfo/orderList";
+    }
+
+    @GetMapping(value = "/myAddress")
+    public String myAddress(@AuthenticationPrincipal LoginUserDetails member, Model model) {
+        if(member==null) return "redirect:/members/login";
+
+        return "/user/userinfo/myAddress";
+    }
+
+    @GetMapping(value = "/myInfo")
+    public String myInfo(@AuthenticationPrincipal LoginUserDetails member, Model model) {
+        if(member==null) return "redirect:/members/login";
+
+        MemberDto memberDto  = new MemberDto(memberService.findUser(member.getUsername()));
+        model.addAttribute("memberDto", memberDto);
+
+        return "/user/userinfo/myInfo";
     }
 }

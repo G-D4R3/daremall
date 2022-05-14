@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <div style="display: flex; flex-direction: row; margin-bottom: 20px">
+        <a href="/userinfo" style="text-decoration: none; color: black"><h3>마이페이지</h3></a>
+    </div>
+    <div style="display: flex; flex-direction: row">
+        <div style="flex: 1;" th:replace="fragments/myPageMenu :: myPageMenu"/>
+        <div style="margin-left: 30px; flex: 5">
+            <h4>회원 정보 수정</h4>
+            <table style="width: 100%">
+                <tr>
+                    <td style="width: 20%; text-align: center">아이디</td>
+                    <td style="width: 80%">
+                        <a th:text="${memberDto.loginId}"></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 20%; text-align: center">이름</td>
+                    <td style="width: 80%">
+                        <a th:text="${memberDto.name}"></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 20%; text-align: center">비밀번호</td>
+                    <td style="width: 80%">
+                        <button class="btn btn-outline-dark">비밀번호 변경</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 20%; text-align: center">휴대폰 번호</td>
+                    <td style="width: 80%">
+                        <a th:text="${memberDto.phone}"></a>
+                        <button class="btn btn-outline-dark" style="margin-left: 20px">변경</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 20%; text-align: center">주소</td>
+                    <td style="width: 80%;">
+                        <a th:text="${memberDto.address.city}"></a>
+                        <a th:text="${memberDto.address.street}"></a>
+                        <a th:text="${memberDto.address.zipcode}"></a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+
+<style>
+    table, th, td {
+        border: 1px solid #DDDDDD;
+        border-collapse: collapse;
+        color: #444444;
+        padding: 10px;
+    }
+</style>
+</html>
