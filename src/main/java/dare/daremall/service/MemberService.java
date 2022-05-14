@@ -106,5 +106,9 @@ public class MemberService {
         member.setPassword(form.getPassword());
         member.encryptPassword(passwordEncoder);
     }
+
+    public Member findMemberByLoginId(String loginId, String phone) {
+        return memberRepository.findMemberByLoginId(loginId, phone).orElse(null);
+    }
 }
 

@@ -69,6 +69,17 @@ public class MemberController {
         return "1234";
     }
 
+    @GetMapping(value = "/getCertificateNumberByLoginId")
+    public @ResponseBody String getCertificateNumberByLoginId(@RequestParam(value = "loginId", required = false) String loginId,
+                                                           @RequestParam(value = "phone", required = false) String phone,
+                                                           RedirectAttributes redirectAttributes) throws CoolsmsException {
+        if(memberService.findMemberByLoginId(loginId, phone)==null) return null;
+        redirectAttributes.addAttribute("phone", phone);
+
+        //return certificationService.PhoneNumberCheck(phone);
+        return "1234";
+    }
+
     @GetMapping(value = "/forgetId")
     public String forgetId(Model model) {
         return "/user/forget/forgetId";
@@ -92,7 +103,7 @@ public class MemberController {
     }
 
     @GetMapping(value = "/forgetPassword/changePassword")
-    public String changePasswordForm(Model model, @RequestParam("loginId") String loginId) {
+    public String changePasswordForm(Model model,@RequestParam("loginId") String loginId) {
 
         Member member = memberService.findUser(loginId);
         if(member==null) return "redirect:/user/forget/forgetPassword";

@@ -49,4 +49,13 @@ public class MemberRepository {
                 .setParameter("phone", phone)
                 .getResultList();
     }
+
+    public Optional<Member> findMemberByLoginId(String loginId, String phone) {
+        return em.createQuery("select m from Member m" +
+                " where m.loginId = :loginId" +
+                " and m.phone = :phone", Member.class)
+                .setParameter("loginId", loginId)
+                .setParameter("phone", phone)
+                .getResultList().stream().findAny();
+    }
 }
