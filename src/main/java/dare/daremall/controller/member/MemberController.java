@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -57,9 +58,11 @@ public class MemberController {
         return "redirect:/";
     }
 
-    @GetMapping(value = "/getCertificateNumber")
-    public @ResponseBody String getCertificateNumber(@RequestParam(value = "phone", required = false) String phone,
+    @GetMapping(value = "/getCertificateNumberByName")
+    public @ResponseBody String getCertificateNumberByName(@RequestParam(value = "name", required = false) String name,
+                                                     @RequestParam(value = "phone", required = false) String phone,
                                                      RedirectAttributes redirectAttributes) throws CoolsmsException {
+        if(memberService.findLoginIdByName(name, phone)==null) return null;
         redirectAttributes.addAttribute("phone", phone);
 
         //return certificationService.PhoneNumberCheck(phone);
@@ -72,12 +75,13 @@ public class MemberController {
     }
 
     @GetMapping(value = "/findId")
-    public @ResponseBody String findId(@RequestParam("phone") String phone) {
-        return memberService.findLoginId(phone);
+    public @ResponseBody List<String> findId(@RequestParam("name") String name, @RequestParam("phone") String phone) {
+        return memberService.findLoginIdByName(name, phone);
     }
 
     @GetMapping(value = "/findIdSuccess")
-    public String findIdSuccess(Model model, @RequestParam("loginId") String loginId) {
+    public String findIdSuccess(Model model, @RequestParam("name") String name, @RequestParam("phone") String phone) {
+        List<String> loginId = memberService.findLoginIdByName(name, phone);
         model.addAttribute("loginId", loginId);
         return "/user/forget/findId";
     }

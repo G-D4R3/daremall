@@ -16,7 +16,10 @@
         </div>
         <div class="jumbotron" style="width: 60%; margin: auto">
             <p>고객님의 아이디는</p>
-            <p><a th:text="${loginId}" style="font-weight: bolder; color: #268aff"></a>입니다.</p>
+            <div th:each="id : ${loginId}">
+                <p th:text="${id}" style="font-weight: bolder; color: #268aff"></p>
+            </div>
+            <p>입니다.</p>
             <p style="margin-top: 40px"><a href="/members/forgetPassword" style="text-decoration: none">비밀번호 찾기</a></p>
         </div>
         <div style="display: flex; flex-direction: row; width: 60%; text-align: center; margin: auto; margin-top: 20px">

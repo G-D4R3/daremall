@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -95,8 +96,8 @@ public class MemberService {
     }
 
 
-    public String findLoginId(String phone) {
-        return memberRepository.findLoginIdByPhone(phone).orElse(null).getLoginId();
+    public List<String> findLoginIdByName(String name, String phone) {
+        return memberRepository.findLoginIdByName(name, phone).stream().map(m->m.getLoginId()).collect(Collectors.toList());
     }
 
     @Transactional

@@ -41,10 +41,12 @@ public class MemberRepository {
                 .getResultList().stream().findAny();
     }
 
-    public Optional<Member> findLoginIdByPhone(String phone) {
+    public List<Member> findLoginIdByName(String name, String phone) {
         return em.createQuery("select m from Member m" +
-                        " where m.phone = :phone", Member.class)
+                        " where m.name = :name" +
+                        " and m.phone = :phone", Member.class)
+                .setParameter("name", name)
                 .setParameter("phone", phone)
-                .getResultList().stream().findAny();
+                .getResultList();
     }
 }
