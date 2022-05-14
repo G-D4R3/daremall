@@ -1,4 +1,4 @@
-package dare.daremall.controller.member;
+package dare.daremall.controller.member.auth;
 
 import dare.daremall.domain.Member;
 import org.springframework.security.core.GrantedAuthority;

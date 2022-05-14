@@ -1,10 +1,9 @@
 package dare.daremall.controller.item;
 
-import dare.daremall.controller.member.LoginUserDetails;
+import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.domain.LikeItem;
 import dare.daremall.domain.Member;
 import dare.daremall.domain.item.Item;
-import dare.daremall.repository.LikeItemRepository;
 import dare.daremall.service.ItemService;
 import dare.daremall.service.LikeItemService;
 import dare.daremall.service.MemberService;

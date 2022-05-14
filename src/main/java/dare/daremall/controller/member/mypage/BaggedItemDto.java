@@ -1,4 +1,4 @@
-package dare.daremall.controller.member;
+package dare.daremall.controller.member.mypage;
 
 import dare.daremall.domain.BaggedItem;
 import lombok.Data;

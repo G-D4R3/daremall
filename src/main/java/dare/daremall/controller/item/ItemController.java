@@ -1,7 +1,6 @@
 package dare.daremall.controller.item;
 
-import dare.daremall.controller.member.LoginUserDetails;
-import dare.daremall.controller.order.OrderDto;
+import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.domain.LikeItem;
 import dare.daremall.domain.Member;
 import dare.daremall.domain.item.Album;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;

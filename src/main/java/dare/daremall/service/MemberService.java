@@ -1,6 +1,6 @@
 package dare.daremall.service;
 
-import dare.daremall.controller.member.MemberSignupRequestDto;
+import dare.daremall.controller.member.auth.MemberSignupRequestDto;
 import dare.daremall.controller.member.forget.ChangePasswordForm;
 import dare.daremall.domain.Address;
 import dare.daremall.domain.BaggedItem;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

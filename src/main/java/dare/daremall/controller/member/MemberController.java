@@ -1,7 +1,8 @@
 package dare.daremall.controller.member;
 
+import dare.daremall.controller.member.auth.LoginForm;
+import dare.daremall.controller.member.auth.MemberSignupRequestDto;
 import dare.daremall.controller.member.forget.ChangePasswordForm;
-import dare.daremall.controller.member.forget.ForgetIdDto;
 import dare.daremall.domain.Member;
 import dare.daremall.repository.ItemRepository;
 import dare.daremall.repository.MemberRepository;
@@ -10,8 +11,6 @@ import dare.daremall.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;

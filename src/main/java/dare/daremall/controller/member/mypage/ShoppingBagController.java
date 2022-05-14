@@ -1,5 +1,7 @@
-package dare.daremall.controller.member;
+package dare.daremall.controller.member.mypage;
 
+import dare.daremall.controller.member.auth.LoginUserDetails;
+import dare.daremall.controller.member.mypage.BaggedItemDto;
 import dare.daremall.domain.BaggedItem;
 import dare.daremall.domain.Member;
 import dare.daremall.repository.BaggedItemRepository;

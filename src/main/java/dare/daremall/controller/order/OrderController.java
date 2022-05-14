@@ -1,8 +1,6 @@
 package dare.daremall.controller.order;
 
-import dare.daremall.controller.member.BaggedItemDto;
-import dare.daremall.controller.member.LoginUserDetails;
-import dare.daremall.controller.member.ShoppingBagController;
+import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.domain.*;
 import dare.daremall.domain.discountPolicy.DiscountPolicy;
 import dare.daremall.repository.BaggedItemRepository;
@@ -14,10 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.thymeleaf.util.StringUtils;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

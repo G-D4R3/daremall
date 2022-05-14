@@ -1,6 +1,6 @@
 package dare.daremall.service;
 
-import dare.daremall.controller.member.MemberSignupRequestDto;
+import dare.daremall.controller.member.auth.MemberSignupRequestDto;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
