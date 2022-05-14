@@ -33,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/css/**", "/font/**", "/images/**", "/js/**", "/favicon.ico").permitAll()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .antMatchers("/user/**").authenticated()
+                .antMatchers("/userinfo/**").authenticated()
                 .antMatchers("/members/login").permitAll()
                 .antMatchers("/shop/**").authenticated()
                 .antMatchers("/like/**").authenticated()
