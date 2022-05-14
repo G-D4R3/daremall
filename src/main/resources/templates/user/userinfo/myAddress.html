@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <div style="display: flex; flex-direction: row; margin-bottom: 20px">
+        <a href="/userinfo" style="text-decoration: none; color: black"><h3>마이페이지</h3></a>
+    </div>
+    <div style="display: flex; flex-direction: row">
+        <div style="flex: 1;" th:replace="fragments/myPageMenu :: myPageMenu"/>
+        <div style="margin-left: 30px; flex: 5">
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
