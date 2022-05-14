@@ -10,6 +10,7 @@ import dare.daremall.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -66,6 +67,12 @@ public class MemberController {
         //return certificationService.PhoneNumberCheck(phone);
         return "1234";
     }
+
+
+    /**
+     *
+     * 아이디 / 비밀번호 찾기
+     */
 
     @GetMapping(value = "/getCertificateNumberByName")
     public @ResponseBody String getCertificateNumberByName(@RequestParam(value = "name", required = false) String name,
@@ -134,5 +141,6 @@ public class MemberController {
     public String findPasswordSuccess(Model model) {
         return "/user/forget/findPassword";
     }
+
 
 }
