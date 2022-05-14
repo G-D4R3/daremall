@@ -14,6 +14,7 @@ public class OrderDto {
     private String title;
     private int price;
     private String orderDate;
+    private String imgUrl;
     private String status;
 
     public OrderDto(Order order) {
@@ -22,6 +23,7 @@ public class OrderDto {
         if(order.getOrderItems().size()>1) this.title += " 외 " + (order.getOrderItems().size()-1);
         this.price = order.getOrderItems().stream().mapToInt(i->i.getTotalPrice()).sum();
         this.orderDate = order.getOrderDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+        this.imgUrl = "/images/"+order.getOrderItems().get(0).getItem().getId()+".png";
         if(order.getStatus()==OrderStatus.PAY) {
             switch (order.getDelivery().getStatus()) {
                 case NONE:
