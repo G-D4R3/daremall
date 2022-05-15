@@ -109,5 +109,12 @@ public class MemberService {
     public Member findMemberByLoginId(String loginId, String phone) {
         return memberRepository.findMemberByLoginId(loginId, phone).orElse(null);
     }
+
+    @Transactional
+    public void updateUserInfo(String loginId, String phone, String zipcode, String street, String detail) {
+        Member member = memberRepository.findByLoginId(loginId).orElse(null);
+        member.setPhone(phone);
+        member.setAddress(new Address(zipcode, street, detail));
+    }
 }
 

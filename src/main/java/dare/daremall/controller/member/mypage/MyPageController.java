@@ -9,9 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,9 +60,25 @@ public class MyPageController {
     public String myInfo(@AuthenticationPrincipal LoginUserDetails member, Model model) {
         if(member==null) return "redirect:/members/login";
 
-        MemberDto memberDto  = new MemberDto(memberService.findUser(member.getUsername()));
-        model.addAttribute("memberDto", memberDto);
+
+        Member findMember = memberService.findUser(member.getUsername());
+        UpdateForm updateForm = new UpdateForm(findMember);
+
+        model.addAttribute("updateForm", updateForm);
+        model.addAttribute("name", findMember.getName());
 
         return "/user/userinfo/myInfo";
+    }
+
+    @PostMapping(value = "/updateUserInfo")
+    public String updateUserInfo(@AuthenticationPrincipal LoginUserDetails member,
+                                 @Valid UpdateForm updateForm) {
+
+        if(member==null) return "redirect:/members/login";
+
+        System.out.println("hello");
+
+        memberService.updateUserInfo(member.getUsername(), updateForm.getPhone(), updateForm.getZipcode(), updateForm.getStreet(), updateForm.getDetail());
+        return "redirect:/userinfo";
     }
 }
