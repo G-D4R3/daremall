@@ -86,8 +86,7 @@ public class MyPageController {
 
     @GetMapping(value = "/getCertificateNumber")
     public @ResponseBody String getCertificateNumberByName(@AuthenticationPrincipal LoginUserDetails member,
-                                                           @RequestParam(value = "phone") String phone,
-                                                           RedirectAttributes redirectAttributes) throws CoolsmsException {
+                                                           @RequestParam(value = "phone") String phone) throws CoolsmsException {
 
         if(member==null) return null;
         //return certificationService.PhoneNumberCheck(phone);

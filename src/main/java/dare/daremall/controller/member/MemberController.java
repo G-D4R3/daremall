@@ -70,7 +70,6 @@ public class MemberController {
         return "1234";
     }
 
-
     /**
      *
      * 아이디 / 비밀번호 찾기
