@@ -99,7 +99,7 @@ public class OrderController {
     public String createOrder(@AuthenticationPrincipal LoginUserDetails member,
                               @Valid OrderForm orderForm, BindingResult result) {
         if(result.hasErrors()) {
-            return "redirect:/shop";
+            return "redirect:/order/new/select";
         }
 
         System.out.println(orderForm.getPayment());

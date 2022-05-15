@@ -60,17 +60,21 @@
                             <input type="tel" th:field="*{phone}" class="form-control" style="width: 40%; margin-left: 20px">
                         </div>
                         <hr>
-                        <div class="form-group" style="display: flex; flex-direction: row">
-                            <label th:for="city" style="width: 20%;">시</label>
-                            <input type="text" th:field="*{city}" class="form-control" style="width: 10%; margin-left: 20px">
+                        <div class="form-group"  style="display: flex; flex-direction: row">
+                            <label th:for="zipcode" style="flex: 1; padding-top: 5px">우편번호</label>
+                            <input id="zipcode" style="flex: 3" type="text" th:field="*{zipcode}" class="form-control" placeholder="우편번호를 입력하세요"
+                                   readonly onclick="findAddr()">
+                            <p th:if="${#fields.hasErrors('zipcode')}" th:errors="*{phone}">Incorrect date</p>
                         </div>
-                        <div class="form-group" style="display: flex; flex-direction: row">
-                            <label th:for="street" style="width: 20%;">거리</label>
-                            <input type="text" th:field="*{street}" class="form-control" style="width: 20%; margin-left: 20px">
+                        <div class="form-group"  style="display: flex; flex-direction: row">
+                            <label th:for="city" style="flex: 1; padding-top: 5px">도로명 주소</label>
+                            <input id="streetAdr" style="flex: 3" type="text" th:field="*{street}" class="form-control" placeholder="도로명 주소를 입력하세요" readonly>
+                            <p th:if="${#fields.hasErrors('street')}" th:errors="*{phone}">Incorrect date</p>
                         </div>
-                        <div class="form-group" style="display: flex; flex-direction: row">
-                            <label th:for="zipcode" style="width: 20%;">우편번호</label>
-                            <input type="text" th:field="*{zipcode}" class="form-control" style="width: 20%; margin-left: 20px">
+                        <div class="form-group"  style="display: flex; flex-direction: row">
+                            <label th:for="street" style="flex: 1; padding-top: 5px">상세주소</label>
+                            <input id="detailAdr" style="flex: 3" type="text" th:field="*{detail}" class="form-control" placeholder="상세 주소를 입력하세요">
+                            <p th:if="${#fields.hasErrors('detail')}" th:errors="*{phone}">Incorrect date</p>
                         </div>
                     </div>
                     <div style="height: fit-content; background-color: #dbe7ff; font-weight: bold; border: 1px solid #909de9; flex: 1; text-align: center; vertical-align: middle; padding-top: 20px; color: #c0183a">
@@ -99,4 +103,38 @@
     <div style="clear: both" th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->
 </body>
+<script>
+    // [출처] : https://ws-pace.tistory.com/38
+    function findAddr() {
+        new daum.Postcode({
+            oncomplete: function (data) {
+                var addr = '' // 주소 변수
+                var extraAddr = '' // 참고항목 변수
+
+                if(data.userSelectedType=== 'R') { // 사용자가 도로명 주소를 선택했을 때
+                    addr = data.roadAddress;
+                }
+                else {
+                    addr = data.jibunAddress;
+                }
+
+                if(data.userSelectedType=== 'R') {
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                        extraAddr += data.bname;
+                    }
+                    if(data.buildingName !== '' && data.apartment === 'Y') {
+                        extraAddr += (extraAddr !== ''? ', ' + data.buildingName: data.buildingName);
+                    }
+                    if(extraAddr !== '') {
+                        extraAddr += ' ('+extraAddr+')';
+                    }
+                }
+                document.getElementById("zipcode").value = data.zonecode;
+                document.getElementById("streetAdr").value = addr;
+                document.getElementById("detailAdr").focus();
+            }
+        }).open();
+    }
+</script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </html>

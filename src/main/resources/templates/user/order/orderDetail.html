@@ -36,10 +36,10 @@
         </div>
         <div style="padding-top: 20px;">
             <h4>배송지 정보</h4>
-            <div style="background-color: #EEEEEE; padding: 3%; color:#4082d9; height: fit-content">
+            <div style="background-color: #EEEEEE; padding: 3%; color:#444444; height: fit-content">
                 <p th:text="'수령인 이름 : '+${order.delivery.name}"></p>
                 <p th:text="'휴대폰 번호 : '+${order.delivery.phone}"></p>
-                <p th:text="'주소 : ('+${order.delivery.address.zipcode}+') '+${order.delivery.address.city}+'시 '+${order.delivery.address.street}"></p>
+                <p th:text="'주소 : ('+${order.delivery.address.zipcode}+') '+${order.delivery.address.street}+', '+${order.delivery.address.detail}"></p>
             </div>
         </div>
         <div style="padding-top: 20px; padding-bottom: 50px">
