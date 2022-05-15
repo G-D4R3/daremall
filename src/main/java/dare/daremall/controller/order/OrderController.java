@@ -46,7 +46,7 @@ public class OrderController {
                               @PathVariable("orderId") Long orderId) {
         if(member==null) return "redirect:/members/login";
         orderService.cancelOrder(orderId);
-        return "redirect:/order/myOrder";
+        return "redirect:/userinfo/orderList";
     }
 
     @PostMapping(value = "/{orderId}/delete")
@@ -54,7 +54,7 @@ public class OrderController {
                               @PathVariable("orderId") Long orderId) {
         if(member==null) return "redirect:/members/login";
         orderService.deleteOrder(orderId);
-        return "redirect:/order/myOrder";
+        return "redirect:/userinfo/orderList";
     }
 
     @GetMapping(value = "/new/{orderOption}")

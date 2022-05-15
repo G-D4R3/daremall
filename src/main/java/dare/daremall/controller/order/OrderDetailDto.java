@@ -27,7 +27,7 @@ public class OrderDetailDto {
         if(order.getStatus()==OrderStatus.PAY) {
             switch (delivery.getStatus()) {
                 case NONE:
-                    this.status = "결제완료";
+                    this.status = "결제 완료";
                     break;
                 case READY:
                     this.status = "배송 준비 중";

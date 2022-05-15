@@ -19,7 +19,7 @@
             <table class="table table-striped" th:if="${orders.size()>0}" style="text-align: center">
                 <thead>
                 <tr style="color: #37a3e3">
-                    <th>주문 일자</th> <th>주문 번호</th> <th>주문 내역</th> <th>주문 금액</th> <th>주문 상태</th>
+                    <th>주문 일자</th> <th>주문 번호</th> <th>주문 내역</th> <th>주문 금액</th> <th>주문 상태</th> <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -39,6 +39,7 @@
                     <td>
                         <p th:text="${order.status}"></p>
                     </td>
+                    <td><a th:if="${order.status}=='주문 완료' or ${order.status}=='결제 완료'" href="#" th:href="'javascript:cancel('+${order.id}+')'">취소</a></td>
                 </tr>
                 </tbody>
             </table>
@@ -47,5 +48,13 @@
     <div th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->
 </body>
-
+<script>
+    function cancel(id) {
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/order/" + id + "/cancel");
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
 </html>
