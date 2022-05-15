@@ -35,8 +35,18 @@
                         <td style="width: 20%; text-align: center">휴대폰 번호</td>
                         <td style="width: 80%">
                             <a th:text="*{phone}"></a>
-                            <input th:field="*{phone}" hidden>
+                            <input id="phone" th:field="*{phone}" hidden>
                             <button type="button" id="phoneBtn" class="btn btn-outline-dark" style="margin-left: 20px">변경</button>
+                            <div id="changePhoneForm" style="margin-top: 10px; width: 50%" hidden>
+                                <div style="display: flex; flex-direction: row;">
+                                    <input style="flex: 1" type="number" id="newPhone" placeholder="새 휴대폰 번호를 입력해주세요">
+                                    <button type="button" id="certificateBtn" class="btn btn-dark" style="margin-left: 5px">인증번호 받기</button>
+                                </div>
+                                <div style="display: flex; flex-direction: row; margin-top: 5px">
+                                    <input style="flex: 1" type="number" id="certificateNum" placeholder="인증번호를 입력해주세요">
+                                    <button type="button" id="enterBtn" class="btn btn-dark" style="margin-left: 5px">확인</button>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr>
@@ -63,6 +73,37 @@
             </table>
             <div style="display: flex; justify-content: center;">
                 <button id="submitBtn" type="submit" class="btn btn-primary" style="width: 30%; font-size: 16pt; margin-top: 20px; ">회원 정보 수정</button>
+            </div>
+        </div>
+    </div>
+    <div id="passwordChangeModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">비밀번호 변경</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form style="margin-top: 20px; margin-bottom: 20px">
+                        <div style="display: flex; flex-direction: row">
+                            <label style="flex: 1">현재 비밀번호</label>
+                            <input style="flex: 3" type="password" id="nowPw">
+                        </div>
+                        <div style="display: flex; flex-direction: row; margin-top: 10px">
+                            <label style="flex: 1">새 비밀번호</label>
+                            <input style="flex: 3" type="password" id="newPw">
+                        </div>
+                        <div style="display: flex; flex-direction: row; margin-top: 10px">
+                            <label style="flex: 1">비밀번호 확인</label>
+                            <input style="flex: 3" type="password" id="confirmPw">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="changePassword" type="button" class="btn btn-primary" style="margin: auto">저장</button>
+                </div>
             </div>
         </div>
     </div>
@@ -117,6 +158,75 @@
             }
         }).open();
     }
+
+    $('#phoneBtn').click(function() {
+        document.getElementById("changePhoneForm").hidden = false;
+    })
+
+    $('#certificateBtn').click(function() {
+
+        var newPhone = document.getElementById("newPhone").value;
+        var loginId = document.getElementById("loginId").value;
+
+        $.ajax ({
+            url: '/userinfo/getCertificateNumber',
+            type: 'GET',
+            data: {
+                "phone" : newPhone
+            },
+            success: function(data) {
+                if(data==null) {
+                    alert("로그인이 필요한 서비스입니다.");
+                }
+                else {
+                    const checkNum = data;
+                    alert("인증번호가 전송되었습니다.");
+
+                    $('#enterBtn').click(function() {
+                        const userNum = $('#certificateNum').val();
+
+                        if(checkNum === userNum) {
+                            alert('인증 성공하였습니다.');
+                            document.getElementById("phone").value = newPhone;
+                            $('form').submit();
+                        }
+                        else {
+                            alert('인증 실패하였습니다. 다시 입력해주세요.');
+                        }
+                    });
+                }
+
+            }
+        });
+
+    });
+
+    $('#passwordBtn').click( function() {
+        $('#passwordChangeModal').modal('toggle');
+    });
+
+    $('#changePassword').click( function() {
+        var nowPw = document.getElementById("nowPw").value;
+        var newPw = document.getElementById("newPw").value;
+        var confirmPw = document.getElementById("confirmPw").value;
+
+        if(newPw===confirmPw) {
+
+            // change password ajax
+
+            alert("비밀번호를 변경했습니다.");
+            $('#passwordChangeModal').modal('hide');
+        }
+        else {
+            alert("비밀번호가 일치하지 않습니다.");
+        }
+    });
+
+    // 페이지 이동 감지
+    window.onbeforeunload = function (event) {
+        return "";
+    };
+
 </script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </html>

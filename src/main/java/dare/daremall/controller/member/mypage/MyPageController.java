@@ -6,10 +6,12 @@ import dare.daremall.domain.Member;
 import dare.daremall.service.MemberService;
 import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -79,6 +81,16 @@ public class MyPageController {
         System.out.println("hello");
 
         memberService.updateUserInfo(member.getUsername(), updateForm.getPhone(), updateForm.getZipcode(), updateForm.getStreet(), updateForm.getDetail());
-        return "redirect:/userinfo";
+        return "redirect:/userinfo/myInfo";
+    }
+
+    @GetMapping(value = "/getCertificateNumber")
+    public @ResponseBody String getCertificateNumberByName(@AuthenticationPrincipal LoginUserDetails member,
+                                                           @RequestParam(value = "phone") String phone,
+                                                           RedirectAttributes redirectAttributes) throws CoolsmsException {
+
+        if(member==null) return null;
+        //return certificationService.PhoneNumberCheck(phone);
+        return "1234";
     }
 }

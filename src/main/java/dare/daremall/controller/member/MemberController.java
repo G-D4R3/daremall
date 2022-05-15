@@ -1,6 +1,7 @@
 package dare.daremall.controller.member;
 
 import dare.daremall.controller.member.auth.LoginForm;
+import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.controller.member.auth.MemberSignupRequestDto;
 import dare.daremall.controller.member.forget.ChangePasswordForm;
 import dare.daremall.domain.Member;
@@ -11,6 +12,7 @@ import dare.daremall.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -61,6 +63,7 @@ public class MemberController {
     @GetMapping(value = "/new/getCertificateNumber")
     public @ResponseBody String getCertificateNumberByName(@RequestParam(value = "phone") String phone,
                                                            RedirectAttributes redirectAttributes) throws CoolsmsException {
+
         redirectAttributes.addAttribute("phone", phone);
 
         //return certificationService.PhoneNumberCheck(phone);
