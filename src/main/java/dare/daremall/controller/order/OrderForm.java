@@ -12,12 +12,12 @@ public class OrderForm {
     @NotEmpty(message = "수령인 연락처를 입력해주세요")
     private String phone;
 
-    @NotEmpty(message = "주소를 입력해주세요")
-    private String city;
-    @NotEmpty(message = "주소를 입력해주세요")
-    private String street;
-    @NotEmpty(message = "주소를 입력해주세요")
+    @NotEmpty(message = "우편번호를 입력해주세요")
     private String zipcode;
+    @NotEmpty(message = "도로명 주소를 입력해주세요")
+    private String street;
+    @NotEmpty(message = "상세 주소를 입력해주세요")
+    private String detail;
 
     private String payment;
 

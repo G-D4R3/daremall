@@ -15,7 +15,7 @@
                 <tr>
                     <td style="width: 20%; text-align: center">아이디</td>
                     <td style="width: 80%">
-                        <a th:text="${memberDto.loginId}"></a>
+                        <a th:text="${memberDto.loginId}" id="loginId"></a>
                     </td>
                 </tr>
                 <tr>
@@ -27,36 +27,131 @@
                 <tr>
                     <td style="width: 20%; text-align: center">비밀번호</td>
                     <td style="width: 80%">
-                        <button class="btn btn-outline-dark">비밀번호 변경</button>
+                        <button id="passwordBtn" class="btn btn-outline-dark">비밀번호 변경</button>
                     </td>
                 </tr>
                 <tr>
                     <td style="width: 20%; text-align: center">휴대폰 번호</td>
                     <td style="width: 80%">
                         <a th:text="${memberDto.phone}"></a>
-                        <button class="btn btn-outline-dark" style="margin-left: 20px">변경</button>
+                        <button id="phoneBtn" class="btn btn-outline-dark" style="margin-left: 20px">변경</button>
                     </td>
                 </tr>
                 <tr>
                     <td style="width: 20%; text-align: center">주소</td>
                     <td style="width: 80%;">
-                        <a th:text="${memberDto.address.city}"></a>
-                        <a th:text="${memberDto.address.street}"></a>
-                        <a th:text="${memberDto.address.zipcode}"></a>
+                        <div style="width: 80%">
+                            <div class="form-group"  style="display: flex; flex-direction: row">
+                                <label th:for="zipcode" style="flex: 1; padding-top: 5px">우편번호</label>
+                                <input id="zipcode" style="flex: 3" type="text" th:field="${memberDto.address.zipcode}" th:value="${memberDto.address.zipcode}" class="form-control" placeholder="우편번호를 입력하세요"
+                                       readonly onclick="findAddr()">
+                            </div>
+                            <div class="form-group"  style="display: flex; flex-direction: row">
+                                <label th:for="city" style="flex: 1; padding-top: 5px">도로명 주소</label>
+                                <input id="streetAdr" style="flex: 3" type="text" th:field="${memberDto.address.street}" class="form-control" placeholder="도로명 주소를 입력하세요" readonly>
+                            </div>
+                            <div class="form-group"  style="display: flex; flex-direction: row">
+                                <label th:for="street" style="flex: 1; padding-top: 5px">상세주소</label>
+                                <input id="detailAdr" style="flex: 3" type="text" th:field="${memberDto.address.detail}" class="form-control" placeholder="상세 주소를 입력하세요" readonly>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             </table>
+            <div style="display: flex; justify-content: center;">
+                <button id="updateBtn" class="btn btn-primary" style="width: 30%; font-size: 16pt; margin-top: 20px; ">회원 정보 수정</button>
+            </div>
         </div>
     </div>
+    <div th:replace="fragments/footer :: footer"/>
 </div>
 </body>
-
 <style>
     table, th, td {
         border: 1px solid #DDDDDD;
         border-collapse: collapse;
         color: #444444;
         padding: 10px;
+        min-width: fit-content;
     }
 </style>
+
+<script>
+
+    $('#updateBtn').click(function () {
+
+        const loginId = "[[${memberDto.loginId}]]";
+        const phone = $('phone').val();
+        const zipcode = $('zipcode').val();
+        const street = $('streetAdr').val();
+        const detail = $('detailAdr').val();
+
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/userinfo/updateUserInfo");
+
+        var loginIdInput = document.createElement("input");
+        loginIdInput.setAttribute("type","hidden");
+        loginIdInput.setAttribute("name","loginId");
+        loginIdInput.setAttribute("value",loginId);
+
+        var zipcodeInput = document.createElement("input");
+        zipcodeInput.setAttribute("type","hidden");
+        zipcodeInput.setAttribute("name","zipcode");
+        zipcodeInput.setAttribute("value",zipcode);
+
+        var streetInput = document.createElement("input");
+        streetInput.setAttribute("type","hidden");
+        streetInput.setAttribute("name","street");
+        streetInput.setAttribute("value",street);
+
+        var detailInput = document.createElement("input");
+        detailInput.setAttribute("type","hidden");
+        detailInput.setAttribute("name","detail");
+        detailInput.setAttribute("value",detail);
+
+        form.appendChild(loginIdInput);
+        form.appendChild(phoneInput);
+        form.appendChild(zipcodeInput);
+        form.appendChild(streetInput);
+        form.appendChild(detailInput);
+
+        document.body.appendChild(form);
+        form.submit();
+    });
+
+    // [출처] : https://ws-pace.tistory.com/38
+    function findAddr() {
+        new daum.Postcode({
+            oncomplete: function (data) {
+                var addr = '' // 주소 변수
+                var extraAddr = '' // 참고항목 변수
+
+                if(data.userSelectedType=== 'R') { // 사용자가 도로명 주소를 선택했을 때
+                    addr = data.roadAddress;
+                }
+                else {
+                    addr = data.jibunAddress;
+                }
+
+                if(data.userSelectedType=== 'R') {
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                        extraAddr += data.bname;
+                    }
+                    if(data.buildingName !== '' && data.apartment === 'Y') {
+                        extraAddr += (extraAddr !== ''? ', ' + data.buildingName: data.buildingName);
+                    }
+                    if(extraAddr !== '') {
+                        extraAddr += ' ('+extraAddr+')';
+                    }
+                }
+                document.getElementById("zipcode").value = data.zonecode;
+                document.getElementById("streetAdr").value = addr;
+                document.getElementById("detailAdr").readOnly = false;
+                document.getElementById("detailAdr").focus();
+            }
+        }).open();
+    }
+</script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </html>

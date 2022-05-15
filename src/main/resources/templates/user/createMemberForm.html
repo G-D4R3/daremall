@@ -35,32 +35,35 @@
                        th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'">
                 <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect date</p>
             </div>
-            <div style="display: flex; flex-direction: row;">
+            <div class="form-group" style="display: flex; flex-direction: row;">
                 <label th:for="phone" style="flex: 1; padding-top: 5px">휴대폰 번호</label>
-                <input id="phone" style="flex: 2; margin-right: 15px" type="text" th:field="*{phone}" class="form-control" placeholder="휴대폰 번호를 입력하세요"
+                <input id="phone" style="flex: 2; margin-right: 15px" type="number" th:field="*{phone}" class="form-control" placeholder="휴대폰 번호를 입력하세요"
                        th:class="${#fields.hasErrors('phone')}? 'form-control fieldError' : 'form-control'">
                 <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Incorrect date</p>
                 <button type="button" id="send" class="btn btn-outline-primary">인증번호 요청</button>
             </div>
-            <div style="display: flex; flex-direction: row;  margin-bottom: 40px">
-                <input style="flex: 2" id="certificateNum" type="text" name="certificateNumber" class="form-control" placeholder="인증 번호를 입력하세요"
+            <div class="form-group" style="display: flex; flex-direction: row; margin-bottom: 40px; padding-top: 5px" id="certificate">
+                <input style="flex: 2; margin-right: 15px" id="certificateNum" type="text" name="certificateNumber" class="form-control" placeholder="인증 번호를 입력하세요"
                        th:class="form-control">
                 <button type="button" id="enterBtn" class="btn btn-outline-primary" style="flex: 1">확인</button>
             </div>
 
-
             <p style="color: #268aff">배송 정보</p>
             <div class="form-group"  style="display: flex; flex-direction: row">
-                <label th:for="city" style="flex: 1; padding-top: 5px">도시</label>
-                <input style="flex: 3" type="text" th:field="*{city}" class="form-control" placeholder="도시를 입력하세요">
-            </div>
-            <div class="form-group"  style="display: flex; flex-direction: row">
-                <label th:for="street" style="flex: 1; padding-top: 5px">거리</label>
-                <input style="flex: 3" type="text" th:field="*{street}" class="form-control" placeholder="거리를 입력하세요">
-            </div>
-            <div class="form-group"  style="display: flex; flex-direction: row">
                 <label th:for="zipcode" style="flex: 1; padding-top: 5px">우편번호</label>
-                <input style="flex: 3" type="text" th:field="*{zipcode}" class="form-control" placeholder="우편번호를 입력하세요">
+                <input id="zipcode" style="flex: 3" type="text" th:field="*{zipcode}" class="form-control" placeholder="우편번호를 입력하세요"
+                readonly onclick="findAddr()">
+                <p th:if="${#fields.hasErrors('zipcode')}" th:errors="*{phone}">Incorrect date</p>
+            </div>
+            <div class="form-group"  style="display: flex; flex-direction: row">
+                <label th:for="city" style="flex: 1; padding-top: 5px">도로명 주소</label>
+                <input id="streetAdr" style="flex: 3" type="text" th:field="*{street}" class="form-control" placeholder="도로명 주소를 입력하세요" readonly>
+                <p th:if="${#fields.hasErrors('street')}" th:errors="*{phone}">Incorrect date</p>
+            </div>
+            <div class="form-group"  style="display: flex; flex-direction: row">
+                <label th:for="street" style="flex: 1; padding-top: 5px">상세주소</label>
+                <input id="detailAdr" style="flex: 3" type="text" th:field="*{detail}" class="form-control" placeholder="상세 주소를 입력하세요">
+                <p th:if="${#fields.hasErrors('detail')}" th:errors="*{phone}">Incorrect date</p>
             </div>
             <button type="submit" class="btn btn-primary" style="width: 100%; height: 45px; margin-top: 40px">회원가입</button>
         </form>
@@ -79,29 +82,36 @@
     $('#send').click(function() {
 
         const phone = $('#phone').val();
+        if(phone.length!=11) {
+            alert("올바른 휴대폰 번호를 입력해주세요")
+        }
+        else {
+            $.ajax ({
+                url: '/members/new/getCertificateNumber',
+                type: 'GET',
+                data: {
+                    "phone" : phone
+                },
+                success: function(data) {
+                    const checkNum = data;
+                    alert("인증번호가 전송되었습니다.");
 
-        $.ajax ({
-            url: '/members/new/getCertificateNumber',
-            type: 'GET',
-            data: {
-                "phone" : phone
-            },
-            success: function(data) {
-                const checkNum = data;
-                alert("인증번호가 전송되었습니다.");
-
-                $('#enterBtn').click(function() {
-                    const userNum = $('#certificateNum').val();
-                    if(checkNum === userNum) {
-                        alert('인증 성공하였습니다.');
-                        isCertificated = true;
-                    }
-                    else {
-                        alert('인증 실패하였습니다. 다시 입력해주세요.');
-                    }
-                });
-            }
-        });
+                    $('#enterBtn').click(function() {
+                        const userNum = $('#certificateNum').val();
+                        if(checkNum === userNum) {
+                            alert('인증 성공하였습니다.');
+                            isCertificated = true;
+                            document.getElementById("phone").readOnly = true;
+                            document.getElementById("phoneBtn").style.visibility = "hidden";
+                            document.getElementById("certificate").style.visibility = "hidden";
+                        }
+                        else {
+                            alert('인증 실패하였습니다. 다시 입력해주세요.');
+                        }
+                    });
+                }
+            });
+        }
 
     });
 
@@ -113,5 +123,39 @@
         return true;
     }
 
+
+    // [출처] : https://ws-pace.tistory.com/38
+    function findAddr() {
+        new daum.Postcode({
+            oncomplete: function (data) {
+                var addr = '' // 주소 변수
+                var extraAddr = '' // 참고항목 변수
+
+                if(data.userSelectedType=== 'R') { // 사용자가 도로명 주소를 선택했을 때
+                    addr = data.roadAddress;
+                }
+                else {
+                    addr = data.jibunAddress;
+                }
+
+                if(data.userSelectedType=== 'R') {
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                        extraAddr += data.bname;
+                    }
+                    if(data.buildingName !== '' && data.apartment === 'Y') {
+                        extraAddr += (extraAddr !== ''? ', ' + data.buildingName: data.buildingName);
+                    }
+                    if(extraAddr !== '') {
+                        extraAddr += ' ('+extraAddr+')';
+                    }
+                }
+                document.getElementById("zipcode").value = data.zonecode;
+                document.getElementById("streetAdr").value = addr;
+                document.getElementById("detailAdr").focus();
+            }
+        }).open();
+    }
+
 </script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </html>

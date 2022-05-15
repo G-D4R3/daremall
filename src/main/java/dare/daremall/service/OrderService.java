@@ -47,7 +47,7 @@ public class OrderService {
         Delivery delivery = new Delivery();
         delivery.setName(orderForm.getName());
         delivery.setPhone(orderForm.getPhone());
-        delivery.setAddress(new Address(orderForm.getCity(), orderForm.getStreet(), orderForm.getZipcode()));
+        delivery.setAddress(new Address(orderForm.getZipcode(), orderForm.getStreet(), orderForm.getDetail()));
         delivery.setStatus(DeliveryStatus.NONE);
 
         List<BaggedItem> baggedItems = baggedItemRepository.findSelected(loginId);

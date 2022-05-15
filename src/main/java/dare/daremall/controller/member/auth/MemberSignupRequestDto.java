@@ -19,7 +19,10 @@ public class MemberSignupRequestDto {
     @NotEmpty(message = "휴대폰 번호를 입력해주세요")
     private String phone;
 
-    private String city;
-    private String street;
+    @NotEmpty(message = "우편 번호를 입력해주세요")
     private String zipcode;
+    @NotEmpty(message = "도로명 주소를 입력해주세요")
+    private String street;
+    @NotEmpty(message = "상세 주소를 입력해주세요")
+    private String detail;
 }

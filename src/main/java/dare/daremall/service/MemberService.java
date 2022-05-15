@@ -35,9 +35,9 @@ public class MemberService {
                                         memberDto.getLoginId(),
                                         memberDto.getPassword(),
                                         memberDto.getPhone(),
-                                        new Address(memberDto.getCity(),
+                                        new Address(memberDto.getZipcode(),
                                                 memberDto.getStreet(),
-                                                memberDto.getZipcode()));
+                                                memberDto.getDetail()));
         newMember.encryptPassword(passwordEncoder);
         memberRepository.save(newMember);
         return newMember.getId();
