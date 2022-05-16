@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<div class="header" th:fragment="myPageMenu" style="padding: 10px; padding-bottom: 0px; height: fit-content; background-color: #eff8ff; border: 1px solid #a1cce6; border-radius: 3px">
-    <p style="font-weight: bolder; color: #37a3e3">주문내역</p>
-    <ul>
-        <li>
-            <a href="/userinfo/orderList" style="text-decoration: none; color: #444444">주문내역/배송조회</a>
-        </li>
-    </ul>
-    <p style="font-weight: bolder; color: #37a3e3">회원 정보</p>
-    <ul>
-        <li>
-            <a href="/userinfo/myAddress" style="text-decoration: none; color: #444444">배송지 관리</a>
-        </li>
-        <li>
-            <a href="/userinfo/myInfo" style="text-decoration: none; color: #444444">회원 정보 수정</a>
-        </li>
-    </ul>
+<div class="header" th:fragment="myPageMenu">
+    <div class="menu">
+        <p>주문내역</p>
+        <ul>
+            <li>
+                <a href="/userinfo/orderList">주문내역/배송조회</a>
+            </li>
+        </ul>
+        <p>회원 정보</p>
+        <ul>
+            <li>
+                <a href="/userinfo/myAddress">배송지 관리</a>
+            </li>
+            <li>
+                <a href="/userinfo/myInfo">회원 정보 수정</a>
+            </li>
+        </ul>
+    </div>
 </div>

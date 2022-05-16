@@ -8,9 +8,9 @@
         <div style="text-align: center">
             <h3>주문이 완료되었습니다.</h3>
             <div>
-                <p><a th:text="${order.title}" style="font-weight: bold; font-size: 14pt" th:href="@{/order/detail(orderId=${order.id})}"></a></p>
-                <p>주문 일자 : <a th:text="${order.orderDate}" style="font-weight: bold"></a></p>
-                <p>주문 번호 : <a th:text="${order.id}" style="font-weight: bold"></a></p>
+                <p><a th:text="${order.title}" style="font-size: 14pt" th:href="@{/order/detail(orderId=${order.id})}"></a></p>
+                <p>주문 일자 : <a th:text="${order.orderDate}"></a></p>
+                <p>주문 번호 : <a th:text="${order.id}"></a></p>
             </div>
         </div>
         <div style="margin-top: 20px">
@@ -20,4 +20,9 @@
     <div style="clear: both" th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->
 </body>
+<style>
+    div p a {
+        font-weight: bold;
+    }
+</style>
 </html>

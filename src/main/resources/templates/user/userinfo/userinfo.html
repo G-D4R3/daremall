@@ -4,13 +4,13 @@
 <body>
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
-    <div style="display: flex; flex-direction: row; margin-bottom: 20px">
+    <div class="flex-row" style="margin-bottom: 20px">
         <a href="/userinfo" style="text-decoration: none; color: black"><h3>마이페이지</h3></a>
     </div>
-    <div style="display: flex; flex-direction: row">
+    <div class="flex-row">
         <div style="flex: 1;" th:replace="fragments/myPageMenu :: myPageMenu"/>
         <div style="margin-left: 30px; flex: 5">
-            <div style="display: flex; flex-direction: row">
+            <div class="flex-row">
                 <h4>최근 주문 내역</h4>
                 <a href="/userinfo/orderList" style="text-decoration: none; color: #444444; height: fit-content; margin-left: 15px;">더보기</a>
             </div>
@@ -20,7 +20,7 @@
                 </div>
                 <table class="table table-striped" th:if="${orders.size()>0}" style="text-align: center">
                     <thead>
-                    <tr style="color: #37a3e3">
+                    <tr>
                         <th>주문 일자</th> <th>주문 번호</th> <th>주문 내역</th> <th>주문 상태</th>
                     </tr>
                     </thead>
@@ -47,5 +47,9 @@
     <div th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->
 </body>
-
+<style>
+    th tr {
+        color: #37a3e3
+    }
+</style>
 </html>

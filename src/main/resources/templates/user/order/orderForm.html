@@ -8,9 +8,9 @@
         <h3>결제</h3>
     </div>
     <div style="overflow: hidden">
-        <div style="margin-top: 20px">
+        <div class="inner-container">
             <h4>상품 확인</h4>
-            <table class="table table-striped" style="text-align: center">
+            <table class="table table-striped">
                 <thead>
                 <tr>
                     <th>상품 정보</th> <th>상품 수량</th> <th>상품 금액</th>
@@ -18,8 +18,8 @@
                 </thead>
                 <tbody>
                 <tr th:each="item : ${items}">
-                    <td style="text-align: left; padding-left: 30px; padding-right: 30px">
-                        <img th:src="@{'/images/'+${item.itemId}+'.png'}" style="height: 120px; width: 80px; margin-right: 20px">
+                    <td class="td-image">
+                        <img th:src="@{'/images/'+${item.itemId}+'.png'}">
                         <a th:href="@{/items/detail(itemId=${item.itemId})}" th:text="${item.name}"></a>
                     </td>
                     <td th:text="${item.count}" style="vertical-align: middle"></td>
@@ -28,69 +28,69 @@
                 </tbody>
             </table>
         </div>
-        <div style="margin-top: 20px">
+        <div class="inner-container">
             <h4>결제금액</h4>
-            <div style="background-color: #dff6ff; display: flex; flex-direction: row">
-                <div style="font-weight: bold; border: 1px solid #cfefff; flex: 1; text-align: center; vertical-align: middle; padding-top: 10px">
+            <div class="flex-row amount">
+                <div>
                     <p>총 상품금액</p>
                     <p th:text="${totalItemPrice}" style="font-size: 20pt"></p>
                 </div>
-                <div style="font-weight: bold; border: 1px solid #cfefff; flex: 1; text-align: center; vertical-align: middle; padding-top: 10px">
+                <div>
                     <p>배송비</p>
                     <p th:text="${shippingFee}" style="font-size: 20pt"></p>
                 </div>
-                <div style="font-weight: bold; border: 1px solid #cfefff; flex: 1; text-align: center; vertical-align: middle; padding-top: 10px; color: #a2233d">
+                <div style="color: #a2233d">
                     <p>최종 결제 금액</p>
                     <p th:text="${totalPrice}" style="font-size: 24pt"></p>
                 </div>
             </div>
             <p style="color: #AAAAAA; font-size: 9pt">주문 금액 5만원 이상 배송비 무료</p>
         </div>
-        <div style="margin-top: 20px;">
+        <div class="inner-container">
             <h4>배송주소</h4>
             <form role="form" action="/order/createOrder" th:object="${orderForm}" method="post">
-                <div style="display: flex; flex-direction: row">
-                    <div style="background-color: #EEEEEE; padding: 3%; flex: 2; font-size: 12pt; color: #909de9">
-                        <div class="form-group" style="display: flex; flex-direction: row">
-                            <label th:for="name" style="width: 20%;">수령인 이름</label>
-                            <input type="text" th:field="*{name}" class="form-control" style="width: 30%; margin-left: 20px">
+                <div class="flex-row">
+                    <div class="delivery">
+                        <div class="form-group flex-row required">
+                            <label th:for="name">수령인 이름</label>
+                            <input type="text" th:field="*{name}" class="form-control">
                         </div>
-                        <div class="form-group" style="display: flex; flex-direction: row">
-                            <label th:for="phone" style="width: 20%;">휴대폰 번호</label>
-                            <input type="tel" th:field="*{phone}" class="form-control" style="width: 40%; margin-left: 20px">
+                        <div class="form-group flex-row required">
+                            <label th:for="phone">휴대폰 번호</label>
+                            <input type="tel" th:field="*{phone}" class="form-control">
                         </div>
                         <hr>
-                        <div class="form-group"  style="display: flex; flex-direction: row">
-                            <label th:for="zipcode" style="flex: 1; padding-top: 5px">우편번호</label>
-                            <input id="zipcode" style="flex: 3" type="text" th:field="*{zipcode}" class="form-control" placeholder="우편번호를 입력하세요"
+                        <div class="form-group flex-row address">
+                            <label th:for="zipcode">우편번호</label>
+                            <input id="zipcode" type="text" th:field="*{zipcode}" class="form-control" placeholder="우편번호를 입력하세요"
                                    readonly onclick="findAddr()">
                             <p th:if="${#fields.hasErrors('zipcode')}" th:errors="*{phone}">Incorrect date</p>
                         </div>
-                        <div class="form-group"  style="display: flex; flex-direction: row">
-                            <label th:for="city" style="flex: 1; padding-top: 5px">도로명 주소</label>
-                            <input id="streetAdr" style="flex: 3" type="text" th:field="*{street}" class="form-control" placeholder="도로명 주소를 입력하세요" readonly>
+                        <div class="form-group flex-row address">
+                            <label th:for="city">도로명 주소</label>
+                            <input id="streetAdr" type="text" th:field="*{street}" class="form-control" placeholder="도로명 주소를 입력하세요" readonly>
                             <p th:if="${#fields.hasErrors('street')}" th:errors="*{phone}">Incorrect date</p>
                         </div>
-                        <div class="form-group"  style="display: flex; flex-direction: row">
-                            <label th:for="street" style="flex: 1; padding-top: 5px">상세주소</label>
-                            <input id="detailAdr" style="flex: 3" type="text" th:field="*{detail}" class="form-control" placeholder="상세 주소를 입력하세요">
+                        <div class="form-group flex-row address">
+                            <label th:for="street">상세주소</label>
+                            <input id="detailAdr" type="text" th:field="*{detail}" class="form-control" placeholder="상세 주소를 입력하세요">
                             <p th:if="${#fields.hasErrors('detail')}" th:errors="*{phone}">Incorrect date</p>
                         </div>
                     </div>
-                    <div style="height: fit-content; background-color: #dbe7ff; font-weight: bold; border: 1px solid #909de9; flex: 1; text-align: center; vertical-align: middle; padding-top: 20px; color: #c0183a">
+                    <div class="total-amount">
                         <h4>총 결제 금액</h4>
-                        <p th:text="${totalPrice}" style="font-size: 28pt"></p>
-                        <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 20pt; margin-top: 10px">결제하기</button>
+                        <p th:text="${totalPrice}"></p>
+                        <button type="submit" class="btn btn-primary">결제하기</button>
                     </div>
                 </div>
-                <div style="margin-top: 20px; margin-bottom: 50px">
+                <div class="payment-option">
                     <h4>결제 방법</h4>
-                    <div class="form-check form-check-inline" style="background-color: #EEEEEE;">
-                        <div style="padding: 10px">
+                    <div class="form-check form-check-inline">
+                        <div>
                             <input type="radio" th:field="*{payment}" value="deposit" class="form-check-input">
                             <label class="form-check-label">무통장 입금</label>
                         </div>
-                        <div style="padding: 10px">
+                        <div>
                             <input type="radio" th:field="*{payment}" value="pay" class="form-check-input">
                             <label class="form-check-label">카드 결제</label>
                         </div>
@@ -103,6 +103,101 @@
     <div style="clear: both" th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->
 </body>
+<style>
+
+    .inner-container {
+        margin-top: 20px;
+    }
+
+    table {
+        text-align: center;
+    }
+
+    .td-image {
+        text-align: left;
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    .td-image img {
+        height: 120px;
+        width: 80px;
+        margin-right: 20px;
+    }
+
+    .delivery {
+        background-color: #EEEEEE;
+        padding: 3%;
+        flex: 2;
+        font-size: 12pt;
+        color: #909de9;
+    }
+
+    .required label {
+        width: 20%;
+    }
+
+    .required input {
+        width: 40%;
+        margin-left: 20px;
+    }
+
+    .address label {
+        flex: 1;
+        padding-top: 5px;
+    }
+
+    .address input {
+        flex: 3;
+    }
+
+    .amount {
+        background-color: #dff6ff;
+    }
+
+    .amount div {
+        font-weight: bold;
+        border: 1px solid #cfefff;
+        flex: 1; text-align: center;
+        vertical-align: middle;
+        padding-top: 10px;
+    }
+
+    .total-amount {
+        height: fit-content;
+        background-color: #dbe7ff;
+        font-weight: bold;
+        border: 1px solid #909de9;
+        flex: 1;
+        text-align: center;
+        ertical-align: middle;
+        padding-top: 20px;
+        color: #c0183a;
+    }
+
+    .total-amount p {
+        font-size: 28pt
+    }
+
+    .total-amount button {
+        width: 100%;
+        font-size: 20pt;
+        margin-top: 10px;
+    }
+
+    .payment-option {
+        margin-top: 20px;
+        margin-bottom: 50px;
+    }
+
+    .form-check-inline {
+        background-color: #EEEEEE;
+    }
+
+    .form-check-inline div {
+        padding: 10px
+    }
+</style>
 <script>
     // [출처] : https://ws-pace.tistory.com/38
     function findAddr() {

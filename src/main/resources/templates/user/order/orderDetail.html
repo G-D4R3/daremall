@@ -7,16 +7,16 @@
     <div style="overflow: hidden">
         <div>
             <h3>주문 상세 정보</h3>
-            <div style="background-color: #EEEEEE; padding: 2%;">
-                <a>주문 일자 : <a th:text="${order.orderDate}" style="font-weight: bold; margin-right: 20px"></a></a>
-                <a>주문 번호 : <a th:text="${order.id}" style="font-weight: bold; margin-right: 20px"></a></a>
-                <a>주문 상태 : <a th:text="${order.status}" style="font-weight: bold; margin-right: 20px"></a></a>
+            <div class="detail">
+                <a th:text="'주문 일자 : '+${order.orderDate}"></a>
+                <a th:text="'주문 번호 : '+${order.id}"></a>
+                <a th:text="'주문 상태 : '+${order.status}"></a>
                 <a th:if="${order.status}=='주문 완료' or ${order.status}=='결제 완료'" href="#" th:href="'javascript:cancel('+${order.id}+')'">주문 취소</a>
                 <a th:if="${order.status}=='주문 취소'" href="#" th:href="'javascript:deleteOrder('+${order.id}+')'">주문 목록에서 삭제</a>
             </div>
         </div>
-        <div style="padding-top: 20px">
-            <table class="table table-striped" th:object="${order}" style="text-align: center">
+        <div class="orders">
+            <table class="table table-striped" th:object="${order}">
                 <thead>
                 <tr>
                     <th>상품 정보</th> <th>상품 수량</th> <th>상품 금액</th>
@@ -24,34 +24,94 @@
                 </thead>
                 <tbody>
                 <tr th:each="orderItem : ${order.orderItems}">
-                    <td style="text-align: left; padding-left: 30px; padding-right: 30px">
-                        <img th:src="@{'/images/'+${orderItem.itemId}+'.png'}" style="height: 120px; width: 80px; margin-right: 20px">
-                        <a th:href="@{/items/detail(itemId=${orderItem.itemId})}" th:text="${orderItem.name}"></a>
+                    <td>
+                        <div class="flex-row">
+                            <img th:src="@{'/images/'+${orderItem.itemId}+'.png'}">
+                            <a th:href="@{/items/detail(itemId=${orderItem.itemId})}" th:text="${orderItem.name}"></a>
+                        </div>
                     </td>
-                    <td th:text="${orderItem.count}" style="vertical-align: middle"></td>
-                    <td th:text="${orderItem.price}" style="vertical-align: middle"></td>
+                    <td>
+                        <div>
+                            <a th:text="${orderItem.count}"></a>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <a th:text="${orderItem.price}+'원'"></a>
+                        </div>
+                    </td>
                 </tr>
                 </tbody>
             </table>
         </div>
-        <div style="padding-top: 20px;">
+        <div class="margin-top">
             <h4>배송지 정보</h4>
-            <div style="background-color: #EEEEEE; padding: 3%; color:#444444; height: fit-content">
+            <div class="order-detail">
                 <p th:text="'수령인 이름 : '+${order.delivery.name}"></p>
                 <p th:text="'휴대폰 번호 : '+${order.delivery.phone}"></p>
                 <p th:text="'주소 : ('+${order.delivery.address.zipcode}+') '+${order.delivery.address.street}+', '+${order.delivery.address.detail}"></p>
             </div>
         </div>
-        <div style="padding-top: 20px; padding-bottom: 50px">
+        <div class="margin-top">
             <h4>결제 정보</h4>
-            <div style="background-color: #EEEEEE; padding: 3%; color:#4082d9; height: fit-content">
-                <p th:text="'총 결제 금액 : '+${order.totalPrice}"></p>
+            <div class="order-detail">
+                <div th:text="'총 결제 금액 : '+${order.totalPrice}"></div>
             </div>
         </div>
     </div>
     <div style="clear: both" th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->
 </body>
+<style>
+
+    .detail {
+        background-color: #EEEEEE;
+        padding: 2%;
+    }
+
+    .detail a {
+        font-weight: bold;
+        margin-right: 20px;
+    }
+
+    .orders {
+        margin-top: 20px;
+    }
+
+    .orders table {
+        text-align: center;
+    }
+
+    td .flex-row {
+        padding-left: 30px;
+        padding-right: 20px;
+    }
+
+    td .flex-row img {
+        height: 120px;
+        width: 80px;
+    }
+
+    td .flex-row a {
+        margin: auto;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .margin-top {
+        margin-top: 20px;
+    }
+
+    .order-detail {
+        background-color: #EEEEEE;
+        padding: 3%;
+        color:#444444;
+        height: fit-content;
+    }
+
+</style>
 <script>
     function cancel(id) {
         var form = document.createElement("form");

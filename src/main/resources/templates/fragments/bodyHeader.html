@@ -1,54 +1,54 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<div class="header" th:fragment="bodyHeader" style="margin-top: 2%; margin-bottom: 3%">
-    <div style="display: flex;">
-        <ul class="nav nav-pills pull-right" style="margin-bottom: 2%; margin-left: auto">
-            <li sec:authorize="isAuthenticated()">
-                <a style="margin-right: 10px; text-decoration: none; color: #444444;">
-                    <a th:text="${#authentication.name}" href="/userinfo" style="text-decoration: none; color: #268aff">회원</a>님 안녕하세요!
+<div class="header" th:fragment="bodyHeader">
+    <div class="body-header">
+        <div class="topper">
+            <ul class="nav nav-pills pull-right">
+                <li sec:authorize="isAuthenticated()">
+                    <a style="margin-right: 10px;">
+                        <a id="hello" th:text="${#authentication.name}" href="/userinfo">회원</a>님 안녕하세요!
+                    </a>
+                    <a class="right" href="/shop">장바구니</a>
+                    <a class="right" href="/userinfo/orderList">주문내역</a>
+                    <a class="right" href="/likes">찜 목록</a>
+                    <a href="/logout" id="logout">로그아웃</a>
+                </li>
+                <li sec:authorize="!isAuthenticated()">
+                    <a href="/members/login" class="right">Login</a>
+                    <a href="/members/new">회원가입</a>
+                </li>
+            </ul>
+        </div>
+        <div class="flex-row">
+            <div class="logo">
+                <a href="/">
+                    <img th:src="@{/images/logo.png}"/>
                 </a>
-                <a href="/shop" style="margin-right: 5px; margin-left: 5px; text-decoration: none; color: #444444">장바구니</a>
-                <a href="/userinfo/orderList" style="margin-right: 5px; text-decoration: none; color: #444444">주문내역</a>
-                <a href="/likes" style="margin-right: 5px; text-decoration: none; color: #444444">찜 목록</a>
-                <a href="/logout" style="text-decoration: none; color: #888888">로그아웃</a>
-            </li>
-            <li sec:authorize="!isAuthenticated()">
-                <a href="/members/login" style="margin-right: 5px; text-decoration: none; color: #444444">Login</a>
-                <a href="/members/new" style="text-decoration: none; color: #444444">회원가입</a>
-            </li>
-        </ul>
-    </div>
-    <div style="display: flex; flex-direction: row; vertical-align: center;">
-        <div style="width: fit-content">
-            <a href="/" style="text-decoration: none">
-                <img th:src="@{/images/logo.png}" style="width: 200px;"/>
-            </a>
+            </div>
+            <div class="search-bar">
+                <form role="form" method="get" th:action="@{/items/search}" class="flex-row">
+                    <div class="search-option">
+                        <select name="option" class="form-control">
+                            <option value="all">통합검색</option>
+                            <option value="book">도서</option>
+                            <option value="album">앨범</option>
+                        </select>
+                    </div>
+                    <div class="search-input">
+                        <input type="text" placeholder="책 제목 / 작가 / 앨범 검색" name="name" th:value="${name}"/>
+                    </div>
+                    <img onclick="submit();" th:src="@{/images/find.png}"/>
+                </form>
+            </div>
         </div>
-        <div style="margin-left: 10%; margin-top: auto; margin-bottom: auto; display: flex; flex-direction: row; width: fit-content; height: fit-content; border: 2px solid #666666">
-            <form role="form" method="get" th:action="@{/items/search}"
-                    style="display: flex; flex-direction: row;">
-                <div style="width: 100px; margin: 0">
-                    <select name="option" class="form-control" style="border: none">
-                        <option value="all">통합검색</option>
-                        <option value="book">도서</option>
-                        <option value="album">앨범</option>
-                    </select>
-                </div>
-                <div style="width: 300px; height: 40px; margin-left: 10px">
-                    <input style="width: 300px; height: 40px; border: none"
-                           type="text" placeholder="책 제목 / 작가 / 앨범 검색" name="name" th:value="${name}"/>
-                </div>
-                <img onclick="submit();" th:src="@{/images/find.png}" style="padding: 5px; width: 40px; height: 40px; background-color: #666666;"/>
-            </form>
-        </div>
-    </div>
 
 
-    <div style="background-color: #333333; width: 100%; margin-top: 30px">
-        <div style="display: flex; flex-direction: row">
-            <a class="btn btn-lg btn-dark" href="/items">전체 상품</a>
-            <a class="btn btn-lg btn-dark" href="/items/books">도서</a>
-            <a class="btn btn-lg btn-dark" href="/items/albums">앨범</a>
+        <div class="navigation">
+            <div class="flex-row">
+                <a class="btn btn-lg btn-dark" href="/items">전체 상품</a>
+                <a class="btn btn-lg btn-dark" href="/items/books">도서</a>
+                <a class="btn btn-lg btn-dark" href="/items/albums">앨범</a>
+            </div>
         </div>
     </div>
 

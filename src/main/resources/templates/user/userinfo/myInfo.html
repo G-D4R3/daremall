@@ -4,66 +4,66 @@
 <body>
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
-    <div style="display: flex; flex-direction: row; margin-bottom: 20px">
+    <div class="flex-row" style="margin-bottom: 20px">
         <a href="/userinfo" style="text-decoration: none; color: black"><h3>마이페이지</h3></a>
     </div>
-    <div style="display: flex; flex-direction: row">
+    <div class="flex-row">
         <div style="flex: 1;" th:replace="fragments/myPageMenu :: myPageMenu"/>
         <div style="margin-left: 30px; flex: 5">
             <h4>회원 정보 수정</h4>
             <table style="width: 100%">
                 <tr>
-                    <td style="width: 20%; text-align: center">아이디</td>
-                    <td style="width: 80%">
+                    <td class="label">아이디</td>
+                    <td class="value">
                         <a th:text="${#authentication.name}" id="loginId"></a>
                     </td>
                 </tr>
                 <tr>
-                    <td style="width: 20%; text-align: center">이름</td>
-                    <td style="width: 80%">
+                    <td class="label">이름</td>
+                    <td class="value">
                         <a th:text="${name}"></a>
                     </td>
                 </tr>
                 <tr>
-                    <td style="width: 20%; text-align: center">비밀번호</td>
-                    <td style="width: 80%">
+                    <td class="label">비밀번호</td>
+                    <td class="value">
                         <button id="passwordBtn" class="btn btn-outline-dark">비밀번호 변경</button>
                     </td>
                 </tr>
                 <form role="form" method="post" action="/userinfo/updateUserInfo" th:object="${updateForm}">
                     <tr>
-                        <td style="width: 20%; text-align: center">휴대폰 번호</td>
-                        <td style="width: 80%">
+                        <td class="label">휴대폰 번호</td>
+                        <td class="value">
                             <a th:text="*{phone}"></a>
                             <input id="phone" th:field="*{phone}" hidden>
                             <button type="button" id="phoneBtn" class="btn btn-outline-dark" style="margin-left: 20px">변경</button>
                             <div id="changePhoneForm" style="margin-top: 10px; width: 50%" hidden>
-                                <div style="display: flex; flex-direction: row;">
-                                    <input style="flex: 1" type="number" id="newPhone" placeholder="새 휴대폰 번호를 입력해주세요">
+                                <div class="flex-row">
+                                    <input type="number" id="newPhone" placeholder="새 휴대폰 번호를 입력해주세요">
                                     <button type="button" id="certificateBtn" class="btn btn-dark" style="margin-left: 5px">인증번호 받기</button>
                                 </div>
-                                <div style="display: flex; flex-direction: row; margin-top: 5px">
-                                    <input style="flex: 1" type="number" id="certificateNum" placeholder="인증번호를 입력해주세요">
+                                <div class="value" style="margin-top: 5px">
+                                    <input type="number" id="certificateNum" placeholder="인증번호를 입력해주세요">
                                     <button type="button" id="enterBtn" class="btn btn-dark" style="margin-left: 5px">확인</button>
                                 </div>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <td style="width: 20%; text-align: center">주소</td>
-                        <td style="width: 80%;">
-                            <div style="width: 80%">
-                                <div class="form-group"  style="display: flex; flex-direction: row">
-                                    <label th:for="zipcode" style="flex: 1; padding-top: 5px">우편번호</label>
+                        <td class="label">주소</td>
+                        <td class="value">
+                            <div class="value">
+                                <div class="form-group flex-row">
+                                    <label th:for="zipcode">우편번호</label>
                                     <input id="zipcode" style="flex: 3" type="text" th:field="*{zipcode}" class="form-control" placeholder="우편번호를 입력하세요"
                                            readonly onclick="findAddr()">
                                 </div>
-                                <div class="form-group"  style="display: flex; flex-direction: row">
-                                    <label th:for="city" style="flex: 1; padding-top: 5px">도로명 주소</label>
+                                <div class="form-group flex-row">
+                                    <label th:for="city">도로명 주소</label>
                                     <input id="streetAdr" style="flex: 3" type="text" th:field="*{street}" class="form-control" placeholder="도로명 주소를 입력하세요" readonly>
                                 </div>
-                                <div class="form-group"  style="display: flex; flex-direction: row">
-                                    <label th:for="street" style="flex: 1; padding-top: 5px">상세주소</label>
+                                <div class="form-group flex-row">
+                                    <label th:for="street">상세주소</label>
                                     <input id="detailAdr" style="flex: 3" type="text" th:field="*{detail}" class="form-control" placeholder="상세 주소를 입력하세요" readonly>
                                 </div>
                             </div>
@@ -71,8 +71,8 @@
                     </tr>
                 </form>
             </table>
-            <div style="display: flex; justify-content: center;">
-                <button id="submitBtn" type="submit" class="btn btn-primary" style="width: 30%; font-size: 16pt; margin-top: 20px; ">회원 정보 수정</button>
+            <div class="submitDiv">
+                <button id="submitBtn" type="submit" class="btn btn-primary">회원 정보 수정</button>
             </div>
         </div>
     </div>
@@ -86,18 +86,18 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form style="margin-top: 20px; margin-bottom: 20px">
-                        <div style="display: flex; flex-direction: row">
-                            <label style="flex: 1">현재 비밀번호</label>
-                            <input style="flex: 3" type="password" id="nowPw">
+                    <form>
+                        <div class="flex-row">
+                            <label>현재 비밀번호</label>
+                            <input type="password" id="nowPw">
                         </div>
-                        <div style="display: flex; flex-direction: row; margin-top: 10px">
-                            <label style="flex: 1">새 비밀번호</label>
-                            <input style="flex: 3" type="password" id="newPw">
+                        <div class="flex-row">
+                            <label>새 비밀번호</label>
+                            <input type="password" id="newPw">
                         </div>
-                        <div style="display: flex; flex-direction: row; margin-top: 10px">
-                            <label style="flex: 1">비밀번호 확인</label>
-                            <input style="flex: 3" type="password" id="confirmPw">
+                        <div class="flex-row">
+                            <label>비밀번호 확인</label>
+                            <input type="password" id="confirmPw">
                         </div>
                     </form>
                 </div>
@@ -118,6 +118,43 @@
         padding: 10px;
         min-width: fit-content;
     }
+
+    .label {
+        width: 20%;
+        text-align: center;
+    }
+
+    .value {
+        width: 80%;
+    }
+
+    .submitDiv {
+        display: flex;
+        justify-content: center;
+    }
+
+    .submitDiv button {
+        width: 30%; font-size: 16pt; margin-top: 20px;
+    }
+
+    .flex-row label {
+        flex: 1;
+        padding-top: 5px;
+    }
+
+    .modal-body form {
+        margin-top: 20px;
+        margin-bottom: 20px
+    }
+
+    .modal-body .flex-row label {
+        flex: 1;
+    }
+
+    .modal-body .flex-row input{
+        flex: 3;
+    }
+
 </style>
 
 <script>

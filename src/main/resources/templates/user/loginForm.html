@@ -5,12 +5,19 @@
     .fieldError {
         border-color: #bd2130;
     }
+
+    .loginForm {
+        width: 50%;
+        margin: auto;
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
 </style>
 <body>
 
 <div class="container">
     <div th:replace="fragments/loginHeader :: loginHeader" />
-    <div style="width: 50%; margin: auto; padding-top: 50px; padding-bottom: 50px;">
+    <div class="loginForm">
         <div style="text-align: center; margin-bottom: 20px">
             <h3>로그인</h3>
         </div>
