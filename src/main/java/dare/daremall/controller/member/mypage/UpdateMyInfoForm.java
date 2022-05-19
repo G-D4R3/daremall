@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class UpdateForm {
+public class UpdateMyInfoForm {
 
     @NotEmpty
     private String phone;
@@ -18,9 +18,9 @@ public class UpdateForm {
     @NotEmpty
     private String detail;
 
-    public UpdateForm() {}
+    public UpdateMyInfoForm() {}
 
-    public UpdateForm(Member member) {
+    public UpdateMyInfoForm(Member member) {
         this.phone = member.getPhone();
         this.zipcode = member.getAddress().getZipcode();
         this.street = member.getAddress().getStreet();

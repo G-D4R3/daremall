@@ -1,5 +1,6 @@
 package dare.daremall.repository;
 
+import dare.daremall.domain.DeliveryInfo;
 import dare.daremall.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -56,6 +57,23 @@ public class MemberRepository {
                 " and m.phone = :phone", Member.class)
                 .setParameter("loginId", loginId)
                 .setParameter("phone", phone)
+                .getResultList().stream().findAny();
+    }
+
+    public Optional<DeliveryInfo> findDeliveryinfo(String loginId, Long deliveryId) {
+        return em.createQuery("select di from DeliveryInfo di" +
+                " where di.id = :deliveryId" +
+                " and di.member.loginId = :memberId", DeliveryInfo.class)
+                .setParameter("deliveryId", deliveryId)
+                .setParameter("memberId", loginId)
+                .getResultList().stream().findAny();
+    }
+
+    public Optional<DeliveryInfo> getDefaultDeliveryInfo(String loginId) {
+        return em.createQuery("select di from DeliveryInfo di" +
+                " where di.member.loginId = :memberId" +
+                " and di.isDefault = true", DeliveryInfo.class)
+                .setParameter("memberId", loginId)
                 .getResultList().stream().findAny();
     }
 }

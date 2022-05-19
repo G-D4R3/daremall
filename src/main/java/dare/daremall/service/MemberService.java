@@ -3,6 +3,7 @@ package dare.daremall.service;
 import dare.daremall.controller.member.auth.MemberSignupRequestDto;
 import dare.daremall.controller.member.forget.ChangePasswordForm;
 import dare.daremall.controller.member.mypage.DeliveryInfoForm;
+import dare.daremall.controller.member.mypage.UpdateDeliveryInfoForm;
 import dare.daremall.domain.Address;
 import dare.daremall.domain.BaggedItem;
 import dare.daremall.domain.DeliveryInfo;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,6 +135,34 @@ public class MemberService {
         deliveryInfo.setAddress(new Address(deliveryInfoForm.getZipcode(), deliveryInfoForm.getStreet(), deliveryInfoForm.getDetail()));
         deliveryInfo.setIsDefault(deliveryInfoForm.getIsDefault());
         member.addDelivery(deliveryInfo);
+    }
+
+    @Transactional
+    public void deleteDeliveryInfo(String loginId, Long deliveryId) {
+        Member member = memberRepository.findByLoginId(loginId).orElse(null);
+        DeliveryInfo deliveryInfo = memberRepository.findDeliveryinfo(loginId, deliveryId).orElse(null);
+
+        if(deliveryInfo!=null) {
+            if(deliveryInfo.getIsDefault()==true) {
+                throw new IllegalStateException("기본 배송지는 삭제할 수 없습니다.");
+            }
+            else member.removeDelivery(deliveryInfo);
+        }
+
+    }
+
+    @Transactional
+    public void updateDeliveryInfo(String loginId, UpdateDeliveryInfoForm updateDeliveryInfoForm) {
+        DeliveryInfo deliveryInfo = memberRepository.findDeliveryinfo(loginId, updateDeliveryInfoForm.getId()).orElse(null);
+        deliveryInfo.setName(updateDeliveryInfoForm.getName());
+        deliveryInfo.setPhone(updateDeliveryInfoForm.getPhone());
+        deliveryInfo.setNickname(updateDeliveryInfoForm.getNickname());
+        deliveryInfo.setAddress(new Address(updateDeliveryInfoForm.getZipcode(), updateDeliveryInfoForm.getStreet(), updateDeliveryInfoForm.getDetail()));
+        deliveryInfo.setIsDefault(updateDeliveryInfoForm.getIsDefault());
+        if(deliveryInfo.getIsDefault()==true) {
+            DeliveryInfo defaultDeliveryInfo = memberRepository.getDefaultDeliveryInfo(loginId).orElse(null);
+            defaultDeliveryInfo.setIsDefault(false);
+        }
     }
 }
 

@@ -10,9 +10,319 @@
     <div class="flex-row">
         <div style="flex: 1;" th:replace="fragments/myPageMenu :: myPageMenu"/>
         <div style="margin-left: 30px; flex: 5">
-
+            <div class="flex-row">
+                <h4>배송지 관리</h4>
+                <a id="addBtn" type="button">추가</a>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                <tr style="color: #37a3e3">
+                    <th>주소 별칭</th> <th>이름</th> <th>휴대폰 번호</th> <th>주소</th> <th>관리</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="delivery : ${deliveries}">
+                    <td th:text="${delivery.nickname}"></td>
+                    <td th:text="${delivery.name}"></td>
+                    <td th:text="${delivery.phone}"></td>
+                    <td th:text="${delivery.address}"></td>
+                    <td>
+                        <a th:href="'javascript:updateDeliveryBtn('+${delivery.id}+')'" type="button">수정</a>
+                        <a th:href="'javascript:deleteDelivery('+${delivery.id}+')'" type="button">삭제</a>
+                    </td>
+                    <div id="updateDeliveryModal" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">배송지 추가</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="updateDeliveryForm" method="post" th:object="${updateDeliveryForm}" action="/userinfo/myAddress/updateDeliveryInfo" onsubmit="return checkUpdateForm();">
+                                        <input type="hidden" id="updateId" th:field="*{id}">
+                                        <div class="flex-row">
+                                            <label>이름</label>
+                                            <input class="form-control" type="text" id="updateName" th:field="*{name}" placeholder="이름을 입력해주세요">
+                                        </div>
+                                        <div class="flex-row">
+                                            <label>휴대폰 번호</label>
+                                            <input class="form-control" type="text" id="updatePhone" th:field="*{phone}" placeholder="휴대폰 번호를 입력해주세요">
+                                        </div>
+                                        <div class="flex-row">
+                                            <label>배송지 별칭</label>
+                                            <input class="form-control" type="text" id="updateNickname" th:field="*{nickname}" placeholder="배송지 별칭을 입력해주세요">
+                                        </div>
+                                        <div class="flex-row">
+                                            <label>우편번호</label>
+                                            <input class="form-control" type="text" id="updateZipcode" th:field="*{zipcode}"
+                                                   placeholder="우편번호를 입력해주세요" readonly onclick="findAddr('updateZipcode','updateStreet','updateDetail')">
+                                        </div>
+                                        <div class="flex-row">
+                                            <label>도로명 주소</label>
+                                            <input class="form-control" type="text" id="updateStreet" th:field="*{street}"
+                                                   placeholder="도로명 주소를 입력해주세요" readonly>
+                                        </div>
+                                        <div class="flex-row">
+                                            <label>상세 주소</label>
+                                            <input class="form-control" type="text" id="updateDetail" th:field="*{detail}"
+                                                   placeholder="상세 주소를 입력해주세요">
+                                        </div>
+                                        <div class="form-check check-default">
+                                            <input id="updateIsDefault" class="form-check-input" type="checkbox" th:field="*{isDefault}">
+                                            <label>기본 배송지로 설정</label>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="updateDelivery" type="button" class="btn btn-primary" style="margin: auto">저장</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
+    <div id="addDeliveryModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">배송지 추가</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addDeliveryForm" th:object="${deliveryInfoForm}" method="post" action="/userinfo/addDelivery" onsubmit="return checkAddForm();">
+                        <div class="flex-row">
+                            <label>이름</label>
+                            <input class="form-control" type="text" id="name" th:field="*{name}" placeholder="이름을 입력해주세요">
+                        </div>
+                        <div class="flex-row">
+                            <label>휴대폰 번호</label>
+                            <input class="form-control" type="text" id="phone" th:field="*{phone}" placeholder="휴대폰 번호를 입력해주세요">
+                        </div>
+                        <div class="flex-row">
+                            <label>배송지 별칭</label>
+                            <input class="form-control" type="text" id="nickname" th:field="*{nickname}" placeholder="배송지 별칭을 입력해주세요">
+                        </div>
+                        <div class="flex-row">
+                            <label>우편번호</label>
+                            <input class="form-control" type="text" id="zipcode" th:field="*{zipcode}"
+                                   placeholder="우편번호를 입력해주세요" readonly onclick="findAddr('zipcode','street','detail')">
+                        </div>
+                        <div class="flex-row">
+                            <label>도로명 주소</label>
+                            <input class="form-control" type="text" id="street" th:field="*{street}"
+                                   placeholder="도로명 주소를 입력해주세요" readonly>
+                        </div>
+                        <div class="flex-row">
+                            <label>상세 주소</label>
+                            <input class="form-control" type="text" id="detail" th:field="*{detail}"
+                                   placeholder="상세 주소를 입력해주세요">
+                        </div>
+                        <div class="form-check check-default">
+                            <input id="isDefault" class="form-check-input" type="checkbox" th:field="*{isDefault}">
+                            <label>기본 배송지로 설정</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="addDelivery" type="button" class="btn btn-primary" style="margin: auto">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="fragments/footer :: footer"/>
 </div>
 </body>
+<style>
+    #addBtn {
+        text-decoration: none;
+        margin-left: 10px;
+        color: #268aff;
+    }
+
+    .flex-row label {
+        flex: 1;
+        padding-top: 5px;
+    }
+
+    .modal-body form {
+        margin-top: 20px;
+        margin-bottom: 20px
+    }
+
+    .modal-body .flex-row {
+        margin-bottom: 10px;
+    }
+
+    .modal-body .flex-row label {
+        flex: 1;
+    }
+
+    .modal-body .flex-row input{
+        flex: 3;
+    }
+
+    .modal-body .check-default {
+        text-align: center;
+    }
+
+    .form-check-inline label {
+        padding-top: 5px;
+    }
+
+    table {
+        text-align: center;
+    }
+
+</style>
+<script>
+    $('#addBtn').click( function() {
+        $('#addDeliveryModal').modal('toggle');
+    });
+
+    $('#addDelivery').click( function() {
+        $('#addDeliveryForm').submit();
+    });
+
+    $('#updateDelivery').click( function() {
+        $('#updateDeliveryForm').submit();
+    });
+
+    function updateDeliveryBtn(id) {
+        $.ajax({
+            url: '/userinfo/myAddress/getDeliveryInfo',
+            type: 'GET',
+            data: {
+                "deliveryId" : id
+            },
+            success: function(data) {
+                document.getElementById("updateId").value = data.id;
+                document.getElementById("updateName").value = data.name;
+                document.getElementById("updatePhone").value = data.phone;
+                document.getElementById("updateNickname").value = data.nickname;
+                document.getElementById("updateZipcode").value = data.zipcode;
+                document.getElementById("updateStreet").value = data.street;
+                document.getElementById("updateDetail").value = data.detail;
+                document.getElementById("updateIsDefault").setAttribute("checked", data.isDefault);
+                $('#updateDeliveryModal').modal('toggle');
+            }
+        })
+    }
+
+    function deleteDelivery(id) {
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/userinfo/myAddress/delete/" + id);
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function checkAddForm() {
+        if($('#name').val().length===0) {
+            alert("이름을 입력해주세요");
+            return false;
+        }
+        if($('#phone').val().length===0) {
+            alert("휴대폰 번호를 입력해주세요");
+            return false;
+        }
+        if($('#nickname').val().length===0) {
+            alert("배송지 별칭을 입력해주세요");
+            return false;
+        }
+        if($('#zipcode').val().length===0) {
+            alert("우편번호를 입력해주세요");
+            return false;
+        }
+        if($('#street').val().length===0) {
+            alert("도로명 주소를 입력해주세요");
+            return false;
+        }
+        if($('#detail').val().length===0) {
+            alert("상세 주소를 입력해주세요");
+            return false;
+        }
+        if($('#isDefault').is(":checked")===true) {
+            alert("기본 배송지로 설정합니다");
+        }
+        else {
+            alert("기본 배송지로 설정하지 않습니다.");
+        }
+        alert("새로운 배송지를 추가합니다");
+    }
+
+    function checkUpdateForm() {
+        if($('#updateName').val().length===0) {
+            alert("이름을 입력해주세요");
+            return false;
+        }
+        if($('#updatePhone').val().length===0) {
+            alert("휴대폰 번호를 입력해주세요");
+            return false;
+        }
+        if($('#updateNickname').val().length===0) {
+            alert("배송지 별칭을 입력해주세요");
+            return false;
+        }
+        if($('#updateZipcode').val().length===0) {
+            alert("우편번호를 입력해주세요");
+            return false;
+        }
+        if($('#updateStreet').val().length===0) {
+            alert("도로명 주소를 입력해주세요");
+            return false;
+        }
+        if($('#updateDetail').val().length===0) {
+            alert("상세 주소를 입력해주세요");
+            return false;
+        }
+        if($('#updateIsDefault').is(":checked")===true) {
+            alert("기본 배송지로 설정합니다");
+        }
+        else {
+            alert("기본 배송지로 설정하지 않습니다.");
+        }
+        alert("배송지를 수정합니다.");
+    }
+
+    // [출처] : https://ws-pace.tistory.com/38
+    function findAddr(zipcode, street, detail) {
+        new daum.Postcode({
+            oncomplete: function (data) {
+                var addr = '' // 주소 변수
+                var extraAddr = '' // 참고항목 변수
+
+                if(data.userSelectedType=== 'R') { // 사용자가 도로명 주소를 선택했을 때
+                    addr = data.roadAddress;
+                }
+                else {
+                    addr = data.jibunAddress;
+                }
+
+                if(data.userSelectedType=== 'R') {
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                        extraAddr += data.bname;
+                    }
+                    if(data.buildingName !== '' && data.apartment === 'Y') {
+                        extraAddr += (extraAddr !== ''? ', ' + data.buildingName: data.buildingName);
+                    }
+                    if(extraAddr !== '') {
+                        extraAddr += ' ('+extraAddr+')';
+                    }
+                }
+                document.getElementById(zipcode).value = data.zonecode;
+                document.getElementById(street).value = addr;
+                document.getElementById(detail).readOnly = false;
+                document.getElementById(detail).focus();
+            }
+        }).open();
+    }
+</script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </html>

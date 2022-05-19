@@ -3,6 +3,7 @@ package dare.daremall.controller.member.mypage;
 import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.controller.order.OrderDto;
 import dare.daremall.domain.Member;
+import dare.daremall.repository.MemberRepository;
 import dare.daremall.service.MemberService;
 import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -24,6 +24,7 @@ public class MyPageController {
 
     private final OrderService orderService;
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
     /**
      * 마이페이지
      */
@@ -55,8 +56,51 @@ public class MyPageController {
     public String myAddress(@AuthenticationPrincipal LoginUserDetails member, Model model) {
         if(member==null) return "redirect:/members/login";
 
+        List<DeliveryInfoDto> deliveryInfoDtos = memberService.findUser(member.getUsername()).getDeliveryInfos().stream().map(di -> new DeliveryInfoDto(di)).collect(Collectors.toList());
+        model.addAttribute("deliveries", deliveryInfoDtos);
+        model.addAttribute("deliveryInfoForm", new DeliveryInfoForm());
+        model.addAttribute("updateDeliveryForm", new UpdateDeliveryInfoForm());
+
         return "/user/userinfo/myAddress";
     }
+
+    @PostMapping(value = "/addDelivery")
+    public String addDelivery(@AuthenticationPrincipal LoginUserDetails member, @Valid DeliveryInfoForm deliveryInfoForm) {
+
+        if(member==null) return "redirect:/members/login";
+
+        memberService.addDeliveryInfo(member.getUsername(), deliveryInfoForm);
+
+        return "redirect:/userinfo/myAddress";
+    }
+
+    @PostMapping(value = "/myAddress/delete/{deliveryId}")
+    public String deleteDelivery(@AuthenticationPrincipal LoginUserDetails member,
+                                 @PathVariable("deliveryId") Long deliveryId) {
+        if(member==null) return "redirect:/members/login";
+
+        memberService.deleteDeliveryInfo(member.getUsername(), deliveryId);
+
+        return "redirect:/userinfo/myAddress";
+    }
+
+    @GetMapping (value = "/myAddress/getDeliveryInfo")
+    public @ResponseBody DeliveryInfoDto getDeliveryInfo(@AuthenticationPrincipal LoginUserDetails member,
+                                  @RequestParam("deliveryId") Long deliveryId) {
+        DeliveryInfoDto deliveryInfoDto = new DeliveryInfoDto(memberRepository.findDeliveryinfo(member.getUsername(), deliveryId).orElse(null));
+        return deliveryInfoDto;
+    }
+
+    @PostMapping(value = "/myAddress/updateDeliveryInfo")
+    public String deleteDelivery(@AuthenticationPrincipal LoginUserDetails member,
+                                 UpdateDeliveryInfoForm updateDeliveryInfoForm) {
+        if(member==null) return "redirect:/members/login";
+
+        memberService.updateDeliveryInfo(member.getUsername(), updateDeliveryInfoForm);
+
+        return "redirect:/userinfo/myAddress";
+    }
+
 
     @GetMapping(value = "/myInfo")
     public String myInfo(@AuthenticationPrincipal LoginUserDetails member, Model model) {
@@ -64,7 +108,7 @@ public class MyPageController {
 
 
         Member findMember = memberService.findUser(member.getUsername());
-        UpdateForm updateForm = new UpdateForm(findMember);
+        UpdateMyInfoForm updateForm = new UpdateMyInfoForm(findMember);
 
         model.addAttribute("updateForm", updateForm);
         model.addAttribute("name", findMember.getName());
@@ -74,7 +118,7 @@ public class MyPageController {
 
     @PostMapping(value = "/updateUserInfo")
     public String updateUserInfo(@AuthenticationPrincipal LoginUserDetails member,
-                                 @Valid UpdateForm updateForm) {
+                                 @Valid UpdateMyInfoForm updateForm) {
 
         if(member==null) return "redirect:/members/login";
 
