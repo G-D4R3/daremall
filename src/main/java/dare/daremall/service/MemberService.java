@@ -2,8 +2,10 @@ package dare.daremall.service;
 
 import dare.daremall.controller.member.auth.MemberSignupRequestDto;
 import dare.daremall.controller.member.forget.ChangePasswordForm;
+import dare.daremall.controller.member.mypage.DeliveryInfoForm;
 import dare.daremall.domain.Address;
 import dare.daremall.domain.BaggedItem;
+import dare.daremall.domain.DeliveryInfo;
 import dare.daremall.domain.Member;
 import dare.daremall.domain.item.Item;
 import dare.daremall.repository.BaggedItemRepository;
@@ -30,7 +32,7 @@ public class MemberService {
 
     @Transactional
     public Long join(MemberSignupRequestDto memberDto) {
-        //validateDuplicateMember(memberDto);
+        validateDuplicateMember(memberDto);
         Member newMember = new Member(memberDto.getName(),
                                         memberDto.getLoginId(),
                                         memberDto.getPassword(),
@@ -47,6 +49,10 @@ public class MemberService {
         Member dupicateMember = memberRepository.findByLoginId(member.getLoginId()).orElse(null);
         if(dupicateMember != null) {
             throw new IllegalStateException("이미 사용중인 아이디입니다.");
+        }
+        List<Member> loginId = memberRepository.findLoginIdByName(member.getName(), member.getPhone());
+        if(loginId.size()>=3) {
+            throw new IllegalStateException("같은 이름, 휴대폰 번호 조합으로 3회까지만 회원가입을 시도할 수 있습니다.");
         }
     }
 
@@ -115,6 +121,18 @@ public class MemberService {
         Member member = memberRepository.findByLoginId(loginId).orElse(null);
         member.setPhone(phone);
         member.setAddress(new Address(zipcode, street, detail));
+    }
+
+    @Transactional
+    public void addDeliveryInfo(String loginId, DeliveryInfoForm deliveryInfoForm) {
+        Member member = memberRepository.findByLoginId(loginId).orElse(null);
+        DeliveryInfo deliveryInfo = new DeliveryInfo();
+        deliveryInfo.setName(deliveryInfoForm.getName());
+        deliveryInfo.setPhone(deliveryInfoForm.getPhone());
+        deliveryInfo.setNickname(deliveryInfoForm.getNickname());
+        deliveryInfo.setAddress(new Address(deliveryInfoForm.getZipcode(), deliveryInfoForm.getStreet(), deliveryInfoForm.getDetail()));
+        deliveryInfo.setIsDefault(deliveryInfoForm.getIsDefault());
+        member.addDelivery(deliveryInfo);
     }
 }
 
