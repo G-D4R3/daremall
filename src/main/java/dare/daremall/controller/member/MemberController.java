@@ -4,6 +4,7 @@ import dare.daremall.controller.member.auth.LoginForm;
 import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.controller.member.auth.MemberSignupRequestDto;
 import dare.daremall.controller.member.forget.ChangePasswordForm;
+import dare.daremall.controller.order.DeliveryInfoDto;
 import dare.daremall.domain.Member;
 import dare.daremall.repository.ItemRepository;
 import dare.daremall.repository.MemberRepository;
@@ -143,5 +144,12 @@ public class MemberController {
         return "/user/forget/findPassword";
     }
 
+
+    @GetMapping(value = "/findDeliveryInfo")
+    public @ResponseBody DeliveryInfoDto findDeliveryInfo(@AuthenticationPrincipal LoginUserDetails member,
+                                                          @RequestParam("delivery_id") Long deliveryId) {
+
+        return new DeliveryInfoDto(memberRepository.findDeliveryinfo(member.getUsername(), deliveryId).orElse(null));
+    }
 
 }

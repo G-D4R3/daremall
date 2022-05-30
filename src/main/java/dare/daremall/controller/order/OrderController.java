@@ -78,6 +78,7 @@ public class OrderController {
         int totalItemPrice = baggedItem.stream().mapToInt(bi->bi.getTotalPrice()).sum();
         int shippingFee = discountPolicy.isDiscountShip(totalItemPrice)==true? 0:2500;
         model.addAttribute("shippingFee", shippingFee);
+        model.addAttribute("myDeliveries", memberService.findUser(member.getUsername()).getDeliveryInfos().stream().map(di -> new DeliveryInfoDto(di)).collect(Collectors.toList()));
 
         model.addAttribute("totalItemPrice", totalItemPrice);
         model.addAttribute("totalPrice", totalItemPrice+shippingFee);

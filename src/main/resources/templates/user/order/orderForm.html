@@ -51,13 +51,23 @@
             <form role="form" action="/order/createOrder" th:object="${orderForm}" method="post">
                 <div class="flex-row">
                     <div class="delivery">
+                        <div id="delivery-select" class="form-group flex-row delivery-select">
+                            <label th:for="delivery-select">배송지 선택</label>
+                            <select class="form-control">
+                                <option value="option">옵션 선택</option>
+                                <option th:each="delivery : ${myDeliveries}"
+                                        th:value="${delivery.id}"
+                                        th:text="${delivery.nickname}"
+                                        th:onselect="javascript:getDelivery([[${delivery.id}]])"/>
+                            </select>
+                        </div>
                         <div class="form-group flex-row required">
                             <label th:for="name">수령인 이름</label>
-                            <input type="text" th:field="*{name}" class="form-control">
+                            <input id="name" type="text" th:field="*{name}" class="form-control">
                         </div>
                         <div class="form-group flex-row required">
                             <label th:for="phone">휴대폰 번호</label>
-                            <input type="tel" th:field="*{phone}" class="form-control">
+                            <input id="phone" type="tel" th:field="*{phone}" class="form-control">
                         </div>
                         <hr>
                         <div class="form-group flex-row address">
@@ -133,6 +143,15 @@
         color: #909de9;
     }
 
+    .delivery-select label{
+        width: 20%;
+    }
+
+    .delivery-select select {
+        width: 20%;
+        margin-left: 20px;
+    }
+
     .required label {
         width: 20%;
     }
@@ -199,6 +218,27 @@
     }
 </style>
 <script>
+
+    $('#delivery-select').on("change", function() {
+        var id = $('#delivery-select option:selected').val();
+        $.ajax ({
+            url: '/members/findDeliveryInfo',
+            type: 'GET',
+            data: {
+                "delivery_id" : id
+            },
+            success: function (data) {
+                document.getElementById("name").value = data.name;
+                document.getElementById("phone").value = data.phone;
+
+                document.getElementById("zipcode").value = data.zipcode;
+                document.getElementById("streetAdr").value = data.street;
+                document.getElementById("detailAdr").value = data.detail;
+            }
+        });
+    })
+
+
     // [출처] : https://ws-pace.tistory.com/38
     function findAddr() {
         new daum.Postcode({
