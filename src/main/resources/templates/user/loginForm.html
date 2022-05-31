@@ -21,7 +21,7 @@
         <div style="text-align: center; margin-bottom: 20px">
             <h3>로그인</h3>
         </div>
-        <form role="form" action="/members/login" th:object="${loginForm}" method="post">
+        <form id="login-form" role="form" action="/members/login" th:object="${loginForm}" method="post">
             <div class="form-group" style="display: flex; flex-direction: row">
                 <label th:for="loginId" style="flex: 1; padding-top: 5px">아이디</label>
                 <input style="flex: 3"
@@ -51,3 +51,7 @@
 
 </body>
 </html>
+<script>
+
+
+</script>

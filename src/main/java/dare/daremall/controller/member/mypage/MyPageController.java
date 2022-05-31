@@ -11,6 +11,8 @@ import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -41,6 +43,20 @@ public class MyPageController {
         return "/user/userinfo/userinfo";
     }
 
+    @GetMapping(value = "/myInfo")
+    public String myInfo(@AuthenticationPrincipal LoginUserDetails member, Model model) {
+        if(member==null) return "redirect:/members/login";
+
+
+        Member findMember = memberService.findUser(member.getUsername());
+        UpdateMyInfoForm updateForm = new UpdateMyInfoForm(findMember);
+
+        model.addAttribute("updateForm", updateForm);
+        model.addAttribute("name", findMember.getName());
+
+        return "/user/userinfo/myInfo";
+    }
+
     @GetMapping(value = "/orderList")
     public String orderList(@AuthenticationPrincipal LoginUserDetails member, Model model) {
         if(member==null) return "redirect:/members/login";
@@ -64,7 +80,7 @@ public class MyPageController {
         return "/user/userinfo/myAddress";
     }
 
-    @PostMapping(value = "/addDelivery")
+    @PostMapping(value = "/myAddress/add")
     public String addDelivery(@AuthenticationPrincipal LoginUserDetails member, @Valid DeliveryInfoForm deliveryInfoForm) {
 
         if(member==null) return "redirect:/members/login";
@@ -91,8 +107,8 @@ public class MyPageController {
         return deliveryInfoDto;
     }
 
-    @PostMapping(value = "/myAddress/updateDeliveryInfo")
-    public String deleteDelivery(@AuthenticationPrincipal LoginUserDetails member,
+    @PostMapping(value = "/myAddress/update")
+    public String updateDelivery(@AuthenticationPrincipal LoginUserDetails member,
                                  UpdateDeliveryInfoForm updateDeliveryInfoForm) {
         if(member==null) return "redirect:/members/login";
 
@@ -102,38 +118,27 @@ public class MyPageController {
     }
 
 
-    @GetMapping(value = "/myInfo")
-    public String myInfo(@AuthenticationPrincipal LoginUserDetails member, Model model) {
-        if(member==null) return "redirect:/members/login";
-
-
-        Member findMember = memberService.findUser(member.getUsername());
-        UpdateMyInfoForm updateForm = new UpdateMyInfoForm(findMember);
-
-        model.addAttribute("updateForm", updateForm);
-        model.addAttribute("name", findMember.getName());
-
-        return "/user/userinfo/myInfo";
-    }
-
-    @PostMapping(value = "/updateUserInfo")
+    @PostMapping(value = "/myInfo/update")
     public String updateUserInfo(@AuthenticationPrincipal LoginUserDetails member,
-                                 @Valid UpdateMyInfoForm updateForm) {
+                                 @Validated UpdateMyInfoForm updateForm, BindingResult result) {
 
         if(member==null) return "redirect:/members/login";
+        if(result.hasErrors()) return "/user/userinfo/myInfo";
 
-        System.out.println("hello");
+        System.out.println(updateForm.getPhone());
 
         memberService.updateUserInfo(member.getUsername(), updateForm.getPhone(), updateForm.getZipcode(), updateForm.getStreet(), updateForm.getDetail());
         return "redirect:/userinfo/myInfo";
     }
 
-    @GetMapping(value = "/getCertificateNumber")
+    @GetMapping(value = "/myInfo/getCertificate")
     public @ResponseBody String getCertificateNumberByName(@AuthenticationPrincipal LoginUserDetails member,
-                                                           @RequestParam(value = "phone") String phone) throws CoolsmsException {
+                                                           @RequestParam(value = "phone") String phone,
+                                                           @RequestParam(value = "newPhone") String newPhone) throws CoolsmsException {
 
         if(member==null) return null;
-        //return certificationService.PhoneNumberCheck(phone);
+        if(!memberService.findUser(member.getUsername()).getPhone().equals(phone)) return null; // 기존 번호 확인
+        //return certificationService.PhoneNumberCheck(newPhone);
         return "1234";
     }
 }

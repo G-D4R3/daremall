@@ -20,9 +20,10 @@
             </div>
             <div class="form-group required-3">
                 <label th:for="loginId">아이디</label>
-                <input type="text" th:field="*{loginId}" class="form-control" placeholder="아이디를 입력하세요"
+                <input id="login-id" type="text" th:field="*{loginId}" class="form-control" placeholder="아이디를 입력하세요"
                        th:class="${#fields.hasErrors('loginId')}? 'form-control fieldError' : 'form-control'">
                 <p th:if="${#fields.hasErrors('loginId')}" th:errors="*{loginId}">Incorrect date</p>
+                <button id="id-check" type="button" class="btn btn-outline-primary">중복확인</button>
             </div>
             <div class="form-group required-3">
                 <label th:for="password">비밀번호</label>
@@ -88,6 +89,14 @@
         flex: 3;
     }
 
+    #login-id {
+        flex: 2;
+    }
+
+    #id-check {
+        flex: 0.7;
+    }
+
     .required-2 input{
         flex: 2;
         margin-right: 15px;
@@ -105,6 +114,30 @@
 <script>
 
     var isCertificated = false;
+    var isValidId = false;
+
+    $('#id-check').click(function() {
+        const loginId = $('#login-id').val();
+
+        $.ajax({
+            url: '/members/new/loginIdValidation',
+            type: 'GET',
+            data: {
+                "loginId" : loginId
+
+            },
+            success(data) {
+                if(data == true) {
+                    alert("사용 가능한 아이디입니다.");
+                    isValidId = true;
+                }
+                else {
+                    alert("중복된 아이디입니다.");
+                    isValidId = false;
+                }
+            }
+        })
+    })
 
     $('#send').click(function() {
 
@@ -114,7 +147,7 @@
         }
         else {
             $.ajax ({
-                url: '/members/new/getCertificateNumber',
+                url: '/members/new/getCertificate',
                 type: 'GET',
                 data: {
                     "phone" : phone
@@ -143,6 +176,10 @@
     });
 
     function onSubmit() {
+        if(isValidId==false){
+            alert("아이디를 확인해주세요");
+            return false;
+        }
         if(isCertificated==false){
             alert("휴대폰 번호가 인증되지 않았습니다.");
             return false;

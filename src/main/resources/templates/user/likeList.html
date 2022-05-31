@@ -33,7 +33,7 @@
     function cancel(id) {
         var form = document.createElement("form");
         form.setAttribute("method", "post");
-        form.setAttribute("action", "/like/" + id + "/cancel");
+        form.setAttribute("action", "/like/cancel/" + id);
         document.body.appendChild(form);
         form.submit();
     }

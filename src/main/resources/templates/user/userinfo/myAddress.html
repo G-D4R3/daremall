@@ -40,7 +40,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form id="updateDeliveryForm" method="post" th:object="${updateDeliveryForm}" action="/userinfo/myAddress/updateDeliveryInfo" onsubmit="return checkUpdateForm();">
+                                    <form id="updateDeliveryForm" method="post" th:object="${updateDeliveryForm}" action="/userinfo/myAddress/update" onsubmit="return checkUpdateForm();">
                                         <input type="hidden" id="updateId" th:field="*{id}">
                                         <div class="flex-row">
                                             <label>이름</label>
@@ -96,7 +96,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="addDeliveryForm" th:object="${deliveryInfoForm}" method="post" action="/userinfo/addDelivery" onsubmit="return checkAddForm();">
+                    <form id="addDeliveryForm" th:object="${deliveryInfoForm}" method="post" action="/userinfo/myAddress/add" onsubmit="return checkAddForm();">
                         <div class="flex-row">
                             <label>이름</label>
                             <input class="form-control" type="text" id="name" th:field="*{name}" placeholder="이름을 입력해주세요">

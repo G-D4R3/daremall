@@ -116,7 +116,7 @@
     function cancel(id) {
         var form = document.createElement("form");
         form.setAttribute("method", "post");
-        form.setAttribute("action", "/order/" + id + "/cancel");
+        form.setAttribute("action", "/order/cancel/" + id);
         document.body.appendChild(form);
         form.submit();
     }
@@ -124,7 +124,7 @@
     function deleteOrder(id) {
         var form = document.createElement("form");
         form.setAttribute("method", "post");
-        form.setAttribute("action", "/order/" + id + "/delete");
+        form.setAttribute("action", "/order/delete/" + id);
         document.body.appendChild(form);
         form.submit();
     }

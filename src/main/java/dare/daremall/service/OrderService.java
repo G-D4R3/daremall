@@ -67,7 +67,12 @@ public class OrderService {
     @Transactional
     public void deleteOrder(Long orderId) {
         Order order = orderRepository.findOne(orderId);
-        order.delete();
-        orderRepository.remove(order);
+        if(order.getStatus()==OrderStatus.CANCEL) {
+            order.delete();
+            orderRepository.remove(order);
+        }
+        else {
+            throw new IllegalStateException("취소하지 않은 주문은 삭제할 수 없습니다.");
+        }
     }
 }

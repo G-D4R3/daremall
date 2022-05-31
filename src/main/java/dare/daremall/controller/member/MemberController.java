@@ -12,7 +12,9 @@ import dare.daremall.service.CertificationService;
 import dare.daremall.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -61,14 +63,20 @@ public class MemberController {
         return "redirect:/";
     }
 
-    @GetMapping(value = "/new/getCertificateNumber")
-    public @ResponseBody String getCertificateNumberByName(@RequestParam(value = "phone") String phone,
+    @GetMapping(value = "/new/getCertificate")
+    public @ResponseBody String createMemberCertificate(@RequestParam(value = "phone") String phone,
                                                            RedirectAttributes redirectAttributes) throws CoolsmsException {
 
         redirectAttributes.addAttribute("phone", phone);
 
         //return certificationService.PhoneNumberCheck(phone);
         return "1234";
+    }
+
+    @GetMapping(value = "/new/loginIdValidation")
+    public @ResponseBody Boolean loginIdValidation(@RequestParam(value = "loginId") String loginId) {
+        if(memberService.findUser(loginId)==null) return true;
+        else return false;
     }
 
     /**
@@ -76,10 +84,15 @@ public class MemberController {
      * 아이디 / 비밀번호 찾기
      */
 
-    @GetMapping(value = "/getCertificateNumberByName")
+    @GetMapping(value = "/forgetId")
+    public String forgetId(Model model) {
+        return "/user/forget/forgetId";
+    }
+
+    @GetMapping(value = "/forgetId/getCertificate")
     public @ResponseBody String getCertificateNumberByName(@RequestParam(value = "name", required = false) String name,
-                                                     @RequestParam(value = "phone", required = false) String phone,
-                                                     RedirectAttributes redirectAttributes) throws CoolsmsException {
+                                                           @RequestParam(value = "phone", required = false) String phone,
+                                                           RedirectAttributes redirectAttributes) throws CoolsmsException {
         if(memberService.findLoginIdByName(name, phone)==null) return null;
         redirectAttributes.addAttribute("phone", phone);
 
@@ -87,10 +100,28 @@ public class MemberController {
         return "1234";
     }
 
-    @GetMapping(value = "/getCertificateNumberByLoginId")
+    @GetMapping(value = "/forgetId/findId")
+    public @ResponseBody List<String> findId(@RequestParam("name") String name, @RequestParam("phone") String phone) {
+        return memberService.findLoginIdByName(name, phone);
+    }
+
+    @GetMapping(value = "/forgetId/success")
+    public String findIdSuccess(Model model, @RequestParam("name") String name, @RequestParam("phone") String phone) {
+        List<String> loginId = memberService.findLoginIdByName(name, phone);
+        model.addAttribute("loginId", loginId);
+        return "/user/forget/findId";
+    }
+
+
+    @GetMapping(value = "/forgetPassword")
+    public String forgetPassword(Model model) {
+        return "/user/forget/forgetPassword";
+    }
+
+    @GetMapping(value = "/forgetPassword/getCertificate")
     public @ResponseBody String getCertificateNumberByLoginId(@RequestParam(value = "loginId", required = false) String loginId,
-                                                           @RequestParam(value = "phone", required = false) String phone,
-                                                           RedirectAttributes redirectAttributes) throws CoolsmsException {
+                                                              @RequestParam(value = "phone", required = false) String phone,
+                                                              RedirectAttributes redirectAttributes) throws CoolsmsException {
         if(memberService.findMemberByLoginId(loginId, phone)==null) return null;
         redirectAttributes.addAttribute("phone", phone);
 
@@ -98,48 +129,32 @@ public class MemberController {
         return "1234";
     }
 
-    @GetMapping(value = "/forgetId")
-    public String forgetId(Model model) {
-        return "/user/forget/forgetId";
-    }
-
-    @GetMapping(value = "/findId")
-    public @ResponseBody List<String> findId(@RequestParam("name") String name, @RequestParam("phone") String phone) {
-        return memberService.findLoginIdByName(name, phone);
-    }
-
-    @GetMapping(value = "/findIdSuccess")
-    public String findIdSuccess(Model model, @RequestParam("name") String name, @RequestParam("phone") String phone) {
-        List<String> loginId = memberService.findLoginIdByName(name, phone);
-        model.addAttribute("loginId", loginId);
-        return "/user/forget/findId";
-    }
-
-    @GetMapping(value = "/forgetPassword")
-    public String forgetPassword(Model model) {
-        return "/user/forget/forgetPassword";
-    }
-
     @GetMapping(value = "/forgetPassword/changePassword")
     public String changePasswordForm(Model model,@RequestParam("loginId") String loginId) {
 
         Member member = memberService.findUser(loginId);
-        if(member==null) return "redirect:/user/forget/forgetPassword";
+        if(member==null) return "redirect:/members/forgetPassword";
 
         model.addAttribute("changePasswordForm", new ChangePasswordForm(loginId));
 
         return "/user/forget/changePassword";
     }
 
-    @PostMapping(value = "/changePassword")
-    public String changePassword(ChangePasswordForm form) {
+    @PostMapping(value = "/forgetPassword/changePassword")
+    public String changePassword(@Validated ChangePasswordForm form, BindingResult result, RedirectAttributes redirectAttributes) {
+
+        if(result.hasErrors()) {
+            return "/user/forget/chagnePassword";
+        }
+        if(!form.getPassword().equals(form.getPasswordConfirm())) {
+            return "/user/forget/chagnePassword";
+        }
 
         memberService.passwordChange(form);
-
-        return "redirect:/members/findPasswordSuccess";
+        return "redirect:/members/forgetPassword/success";
     }
 
-    @GetMapping(value = "/findPasswordSuccess")
+    @GetMapping(value = "/forgetPassword/success")
     public String findPasswordSuccess(Model model) {
         return "/user/forget/findPassword";
     }

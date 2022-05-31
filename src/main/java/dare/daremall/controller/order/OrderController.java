@@ -11,7 +11,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -27,21 +29,7 @@ public class OrderController {
     private final BaggedItemRepository baggedItemRepository;
     private final DiscountPolicy discountPolicy;
 
-    @GetMapping(value = "myOrder")
-    public String orderList(@AuthenticationPrincipal LoginUserDetails member,
-                            Model model) {
-
-        if(member==null) return "redirect:/members/login";
-
-        List<Order> orders = orderService.findOrders(member.getUsername());
-        List<OrderDto> orderDtos = orders.stream().map(o -> new OrderDto(o)).collect(Collectors.toList());
-
-        model.addAttribute("orders", orderDtos);
-
-        return "/user/order/orderList";
-    }
-
-    @PostMapping(value = "/{orderId}/cancel")
+    @PostMapping(value = "/cancel/{orderId}")
     public String cancelOrder(@AuthenticationPrincipal LoginUserDetails member,
                               @PathVariable("orderId") Long orderId) {
         if(member==null) return "redirect:/members/login";
@@ -49,7 +37,7 @@ public class OrderController {
         return "redirect:/userinfo/orderList";
     }
 
-    @PostMapping(value = "/{orderId}/delete")
+    @PostMapping(value = "/delete/{orderId}")
     public String deleteOrder(@AuthenticationPrincipal LoginUserDetails member,
                               @PathVariable("orderId") Long orderId) {
         if(member==null) return "redirect:/members/login";
@@ -87,7 +75,7 @@ public class OrderController {
         return "/user/order/orderForm";
     }
 
-    @PostMapping(value = "/new")
+    @PostMapping(value = "/new/addItem")
     public String orderFormWithItem(@AuthenticationPrincipal LoginUserDetails member,
                             @RequestParam(value = "itemId", required = false) Long itemId,
                             @RequestParam(value = "count", required = false, defaultValue = "0") int count) {
@@ -98,12 +86,7 @@ public class OrderController {
 
     @PostMapping(value = "/createOrder")
     public String createOrder(@AuthenticationPrincipal LoginUserDetails member,
-                              @Valid OrderForm orderForm, BindingResult result) {
-        if(result.hasErrors()) {
-            return "redirect:/order/new/select";
-        }
-
-        System.out.println(orderForm.getPayment());
+                              @Validated OrderForm orderForm, BindingResult result) {
 
         Long orderId = orderForm.getPayment().equals("pay")? orderService.createOrder(member.getUsername(), orderForm, OrderStatus.PAY)
                 :orderService.createOrder(member.getUsername(), orderForm, OrderStatus.ORDER);

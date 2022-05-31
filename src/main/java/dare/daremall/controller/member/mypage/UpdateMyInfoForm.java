@@ -8,14 +8,14 @@ import javax.validation.constraints.NotEmpty;
 @Data
 public class UpdateMyInfoForm {
 
-    @NotEmpty
+    @NotEmpty(message = "휴대폰 번호를 입력해주세요")
     private String phone;
 
-    @NotEmpty
+    @NotEmpty(message = "우편번호를 입력해주세요")
     private String zipcode;
-    @NotEmpty
+    @NotEmpty(message = "도로명 주소를 입력해주세요")
     private String street;
-    @NotEmpty
+    @NotEmpty(message = "상세 주소를 입력해주세요")
     private String detail;
 
     public UpdateMyInfoForm() {}

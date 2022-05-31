@@ -15,7 +15,7 @@
                 </p>
                 <p>재고 수량 : <td th:text="${item.stockQuantity}"></td>개</p>
             </tr>
-            <form role="form" method="post" th:action="@{/order/new}">
+            <form role="form" method="post" th:action="@{/order/new/addItem}">
                 <div class="form-group">
                     <label for="item">옵션 선택</label>
                     <select name="itemId" id="item" class="form-control">
@@ -34,7 +34,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary">주문하기</button>
                 <button type="submit" class="btn btn-outline-primary" th:formaction="@{/shop/add}">장바구니</button>
-                <button type="submit" class="btn" th:classappend="${isLikeItem}" th:formaction="@{/like}">찜</button>
+                <button type="submit" class="btn" th:classappend="${isLikeItem}" th:formaction="@{/like/add}">찜</button>
             </form>
         </div>
 

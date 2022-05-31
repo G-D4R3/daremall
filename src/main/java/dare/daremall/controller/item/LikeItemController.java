@@ -11,24 +11,34 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping(value = "like")
 public class LikeItemController {
 
     private final MemberService memberService;
     private final ItemService itemService;
     private final LikeItemService likeItemService;
 
+    @GetMapping(value = "/")
+    public String likes(@AuthenticationPrincipal LoginUserDetails member, Model model) {
 
-    @PostMapping(value = "/like")
+        if(member==null) return "redirect:/members/login";
+
+        Member findMember = memberService.findUser(member.getUsername());
+        List<LikeItem> likeItems = findMember.getLikes();
+        List<Item> items = likeItems.stream().map(likeItem -> likeItem.getItem()).collect(Collectors.toList());
+        model.addAttribute("items", items);
+        return "/user/likeList";
+
+    }
+
+    @PostMapping(value = "/add")
     public String addLike(@AuthenticationPrincipal LoginUserDetails member,
                           @RequestParam("itemId") Long itemId){
 
@@ -52,7 +62,7 @@ public class LikeItemController {
         return "redirect:/items/detail?itemId="+itemId;
     }
 
-    @PostMapping(value = "/like/{itemId}/cancel")
+    @PostMapping(value = "/like/cancel/{itemId}")
     public String cancelLike(@AuthenticationPrincipal LoginUserDetails member,
                               @PathVariable("itemId") Long itemId) {
 
@@ -64,18 +74,5 @@ public class LikeItemController {
         likeItemService.remove(likeItem.getId());
 
         return "redirect:/likes";
-    }
-
-    @GetMapping(value = "/likes")
-    public String likes(@AuthenticationPrincipal LoginUserDetails member, Model model) {
-
-        if(member==null) return "redirect:/members/login";
-
-        Member findMember = memberService.findUser(member.getUsername());
-        List<LikeItem> likeItems = findMember.getLikes();
-        List<Item> items = likeItems.stream().map(likeItem -> likeItem.getItem()).collect(Collectors.toList());
-        model.addAttribute("items", items);
-        return "/user/likeList";
-
     }
 }

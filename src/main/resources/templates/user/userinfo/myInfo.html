@@ -30,7 +30,7 @@
                         <button id="passwordBtn" class="btn btn-outline-dark">비밀번호 변경</button>
                     </td>
                 </tr>
-                <form role="form" method="post" action="/userinfo/updateUserInfo" th:object="${updateForm}">
+                <form id="form" role="form" method="post" action="/userinfo/myInfo/update" th:object="${updateForm}">
                     <tr>
                         <td class="label">휴대폰 번호</td>
                         <td class="value">
@@ -56,15 +56,18 @@
                                 <div class="form-group flex-row">
                                     <label th:for="zipcode">우편번호</label>
                                     <input id="zipcode" style="flex: 3" type="text" th:field="*{zipcode}" class="form-control" placeholder="우편번호를 입력하세요"
-                                           readonly onclick="findAddr()">
+                                           readonly onclick="findAddr()"
+                                           th:class="${#fields.hasErrors('zipcode')}? 'form-control fieldError' : 'form-control'">
                                 </div>
                                 <div class="form-group flex-row">
                                     <label th:for="city">도로명 주소</label>
-                                    <input id="streetAdr" style="flex: 3" type="text" th:field="*{street}" class="form-control" placeholder="도로명 주소를 입력하세요" readonly>
+                                    <input id="streetAdr" style="flex: 3" type="text" th:field="*{street}" class="form-control" placeholder="도로명 주소를 입력하세요" readonly
+                                           th:class="${#fields.hasErrors('street')}? 'form-control fieldError' : 'form-control'">
                                 </div>
                                 <div class="form-group flex-row">
                                     <label th:for="street">상세주소</label>
-                                    <input id="detailAdr" style="flex: 3" type="text" th:field="*{detail}" class="form-control" placeholder="상세 주소를 입력하세요" readonly>
+                                    <input id="detailAdr" style="flex: 3" type="text" th:field="*{detail}" class="form-control" placeholder="상세 주소를 입력하세요" readonly
+                                           th:class="${#fields.hasErrors('detail')}? 'form-control fieldError' : 'form-control'">
                                 </div>
                             </div>
                         </td>
@@ -164,7 +167,13 @@
 <script>
 
     $('#submitBtn').click(function() {
-        $('form').submit();
+
+        console.log($('#detailAdr').val());
+
+        if($('#detailAdr').val().length == 0) {
+            alert("상세 주소를 입력해주세요");
+        }
+        else $('#form').submit();
     })
 
     // [출처] : https://ws-pace.tistory.com/38
@@ -206,18 +215,20 @@
 
     $('#certificateBtn').click(function() {
 
-        var newPhone = document.getElementById("newPhone").value;
-        var loginId = document.getElementById("loginId").value;
+        var phone = $('#phone').val();
+        var newPhone = $('#newPhone').val();
 
         $.ajax ({
-            url: '/userinfo/getCertificateNumber',
+            url: '/userinfo/myInfo/getCertificate',
             type: 'GET',
             data: {
-                "phone" : newPhone
+                "phone" : phone,
+                "newPhone" : newPhone
             },
             success: function(data) {
                 if(data==null) {
-                    alert("로그인이 필요한 서비스입니다.");
+                    alert("회원 정보가 일치하지 않습니다.");
+                    window.location.replace("/members/login");
                 }
                 else {
                     const checkNum = data;
@@ -229,7 +240,7 @@
                         if(checkNum === userNum) {
                             alert('인증 성공하였습니다.');
                             document.getElementById("phone").value = newPhone;
-                            $('form').submit();
+                            $('#form').submit();
                         }
                         else {
                             alert('인증 실패하였습니다. 다시 입력해주세요.');
