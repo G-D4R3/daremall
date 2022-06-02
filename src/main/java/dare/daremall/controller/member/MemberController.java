@@ -23,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.naming.Binding;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -36,17 +37,22 @@ public class MemberController {
     private final ItemRepository itemRepository;
     private final CertificationService certificationService;
 
-    @GetMapping(value = "/login")
+
+    @RequestMapping(value = "login")
+    public String login() {
+        return "user/loginForm";
+    }
+
+    /*@GetMapping(value = "/login")
     public String loginForm(Model model) {
         model.addAttribute("loginForm", new LoginForm());
         return "user/loginForm";
     }
 
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String login(@Valid LoginForm form) {
-
+    public String login(@ModelAttribute(value = "loginForm") @Validated LoginForm form, BindingResult bindingResult) {
         return "login";
-    }
+    }*/
 
     @GetMapping(value = "/new")
     public String createMemberForm(Model model) {

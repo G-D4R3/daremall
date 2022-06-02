@@ -13,6 +13,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final AuthFailureHandler authFailureHandler;
+
+    public SecurityConfig(AuthFailureHandler authFailureHandler) {
+        this.authFailureHandler = authFailureHandler;
+    }
+
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -34,7 +40,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/css/**", "/font/**", "/images/**", "/js/**", "/favicon.ico").permitAll()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .antMatchers("/userinfo/**").authenticated()
-                .antMatchers("/members/login").permitAll()
+                .antMatchers( "/members/login" ).permitAll()
+                .antMatchers("/members/new").permitAll()
                 .antMatchers("/shop/**").authenticated()
                 .antMatchers("/like/**").authenticated()
                 .antMatchers("/order/**").authenticated()
@@ -42,8 +49,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                     .loginPage("/members/login")
-                    .loginProcessingUrl("/members/login")
+                    .loginProcessingUrl("/loginAction")
+                    .defaultSuccessUrl("/")
                     .usernameParameter("loginId")
-                    .defaultSuccessUrl("/");
+                    .passwordParameter("password")
+                    .failureUrl("/members/login?error=true")
+                    .failureHandler(new AuthFailureHandler())
+                    .permitAll()
+                    .and()
+                .logout()
+                    .logoutSuccessUrl("/");
     }
 }
