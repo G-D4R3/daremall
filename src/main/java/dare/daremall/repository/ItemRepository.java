@@ -21,7 +21,7 @@ public class ItemRepository {
             em.persist(item);
         }
         else {
-            Item merge = em.merge(item); // update 비슷
+            em.merge(item); // update 비슷
             // merge는 영속성으로 관리됨. item은 준영속
         }
     }

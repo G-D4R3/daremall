@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -160,7 +159,7 @@ public class MemberService {
         deliveryInfo.setAddress(new Address(updateDeliveryInfoForm.getZipcode(), updateDeliveryInfoForm.getStreet(), updateDeliveryInfoForm.getDetail()));
         deliveryInfo.setIsDefault(updateDeliveryInfoForm.getIsDefault());
         if(deliveryInfo.getIsDefault()==true) {
-            DeliveryInfo defaultDeliveryInfo = memberRepository.getDefaultDeliveryInfo(loginId).orElse(null);
+            DeliveryInfo defaultDeliveryInfo = memberRepository.findDefaultDeliveryInfo(loginId).orElse(null);
             defaultDeliveryInfo.setIsDefault(false);
         }
     }

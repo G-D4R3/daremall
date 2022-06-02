@@ -69,7 +69,7 @@ public class MemberRepository {
                 .getResultList().stream().findAny();
     }
 
-    public Optional<DeliveryInfo> getDefaultDeliveryInfo(String loginId) {
+    public Optional<DeliveryInfo> findDefaultDeliveryInfo(String loginId) {
         return em.createQuery("select di from DeliveryInfo di" +
                 " where di.member.loginId = :memberId" +
                 " and di.isDefault = true", DeliveryInfo.class)

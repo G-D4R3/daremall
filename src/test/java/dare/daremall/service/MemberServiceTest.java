@@ -23,14 +23,13 @@ public class MemberServiceTest {
         memberDto.setName("kim");
         memberDto.setLoginId("kim1234");
         memberDto.setPassword("password!");
-        memberDto.setCity("서울");
-        memberDto.setStreet("강가");
         memberDto.setZipcode("00000");
+        memberDto.setStreet("강가");
+        memberDto.setDetail("어딘가");
 
         // when
         Long id = memberService.join(memberDto);
 
-        System.out.println("password : "+memberService.findOne(id).getPassword());
         // then
         Assertions.assertThat(memberDto.getLoginId()).isEqualTo(memberService.findOne(id).getLoginId());
 
