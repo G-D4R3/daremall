@@ -1,7 +1,7 @@
 package dare.daremall.service;
 
 import dare.daremall.controller.member.auth.MemberSignupRequestDto;
-import dare.daremall.controller.member.forget.ChangePasswordForm;
+import dare.daremall.controller.member.mypage.ChangePasswordForm;
 import dare.daremall.controller.member.mypage.DeliveryInfoForm;
 import dare.daremall.controller.member.mypage.UpdateDeliveryInfoForm;
 import dare.daremall.domain.Address;
@@ -107,9 +107,9 @@ public class MemberService {
     }
 
     @Transactional
-    public void passwordChange(ChangePasswordForm form) {
-        Member member = memberRepository.findByLoginId(form.getLoginId()).orElse(null);
-        member.setPassword(form.getPassword());
+    public void passwordChange(String loginId, String newPassword) {
+        Member member = memberRepository.findByLoginId(loginId).orElse(null);
+        member.setPassword(newPassword);
         member.encryptPassword(passwordEncoder);
     }
 
@@ -127,12 +127,14 @@ public class MemberService {
     @Transactional
     public void addDeliveryInfo(String loginId, DeliveryInfoForm deliveryInfoForm) {
         Member member = memberRepository.findByLoginId(loginId).orElse(null);
+
         DeliveryInfo deliveryInfo = new DeliveryInfo();
         deliveryInfo.setName(deliveryInfoForm.getName());
         deliveryInfo.setPhone(deliveryInfoForm.getPhone());
         deliveryInfo.setNickname(deliveryInfoForm.getNickname());
         deliveryInfo.setAddress(new Address(deliveryInfoForm.getZipcode(), deliveryInfoForm.getStreet(), deliveryInfoForm.getDetail()));
         deliveryInfo.setIsDefault(deliveryInfoForm.getIsDefault());
+
         member.addDelivery(deliveryInfo);
     }
 
@@ -152,14 +154,23 @@ public class MemberService {
 
     @Transactional
     public void updateDeliveryInfo(String loginId, UpdateDeliveryInfoForm updateDeliveryInfoForm) {
+
         DeliveryInfo deliveryInfo = memberRepository.findDeliveryinfo(loginId, updateDeliveryInfoForm.getId()).orElse(null);
-        deliveryInfo.setName(updateDeliveryInfoForm.getName());
-        deliveryInfo.setPhone(updateDeliveryInfoForm.getPhone());
-        deliveryInfo.setNickname(updateDeliveryInfoForm.getNickname());
-        deliveryInfo.setAddress(new Address(updateDeliveryInfoForm.getZipcode(), updateDeliveryInfoForm.getStreet(), updateDeliveryInfoForm.getDetail()));
-        deliveryInfo.setIsDefault(updateDeliveryInfoForm.getIsDefault());
-        if(deliveryInfo.getIsDefault()==true) {
-            DeliveryInfo defaultDeliveryInfo = memberRepository.findDefaultDeliveryInfo(loginId).orElse(null);
+        DeliveryInfo defaultDeliveryInfo = memberRepository.findByLoginId(loginId).orElse(null).getDefaultDelivery();
+
+        if(defaultDeliveryInfo == null){
+            throw new IllegalStateException("배송지 수정에 문제가 생겼습니다.");
+        }
+
+        if(defaultDeliveryInfo.getId()== deliveryInfo.getId() && updateDeliveryInfoForm.getIsDefault() == false) {
+            throw new IllegalStateException("기본 배송지는 삭제할 수 없습니다.");
+        }
+        else {
+            deliveryInfo.setName(updateDeliveryInfoForm.getName());
+            deliveryInfo.setPhone(updateDeliveryInfoForm.getPhone());
+            deliveryInfo.setNickname(updateDeliveryInfoForm.getNickname());
+            deliveryInfo.setAddress(new Address(updateDeliveryInfoForm.getZipcode(), updateDeliveryInfoForm.getStreet(), updateDeliveryInfoForm.getDetail()));
+            deliveryInfo.setIsDefault(true);
             defaultDeliveryInfo.setIsDefault(false);
         }
     }

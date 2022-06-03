@@ -69,11 +69,11 @@ public class MemberRepository {
                 .getResultList().stream().findAny();
     }
 
-    public Optional<DeliveryInfo> findDefaultDeliveryInfo(String loginId) {
+    public List<DeliveryInfo> findDeliveryInfos(String loginId) {
         return em.createQuery("select di from DeliveryInfo di" +
-                " where di.member.loginId = :memberId" +
-                " and di.isDefault = true", DeliveryInfo.class)
-                .setParameter("memberId", loginId)
-                .getResultList().stream().findAny();
+                " where di.member.loginId = :loginId" +
+                " order by di.isDefault desc, di.id", DeliveryInfo.class)
+                .setParameter("loginId", loginId)
+                .getResultList();
     }
 }

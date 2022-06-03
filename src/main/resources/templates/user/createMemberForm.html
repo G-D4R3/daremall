@@ -33,7 +33,7 @@
             <p class="field-error-text" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Incorrect date</p>
             <div class="form-group required-2">
                 <label th:for="phone">휴대폰 번호</label>
-                <input id="phone" type="number" th:field="*{phone}" class="form-control" placeholder="휴대폰 번호를 입력하세요"
+                <input id="phone" type="tel" th:field="*{phone}" class="form-control" placeholder="휴대폰 번호를 입력하세요"
                        th:class="${#fields.hasErrors('phone')}? 'form-control fieldError' : 'form-control'">
                 <button type="button" id="send" class="btn btn-outline-primary">인증번호 요청</button>
             </div>
@@ -121,36 +121,80 @@
     var isCertificated = false;
     var isValidId = false;
 
+    var autoHypenPhone = function(str){
+        str = str.replace(/[^0-9]/g, '');
+        var tmp = '';
+        if( str.length < 4){
+            return str;
+        }else if(str.length < 7){
+            tmp += str.substr(0, 3);
+            tmp += '-';
+            tmp += str.substr(3);
+            return tmp;
+        }else if(str.length < 11){
+            tmp += str.substr(0, 3);
+            tmp += '-';
+            tmp += str.substr(3, 3);
+            tmp += '-';
+            tmp += str.substr(6);
+            return tmp;
+        }else{
+            tmp += str.substr(0, 3);
+            tmp += '-';
+            tmp += str.substr(3, 4);
+            tmp += '-';
+            tmp += str.substr(7);
+            return tmp;
+        }
+
+        return str;
+    }
+
+
+    var phone = document.getElementById('phone');
+
+    phone.onkeyup = function(){
+        console.log(this.value);
+        this.value = autoHypenPhone( this.value ) ;
+    }
+
+
     $('#id-check').click(function() {
         const loginId = $('#login-id').val();
+        var idReg = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{6,20}$/;
 
-        $.ajax({
-            url: '/members/new/loginIdValidation',
-            type: 'GET',
-            data: {
-                "loginId" : loginId
-
-            },
-            success(data) {
-                if(data == true) {
-                    alert("사용 가능한 아이디입니다.");
-                    isValidId = true;
+        if(idReg.test(loginId)==true) {
+            $.ajax({
+                url: '/members/new/loginIdValidation',
+                type: 'GET',
+                data: {
+                    "loginId" : loginId
+                },
+                success(data) {
+                    if(data == true) {
+                        alert("사용 가능한 아이디입니다.");
+                        isValidId = true;
+                    }
+                    else {
+                        alert("중복된 아이디입니다.");
+                        isValidId = false;
+                    }
                 }
-                else {
-                    alert("중복된 아이디입니다.");
-                    isValidId = false;
-                }
-            }
-        })
+            })
+        }
+        else {
+            alert("6-20자 사이의 영문, 숫자로만 입력할 수 있습니다.");
+        }
     })
 
     $('#send').click(function() {
 
+        // var nameReg = /^[가-힣]{2,10}$/;
+        // var idReg = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{6,20}$/;
+        // var pwReg = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{6,20}$/;
+        var phoneReg = /^\d{3}-\d{3,4}-\d{4}$/;
         const phone = $('#phone').val();
-        if(phone.length!=11) {
-            alert("올바른 휴대폰 번호를 입력해주세요")
-        }
-        else {
+        if(phoneReg.test(phone)==true) {
             $.ajax ({
                 url: '/members/new/getCertificate',
                 type: 'GET',
@@ -176,6 +220,9 @@
                     });
                 }
             });
+        }
+        else {
+            alert("올바른 휴대폰 번호를 입력해주세요");
         }
 
     });

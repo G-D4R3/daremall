@@ -48,7 +48,7 @@
         </div>
         <div class="inner-container">
             <h4>배송주소</h4>
-            <form role="form" action="/order/createOrder" th:object="${orderForm}" method="post">
+            <form onsubmit="return onSubmitOrder()" role="form" action="/order/createOrder" th:object="${orderForm}" method="post">
                 <div class="flex-row">
                     <div class="delivery">
                         <div id="delivery-select" class="form-group flex-row delivery-select">
@@ -61,37 +61,38 @@
                                         th:onselect="javascript:getDelivery([[${delivery.id}]])"/>
                             </select>
                         </div>
+                        <p class="field-error-text" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Incorrect date</p>
                         <div class="form-group flex-row required">
                             <label th:for="name">수령인 이름</label>
                             <input id="name" type="text" th:field="*{name}" class="form-control"
                                    th:class="${#fields.hasErrors('name')}? 'form-control fieldError' : 'form-control'">
-                            <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Incorrect date</p>
                         </div>
+                        <p class="field-error-text" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Incorrect date</p>
                         <div class="form-group flex-row required">
                             <label th:for="phone">휴대폰 번호</label>
                             <input id="phone" type="tel" th:field="*{phone}" class="form-control"
                                    th:class="${#fields.hasErrors('phone')}? 'form-control fieldError' : 'form-control'">
-                            <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Incorrect date</p>
                         </div>
                         <hr>
+                        <p class="field-error-text" th:if="${#fields.hasErrors('zipcode')}" th:errors="*{zipcode}">Incorrect date</p>
                         <div class="form-group flex-row address">
                             <label th:for="zipcode">우편번호</label>
                             <input id="zipcode" type="text" th:field="*{zipcode}" class="form-control" placeholder="우편번호를 입력하세요"
                                    readonly onclick="findAddr()"
                                    th:class="${#fields.hasErrors('zipcode')}? 'form-control fieldError' : 'form-control'">
-                            <p th:if="${#fields.hasErrors('zipcode')}" th:errors="*{zipcode}">Incorrect date</p>
                         </div>
+                        <p class="field-error-text" th:if="${#fields.hasErrors('street')}" th:errors="*{street}">Incorrect date</p>
                         <div class="form-group flex-row address">
                             <label th:for="street">도로명 주소</label>
                             <input id="street" type="text" th:field="*{street}" class="form-control" placeholder="도로명 주소를 입력하세요" readonly
                                    th:class="${#fields.hasErrors('street')}? 'form-control fieldError' : 'form-control'">
-                            <p th:if="${#fields.hasErrors('street')}" th:errors="*{street}">Incorrect date</p>
                         </div>
+
+                        <p class="field-error-text" th:if="${#fields.hasErrors('detail')}" th:errors="*{detail}">Incorrect date</p>
                         <div class="form-group flex-row address">
                             <label th:for="detail">상세주소</label>
                             <input id="detail" type="text" th:field="*{detail}" class="form-control" placeholder="상세 주소를 입력하세요"
                                    th:class="${#fields.hasErrors('detail')}? 'form-control fieldError' : 'form-control'">
-                            <p th:if="${#fields.hasErrors('detail')}" th:errors="*{detail}">Incorrect date</p>
                         </div>
                     </div>
                     <div class="total-amount">
@@ -103,14 +104,8 @@
                 <div class="payment-option">
                     <h4>결제 방법</h4>
                     <div class="form-check form-check-inline">
-                        <div>
-                            <input type="radio" th:field="*{payment}" value="deposit" class="form-check-input">
-                            <label class="form-check-label">무통장 입금</label>
-                        </div>
-                        <div>
-                            <input type="radio" th:field="*{payment}" value="pay" class="form-check-input">
-                            <label class="form-check-label">카드 결제</label>
-                        </div>
+                        <label class="form-check-label"><input name="pay_type" type="radio" th:field="*{payment}" value="deposit" class="form-check-input">무통장 입금</label>
+                        <label class="form-check-label"><input name="pay_type" type="radio" th:field="*{payment}" value="pay" class="form-check-input">카드 결제</label>
                     </div>
                 </div>
             </form>
@@ -124,6 +119,10 @@
 
     .fieldError {
         border-color: #bd2130;
+    }
+
+    .field-error-text {
+        color: #bd2130;
     }
 
     .inner-container {
@@ -224,7 +223,7 @@
         background-color: #EEEEEE;
     }
 
-    .form-check-inline div {
+    .form-check-inline label {
         padding: 10px
     }
 </style>
@@ -248,6 +247,17 @@
             }
         });
     })
+
+    function onSubmitOrder() {
+        var radio = $(":input:radio[name=pay_type]:checked");
+        // 출처: https://ooz.co.kr/4 [이러쿵저러쿵:티스토리]
+
+        if(radio==null){
+            alert("결제 방법을 선택해주세요");
+            return false;
+        }
+        return true;
+    }
 
 
     // [출처] : https://ws-pace.tistory.com/38

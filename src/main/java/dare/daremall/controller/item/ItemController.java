@@ -118,7 +118,7 @@ public class ItemController {
 
     @GetMapping(value = "/search")
     public String itemSearch(@RequestParam(value = "option") String option,
-                             @RequestParam(value = "name") String name,
+                             @RequestParam(value = "searchName") String name,
                              Model model) {
 
         List<ItemListDto> items = null;

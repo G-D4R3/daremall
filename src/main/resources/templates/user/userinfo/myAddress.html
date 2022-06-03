@@ -22,7 +22,8 @@
                 </thead>
                 <tbody>
                 <tr th:each="delivery : ${deliveries}">
-                    <td th:text="${delivery.nickname}"></td>
+                    <td th:if="${delivery.isDefault}==true" th:text="${delivery.nickname}+' (기본)'"></td>
+                    <td th:if="${delivery.isDefault}==false" th:text="${delivery.nickname}"></td>
                     <td th:text="${delivery.name}"></td>
                     <td th:text="${delivery.phone}"></td>
                     <td th:text="${delivery.address}"></td>
@@ -34,7 +35,7 @@
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title">배송지 추가</h5>
+                                    <h5 class="modal-title">배송지 수정</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -125,8 +126,7 @@
                                    placeholder="상세 주소를 입력해주세요">
                         </div>
                         <div class="form-check check-default">
-                            <input id="isDefault" class="form-check-input" type="checkbox" th:field="*{isDefault}">
-                            <label>기본 배송지로 설정</label>
+                            <label><input id="isDefault" class="form-check-input" type="checkbox" th:field="*{isDefault}">기본 배송지로 설정</label>
                         </div>
                     </form>
                 </div>
@@ -209,7 +209,10 @@
                 document.getElementById("updateZipcode").value = data.zipcode;
                 document.getElementById("updateStreet").value = data.street;
                 document.getElementById("updateDetail").value = data.detail;
-                document.getElementById("updateIsDefault").setAttribute("checked", data.isDefault);
+                document.getElementById("updateIsDefault").checked = data.isDefault;
+                if(document.getElementById("updateIsDefault").checked == true) {
+                    document.getElementById("updateIsDefault").setAttribute("disabled", true);
+                }
                 $('#updateDeliveryModal').modal('toggle');
             }
         })

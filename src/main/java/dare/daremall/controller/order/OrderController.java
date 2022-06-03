@@ -49,6 +49,9 @@ public class OrderController {
     public String orderForm(@AuthenticationPrincipal LoginUserDetails member,
                             @PathVariable("orderOption") String option,
                             Model model) {
+
+        if(member==null) return "redirect:/members/login";
+
         List<BaggedItemOrderDto> baggedItem = null;
         if(option.equals("all")) {
             baggedItem = baggedItemRepository.findByMember(member.getUsername())
@@ -79,6 +82,7 @@ public class OrderController {
     public String orderFormWithItem(@AuthenticationPrincipal LoginUserDetails member,
                             @RequestParam(value = "itemId", required = false) Long itemId,
                             @RequestParam(value = "count", required = false, defaultValue = "0") int count) {
+        if(member==null) return "redirect:/members/login";
 
         memberService.addShoppingBag(itemId, member.getUsername(), count);
         return "redirect:/order/new/all";
@@ -87,6 +91,9 @@ public class OrderController {
     @PostMapping(value = "/createOrder")
     public String createOrder(@AuthenticationPrincipal LoginUserDetails member,
                               @Validated OrderForm orderForm, BindingResult result) {
+
+        if(member==null) return "redirect:/members/login";
+        if(result.hasErrors()) return "user/order/orderForm";
 
         Long orderId = orderForm.getPayment().equals("pay")? orderService.createOrder(member.getUsername(), orderForm, OrderStatus.PAY)
                 :orderService.createOrder(member.getUsername(), orderForm, OrderStatus.ORDER);
@@ -98,6 +105,8 @@ public class OrderController {
     public String orderSuccess(@AuthenticationPrincipal LoginUserDetails member,
                                @PathVariable("orderId") Long orderId, Model model) {
 
+        if(member==null) return "redirect:/members/login";
+
         OrderDto orderDto = new OrderDto(orderService.findOne(orderId));
         model.addAttribute("order", orderDto);
 
@@ -107,6 +116,8 @@ public class OrderController {
     @GetMapping(value = "/detail")
     public String orderDetail(@AuthenticationPrincipal LoginUserDetails member,
                               @RequestParam("orderId") Long orderId, Model model) {
+
+        if(member==null) return "redirect:/members/login";
 
         OrderDetailDto orderDetailDto = new OrderDetailDto(orderService.findOne(orderId));
         model.addAttribute("order", orderDetailDto);

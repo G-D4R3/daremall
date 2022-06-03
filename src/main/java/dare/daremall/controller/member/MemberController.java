@@ -1,6 +1,5 @@
 package dare.daremall.controller.member;
 
-import dare.daremall.controller.member.auth.LoginForm;
 import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.controller.member.auth.MemberSignupRequestDto;
 import dare.daremall.controller.member.forget.ChangePasswordForm;
@@ -12,9 +11,6 @@ import dare.daremall.service.CertificationService;
 import dare.daremall.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,8 +19,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.naming.Binding;
-import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -75,8 +69,8 @@ public class MemberController {
 
         redirectAttributes.addAttribute("phone", phone);
 
-        //return certificationService.PhoneNumberCheck(phone);
-        return "1234";
+        return certificationService.PhoneNumberCheck(phone);
+        //return "1234";
     }
 
     @GetMapping(value = "/new/loginIdValidation")
@@ -102,8 +96,8 @@ public class MemberController {
         if(memberService.findLoginIdByName(name, phone)==null) return null;
         redirectAttributes.addAttribute("phone", phone);
 
-        //return certificationService.PhoneNumberCheck(phone);
-        return "1234";
+        return certificationService.PhoneNumberCheck(phone);
+        //return "1234";
     }
 
     @GetMapping(value = "/forgetId/findId")
@@ -131,8 +125,8 @@ public class MemberController {
         if(memberService.findMemberByLoginId(loginId, phone)==null) return null;
         redirectAttributes.addAttribute("phone", phone);
 
-        //return certificationService.PhoneNumberCheck(phone);
-        return "1234";
+        return certificationService.PhoneNumberCheck(phone);
+        //return "1234";
     }
 
     @GetMapping(value = "/forgetPassword/changePassword")
@@ -152,11 +146,11 @@ public class MemberController {
         if(result.hasErrors()) {
             return "/user/forget/chagnePassword";
         }
-        if(!form.getPassword().equals(form.getPasswordConfirm())) {
+        if(!form.getNewPassword().equals(form.getPasswordConfirm())) {
             return "/user/forget/chagnePassword";
         }
 
-        memberService.passwordChange(form);
+        memberService.passwordChange(form.getLoginId(), form.getNewPassword());
         return "redirect:/members/forgetPassword/success";
     }
 

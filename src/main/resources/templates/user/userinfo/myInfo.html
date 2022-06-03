@@ -39,7 +39,7 @@
                             <button type="button" id="phoneBtn" class="btn btn-outline-dark" style="margin-left: 20px">변경</button>
                             <div id="changePhoneForm" style="margin-top: 10px; width: 50%" hidden>
                                 <div class="flex-row">
-                                    <input type="number" id="newPhone" placeholder="새 휴대폰 번호를 입력해주세요">
+                                    <input type="tel" id="newPhone" placeholder="새 휴대폰 번호를 입력해주세요">
                                     <button type="button" id="certificateBtn" class="btn btn-dark" style="margin-left: 5px">인증번호 받기</button>
                                 </div>
                                 <div class="value" style="margin-top: 5px">
@@ -89,18 +89,18 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form id="pwForm" th:object="${changePasswordForm}" role="form">
                         <div class="flex-row">
                             <label>현재 비밀번호</label>
-                            <input class="form-control" type="password" id="nowPw">
+                            <input class="form-control" type="password" id="nowPw" th:field="*{password}">
                         </div>
                         <div class="flex-row">
                             <label>새 비밀번호</label>
-                            <input class="form-control" type="password" id="newPw">
+                            <input class="form-control" type="password" id="newPw" th:field="*{newPassword}">
                         </div>
                         <div class="flex-row">
                             <label>비밀번호 확인</label>
-                            <input class="form-control" type="password" id="confirmPw">
+                            <input class="form-control" type="password" id="confirmPw" th:field="*{passwordConfirm}">
                         </div>
                     </form>
                 </div>
@@ -166,6 +166,43 @@
 
 <script>
 
+    var autoHypenPhone = function(str){
+        str = str.replace(/[^0-9]/g, '');
+        var tmp = '';
+        if( str.length < 4){
+            return str;
+        }else if(str.length < 7){
+            tmp += str.substr(0, 3);
+            tmp += '-';
+            tmp += str.substr(3);
+            return tmp;
+        }else if(str.length < 11){
+            tmp += str.substr(0, 3);
+            tmp += '-';
+            tmp += str.substr(3, 3);
+            tmp += '-';
+            tmp += str.substr(6);
+            return tmp;
+        }else{
+            tmp += str.substr(0, 3);
+            tmp += '-';
+            tmp += str.substr(3, 4);
+            tmp += '-';
+            tmp += str.substr(7);
+            return tmp;
+        }
+
+        return str;
+    }
+
+
+    var newPhone = document.getElementById('newPhone');
+
+    newPhone.onkeyup = function(){
+        console.log(this.value);
+        this.value = autoHypenPhone( this.value ) ;
+    }
+
     $('#submitBtn').click(function() {
 
         console.log($('#detailAdr').val());
@@ -218,59 +255,100 @@
         var phone = $('#phone').val();
         var newPhone = $('#newPhone').val();
 
-        $.ajax ({
-            url: '/userinfo/myInfo/getCertificate',
-            type: 'GET',
-            data: {
-                "phone" : phone,
-                "newPhone" : newPhone
-            },
-            success: function(data) {
-                if(data==null) {
-                    alert("회원 정보가 일치하지 않습니다.");
-                    window.location.replace("/members/login");
+        var phoneReg = /^\d{3}-\d{3,4}-\d{4}$/;
+
+        if(phoneReg.test(newPhone)==true) {
+            $.ajax ({
+                url: '/userinfo/myInfo/getCertificate',
+                type: 'GET',
+                data: {
+                    "phone" : phone,
+                    "newPhone" : newPhone
+                },
+                success: function(data) {
+                    if(data==null) {
+                        alert("회원 정보가 일치하지 않습니다.");
+                        window.location.replace("/members/login");
+                    }
+                    else {
+                        const checkNum = data;
+                        alert("인증번호가 전송되었습니다.");
+
+                        $('#enterBtn').click(function() {
+                            const userNum = $('#certificateNum').val();
+
+                            if(checkNum === userNum) {
+                                alert('인증 성공하였습니다.');
+                                document.getElementById("phone").value = newPhone;
+                                $('#form').submit();
+                            }
+                            else {
+                                alert('인증 실패하였습니다. 다시 입력해주세요.');
+                            }
+                        });
+                    }
+
                 }
-                else {
-                    const checkNum = data;
-                    alert("인증번호가 전송되었습니다.");
-
-                    $('#enterBtn').click(function() {
-                        const userNum = $('#certificateNum').val();
-
-                        if(checkNum === userNum) {
-                            alert('인증 성공하였습니다.');
-                            document.getElementById("phone").value = newPhone;
-                            $('#form').submit();
-                        }
-                        else {
-                            alert('인증 실패하였습니다. 다시 입력해주세요.');
-                        }
-                    });
-                }
-
-            }
-        });
-
+            });
+        }
+        else {
+            alert("올바른 휴대폰 번호를 입력해주세요");
+        }
     });
 
     $('#passwordBtn').click( function() {
         $('#passwordChangeModal').modal('toggle');
     });
 
-    $('#changePassword').click( function() {
+    $('#changePassword').click(function () {
+        var pwReg = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{6,20}$/;
+
         var nowPw = document.getElementById("nowPw").value;
         var newPw = document.getElementById("newPw").value;
         var confirmPw = document.getElementById("confirmPw").value;
 
-        if(newPw===confirmPw) {
+        if(newPw===confirmPw && pwReg.test(newPw)==true) {
+            var form = document.createElement("form");
 
-            // change password ajax
+            var pwInput = document.createElement("input");
+            pwInput.setAttribute("type","hidden");
+            pwInput.setAttribute("name","password");
+            pwInput.setAttribute("value",nowPw);
 
-            alert("비밀번호를 변경했습니다.");
-            $('#passwordChangeModal').modal('hide');
+            form.appendChild(pwInput);
+
+            $.ajax({
+                url : '/userinfo/myInfo/varifyPw',
+                method: 'POST',
+                data : $('#pwForm').serialize(),
+                dataType : "json",
+                success: function (data) {
+                    if(data) {
+                        $.ajax({
+                            url : '/userinfo/myInfo/changePassword',
+                            method: 'POST',
+                            data : $('#pwForm').serialize(),
+                            dataType : "json",
+                            success: function (data) {
+                                if(data) {
+                                    alert("비밀번호 변경에 성공했습니다");
+                                    $('#passwordChangeModal').modal('hide');
+                                    window.location.href = '/userinfo/myInfo';
+                                }
+                                else {
+                                    alert("비밀번호 변경에 실패했습니다");
+                                }
+                            }
+                        })
+                    }
+                    else {
+                        alert("회원정보가 일치하지 않습니다");
+                    }
+                }
+            })
         }
         else {
-            alert("비밀번호가 일치하지 않습니다.");
+            alert("올바른 비밀번호를 입력해주세요");
         }
     });
 

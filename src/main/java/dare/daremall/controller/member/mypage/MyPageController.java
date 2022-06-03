@@ -4,16 +4,20 @@ import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.controller.order.OrderDto;
 import dare.daremall.domain.Member;
 import dare.daremall.repository.MemberRepository;
+import dare.daremall.service.CertificationService;
 import dare.daremall.service.MemberService;
 import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -27,6 +31,8 @@ public class MyPageController {
     private final OrderService orderService;
     private final MemberService memberService;
     private final MemberRepository memberRepository;
+    private final CertificationService certificationService;
+    private final PasswordEncoder encoder;
     /**
      * 마이페이지
      */
@@ -53,6 +59,7 @@ public class MyPageController {
 
         model.addAttribute("updateForm", updateForm);
         model.addAttribute("name", findMember.getName());
+        model.addAttribute("changePasswordForm", new ChangePasswordForm());
 
         return "/user/userinfo/myInfo";
     }
@@ -72,7 +79,7 @@ public class MyPageController {
     public String myAddress(@AuthenticationPrincipal LoginUserDetails member, Model model) {
         if(member==null) return "redirect:/members/login";
 
-        List<DeliveryInfoDto> deliveryInfoDtos = memberService.findUser(member.getUsername()).getDeliveryInfos().stream().map(di -> new DeliveryInfoDto(di)).collect(Collectors.toList());
+        List<DeliveryInfoDto> deliveryInfoDtos = memberRepository.findDeliveryInfos(member.getUsername()).stream().map(di -> new DeliveryInfoDto(di)).collect(Collectors.toList());
         model.addAttribute("deliveries", deliveryInfoDtos);
         model.addAttribute("deliveryInfoForm", new DeliveryInfoForm());
         model.addAttribute("updateDeliveryForm", new UpdateDeliveryInfoForm());
@@ -112,6 +119,11 @@ public class MyPageController {
                                  UpdateDeliveryInfoForm updateDeliveryInfoForm) {
         if(member==null) return "redirect:/members/login";
 
+        System.out.println(updateDeliveryInfoForm.getIsDefault());
+        if(updateDeliveryInfoForm.getIsDefault()==true) {
+            System.out.println("is true");
+        }
+
         memberService.updateDeliveryInfo(member.getUsername(), updateDeliveryInfoForm);
 
         return "redirect:/userinfo/myAddress";
@@ -138,7 +150,35 @@ public class MyPageController {
 
         if(member==null) return null;
         if(!memberService.findUser(member.getUsername()).getPhone().equals(phone)) return null; // 기존 번호 확인
-        //return certificationService.PhoneNumberCheck(newPhone);
-        return "1234";
+        return certificationService.PhoneNumberCheck(newPhone);
+        //return "1234";
+    }
+
+    @PostMapping(value = "/myInfo/varifyPw")
+    public @ResponseBody Boolean varifyPassword(@AuthenticationPrincipal LoginUserDetails member,
+                                               @ModelAttribute @Validated ChangePasswordForm changePasswordForm) {
+
+        if(member==null) return false;
+
+        if(changePasswordForm.getNewPassword().equals(changePasswordForm.getPasswordConfirm())
+        && encoder.matches(changePasswordForm.getPassword(), memberService.findUser(member.getUsername()).getPassword()) == true) {
+            return true;
+        }
+        return false;
+    }
+
+    @PostMapping(value = "/myInfo/changePassword")
+    public @ResponseBody Boolean changePassword(@AuthenticationPrincipal LoginUserDetails member,
+                                 @ModelAttribute @Validated ChangePasswordForm changePasswordForm,
+                                 BindingResult result) {
+
+
+        if(member==null) return false;
+        if(result.hasErrors() || changePasswordForm.getNewPassword().equals(changePasswordForm.getPasswordConfirm())==false){
+            return false;
+        }
+
+        memberService.passwordChange(member.getUsername(), changePasswordForm.getNewPassword());
+        return true;
     }
 }
