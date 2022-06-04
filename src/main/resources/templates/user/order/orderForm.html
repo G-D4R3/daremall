@@ -249,14 +249,30 @@
     })
 
     function onSubmitOrder() {
-        var radio = $(":input:radio[name=pay_type]:checked");
-        // 출처: https://ooz.co.kr/4 [이러쿵저러쿵:티스토리]
+        var radio = $(':radio');
 
+        var isChecked = false;
+
+        for(var i=0; i<radio.length; i++) {
+            if($(radio[i]).is(':checked')) {
+                isChecked = true;
+                break;
+            }
+        }
+        if(isChecked) return true;
+        else {
+            alert("결제 방법을 선택해주세요");
+            return false;
+        }
+
+/*
         if(radio==null){
             alert("결제 방법을 선택해주세요");
             return false;
         }
         return true;
+
+ */
     }
 
 

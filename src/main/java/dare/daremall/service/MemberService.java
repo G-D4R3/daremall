@@ -174,5 +174,12 @@ public class MemberService {
             defaultDeliveryInfo.setIsDefault(false);
         }
     }
+
+    public void selectAllBagItem(String loginId) {
+        Member member = memberRepository.findByLoginId(loginId).orElse(null);
+        for(BaggedItem baggedItem:member.getShoppingBag()) {
+            baggedItem.setChecked(true);
+        }
+    }
 }
 

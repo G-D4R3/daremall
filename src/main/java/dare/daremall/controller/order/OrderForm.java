@@ -19,6 +19,7 @@ public class OrderForm {
     @NotEmpty(message = "상세 주소를 입력해주세요")
     private String detail;
 
+    @NotEmpty(message = "결제 방식을 선택해주세요")
     private String payment;
 
 }

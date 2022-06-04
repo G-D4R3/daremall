@@ -52,17 +52,16 @@ public class OrderController {
 
         if(member==null) return "redirect:/members/login";
 
-        List<BaggedItemOrderDto> baggedItem = null;
         if(option.equals("all")) {
-            baggedItem = baggedItemRepository.findByMember(member.getUsername())
-                    .stream().map(bi -> new BaggedItemOrderDto(bi))
-                    .collect(Collectors.toList());
-            baggedItemRepository.setAllChecked(member.getUsername());
+            memberService.selectAllBagItem(member.getUsername());
         }
-        else if(option.equals("select")) {
-            baggedItem = baggedItemRepository.findSelected(member.getUsername())
-                    .stream().map(bi -> new BaggedItemOrderDto(bi))
-                    .collect(Collectors.toList());
+
+        List<BaggedItemOrderDto> baggedItem = baggedItemRepository.findSelected(member.getUsername())
+                .stream().map(bi -> new BaggedItemOrderDto(bi))
+                .collect(Collectors.toList());
+
+        if(baggedItem.size()==0) {
+            return "redirect:/shop";
         }
 
         model.addAttribute("items", baggedItem);
@@ -93,7 +92,9 @@ public class OrderController {
                               @Validated OrderForm orderForm, BindingResult result) {
 
         if(member==null) return "redirect:/members/login";
-        if(result.hasErrors()) return "user/order/orderForm";
+        if(result.hasErrors()){
+            return "redirect:/order/new/select";
+        }
 
         Long orderId = orderForm.getPayment().equals("pay")? orderService.createOrder(member.getUsername(), orderForm, OrderStatus.PAY)
                 :orderService.createOrder(member.getUsername(), orderForm, OrderStatus.ORDER);

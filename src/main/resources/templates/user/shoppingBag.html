@@ -42,9 +42,9 @@
             <br/>
         <div th:if="${list.size()>0}">
             <h3 style="float: right">총 금액 : <a th:text="${totalPrice}"></a> 원</h3>
-            <form method="get">
-                <button style="width: 100%; margin-bottom: 5px" class="btn btn-primary" type="submit" th:formaction="@{order/new/select}">선택 상품 주문</button>
-                <button style="width: 100%" class="btn btn-primary" type="submit" th:formaction="@{order/new/all}">전체 상품 주문</button>
+            <form method="get" onsubmit="return checkLength();">
+                <button id="select" onclick="checkLength(this)" style="width: 100%; margin-bottom: 5px" class="btn btn-primary" type="button">선택 상품 주문</button>
+                <button id="all" onclick="checkLength(this)" style="width: 100%" class="btn btn-primary" type="button">전체 상품 주문</button>
             </form>
         </div>
     </div>
@@ -58,6 +58,40 @@
         form.setAttribute("action", "/shop/" + id + "/delete");
         document.body.appendChild(form);
         form.submit();
+    }
+
+    function checkLength(btn) {
+
+        var checkbox = $(':checkbox');
+        var checked = 0;
+
+        if(checked.length==0) {
+            alert("선택된 상품이 없습니다");
+        }
+        else {
+            for(var i=0; i<checkbox.length; i++) {
+                if($(checkbox[i]).is(':checked')) {
+                    checked ++;
+                }
+            }
+            if(checked > 0){
+                var form = document.createElement("form");
+                form.setAttribute("method", "get");
+                if(btn.id==="select") {
+                    form.setAttribute("action", "/order/new/select");
+                }
+                else if(btn.id==="all") {
+                    form.setAttribute("action", "/order/new/all");
+                }
+                document.body.appendChild(form);
+                form.submit();
+            }
+            else {
+                alert("선택된 상품이 없습니다");
+            }
+        }
+
+
     }
 </script>
 </html>
