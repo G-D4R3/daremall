@@ -260,7 +260,7 @@
         if(phoneReg.test(newPhone)==true) {
             $.ajax ({
                 url: '/userinfo/myInfo/getCertificate',
-                type: 'GET',
+                type: 'POST',
                 data: {
                     "phone" : phone,
                     "newPhone" : newPhone

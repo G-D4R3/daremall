@@ -97,9 +97,9 @@ public class MyPageController {
         return "redirect:/userinfo/myAddress";
     }
 
-    @PostMapping(value = "/myAddress/delete/{deliveryId}")
+    @PostMapping(value = "/myAddress/delete")
     public String deleteDelivery(@AuthenticationPrincipal LoginUserDetails member,
-                                 @PathVariable("deliveryId") Long deliveryId) {
+                                 Long deliveryId) {
         if(member==null) return "redirect:/members/login";
 
         memberService.deleteDeliveryInfo(member.getUsername(), deliveryId);
@@ -107,11 +107,10 @@ public class MyPageController {
         return "redirect:/userinfo/myAddress";
     }
 
-    @GetMapping (value = "/myAddress/getDeliveryInfo")
+    @PostMapping (value = "/myAddress/getDeliveryInfo")
     public @ResponseBody DeliveryInfoDto getDeliveryInfo(@AuthenticationPrincipal LoginUserDetails member,
                                   @RequestParam("deliveryId") Long deliveryId) {
-        DeliveryInfoDto deliveryInfoDto = new DeliveryInfoDto(memberRepository.findDeliveryinfo(member.getUsername(), deliveryId).orElse(null));
-        return deliveryInfoDto;
+        return new DeliveryInfoDto(memberRepository.findDeliveryinfo(member.getUsername(), deliveryId).orElse(null));
     }
 
     @PostMapping(value = "/myAddress/update")
@@ -143,15 +142,14 @@ public class MyPageController {
         return "redirect:/userinfo/myInfo";
     }
 
-    @GetMapping(value = "/myInfo/getCertificate")
+    @PostMapping(value = "/myInfo/getCertificate")
     public @ResponseBody String getCertificateNumberByName(@AuthenticationPrincipal LoginUserDetails member,
-                                                           @RequestParam(value = "phone") String phone,
-                                                           @RequestParam(value = "newPhone") String newPhone) throws CoolsmsException {
+                                                           String phone, String newPhone) throws CoolsmsException {
 
         if(member==null) return null;
         if(!memberService.findUser(member.getUsername()).getPhone().equals(phone)) return null; // 기존 번호 확인
-        return certificationService.PhoneNumberCheck(newPhone);
-        //return "1234";
+        //return certificationService.PhoneNumberCheck(newPhone);
+        return "1234";
     }
 
     @PostMapping(value = "/myInfo/varifyPw")

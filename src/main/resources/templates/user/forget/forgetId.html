@@ -74,7 +74,7 @@
 
         $.ajax ({
             url: '/members/forgetId/getCertificate',
-            type: 'GET',
+            type: 'POST',
             data: {
                 "name" : name,
                 "phone" : phone
@@ -96,8 +96,8 @@
                         if(checkNum === userNum) {
                             alert('인증 성공하였습니다.');
                             var form = document.createElement("form");
-                            form.setAttribute("method", "get");
-                            form.setAttribute("action", "/members/forgetId/success");
+                            form.setAttribute("method", "post");
+                            form.setAttribute("action", "/members/forgetId/findId");
 
                             var nameInput = document.createElement("input");
                             nameInput.setAttribute("type","hidden");

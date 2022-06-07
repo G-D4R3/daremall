@@ -197,7 +197,7 @@
     function updateDeliveryBtn(id) {
         $.ajax({
             url: '/userinfo/myAddress/getDeliveryInfo',
-            type: 'GET',
+            type: 'POST',
             data: {
                 "deliveryId" : id
             },
@@ -221,7 +221,15 @@
     function deleteDelivery(id) {
         var form = document.createElement("form");
         form.setAttribute("method", "post");
-        form.setAttribute("action", "/userinfo/myAddress/delete/" + id);
+        form.setAttribute("action", "/userinfo/myAddress/delete");
+
+        var deliveryId = document.createElement("input");
+        deliveryId.setAttribute("type","hidden");
+        deliveryId.setAttribute("name","deliveryId");
+        deliveryId.setAttribute("value",id);
+
+        form.appendChild(deliveryId);
+
         document.body.appendChild(form);
         form.submit();
     }

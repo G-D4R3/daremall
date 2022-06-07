@@ -37,16 +37,6 @@ public class MemberController {
         return "user/loginForm";
     }
 
-    /*@GetMapping(value = "/login")
-    public String loginForm(Model model) {
-        model.addAttribute("loginForm", new LoginForm());
-        return "user/loginForm";
-    }
-
-    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String login(@ModelAttribute(value = "loginForm") @Validated LoginForm form, BindingResult bindingResult) {
-        return "login";
-    }*/
 
     @GetMapping(value = "/new")
     public String createMemberForm(Model model) {
@@ -63,18 +53,18 @@ public class MemberController {
         return "redirect:/";
     }
 
-    @GetMapping(value = "/new/getCertificate")
-    public @ResponseBody String createMemberCertificate(@RequestParam(value = "phone") String phone,
-                                                           RedirectAttributes redirectAttributes) throws CoolsmsException {
+    @PostMapping(value = "/new/getCertificate")
+    public @ResponseBody String createMemberCertificate(String phone,
+                                                        RedirectAttributes redirectAttributes) throws CoolsmsException {
 
         redirectAttributes.addAttribute("phone", phone);
 
-        return certificationService.PhoneNumberCheck(phone);
-        //return "1234";
+        //return certificationService.PhoneNumberCheck(phone);
+        return "1234";
     }
 
-    @GetMapping(value = "/new/loginIdValidation")
-    public @ResponseBody Boolean loginIdValidation(@RequestParam(value = "loginId") String loginId) {
+    @PostMapping(value = "/new/loginIdValidation")
+    public @ResponseBody Boolean loginIdValidation(String loginId) {
         if(memberService.findUser(loginId)==null) return true;
         else return false;
     }
@@ -89,26 +79,25 @@ public class MemberController {
         return "/user/forget/forgetId";
     }
 
-    @GetMapping(value = "/forgetId/getCertificate")
-    public @ResponseBody String getCertificateNumberByName(@RequestParam(value = "name", required = false) String name,
-                                                           @RequestParam(value = "phone", required = false) String phone,
+    @PostMapping(value = "/forgetId/getCertificate")
+    public @ResponseBody String getCertificateNumberByName(String name, String phone,
                                                            RedirectAttributes redirectAttributes) throws CoolsmsException {
         if(memberService.findLoginIdByName(name, phone)==null) return null;
         redirectAttributes.addAttribute("phone", phone);
 
-        return certificationService.PhoneNumberCheck(phone);
-        //return "1234";
+        //return certificationService.PhoneNumberCheck(phone);
+        return "1234";
     }
 
-    @GetMapping(value = "/forgetId/findId")
-    public @ResponseBody List<String> findId(@RequestParam("name") String name, @RequestParam("phone") String phone) {
-        return memberService.findLoginIdByName(name, phone);
+    @PostMapping(value = "/forgetId/findId")
+    public String findId(String name, String phone , RedirectAttributes redirectAttributes) {
+        List<String> loginId = memberService.findLoginIdByName(name, phone);
+        redirectAttributes.addFlashAttribute("loginId", loginId);
+        return "redirect:/members/forgetId/success";
     }
 
     @GetMapping(value = "/forgetId/success")
-    public String findIdSuccess(Model model, @RequestParam("name") String name, @RequestParam("phone") String phone) {
-        List<String> loginId = memberService.findLoginIdByName(name, phone);
-        model.addAttribute("loginId", loginId);
+    public String findIdSuccess(Model model) {
         return "/user/forget/findId";
     }
 
@@ -118,27 +107,36 @@ public class MemberController {
         return "/user/forget/forgetPassword";
     }
 
-    @GetMapping(value = "/forgetPassword/getCertificate")
-    public @ResponseBody String getCertificateNumberByLoginId(@RequestParam(value = "loginId", required = false) String loginId,
-                                                              @RequestParam(value = "phone", required = false) String phone,
+    @PostMapping(value = "/forgetPassword/getCertificate")
+    public @ResponseBody String getCertificateNumberByLoginId(String loginId, String phone,
                                                               RedirectAttributes redirectAttributes) throws CoolsmsException {
         if(memberService.findMemberByLoginId(loginId, phone)==null) return null;
         redirectAttributes.addAttribute("phone", phone);
 
-        return certificationService.PhoneNumberCheck(phone);
-        //return "1234";
+        //return certificationService.PhoneNumberCheck(phone);
+        return "1234";
     }
 
-    @GetMapping(value = "/forgetPassword/changePassword")
-    public String changePasswordForm(Model model,@RequestParam("loginId") String loginId) {
+    @PostMapping(value = "/forgetPassword/validationId")
+    public String validationId(String loginId, RedirectAttributes redirectAttributes) {
 
         Member member = memberService.findUser(loginId);
         if(member==null) return "redirect:/members/forgetPassword";
+
+        redirectAttributes.addFlashAttribute("loginId", loginId);
+
+        return "redirect:/members/forgetPassword/changePassword";
+    }
+
+    @GetMapping(value = "/forgetPassword/changePassword")
+    public String changePasswordForm(Model model) {
+        String loginId = (String) model.getAttribute("loginId");
 
         model.addAttribute("changePasswordForm", new ChangePasswordForm(loginId));
 
         return "/user/forget/changePassword";
     }
+
 
     @PostMapping(value = "/forgetPassword/changePassword")
     public String changePassword(@Validated ChangePasswordForm form, BindingResult result, RedirectAttributes redirectAttributes) {
@@ -160,10 +158,9 @@ public class MemberController {
     }
 
 
-    @GetMapping(value = "/findDeliveryInfo")
+    @PostMapping(value = "/findDeliveryInfo")
     public @ResponseBody DeliveryInfoDto findDeliveryInfo(@AuthenticationPrincipal LoginUserDetails member,
-                                                          @RequestParam("delivery_id") Long deliveryId) {
-
+                                                          @RequestParam(name="delivery_id") Long deliveryId) {
         return new DeliveryInfoDto(memberRepository.findDeliveryinfo(member.getUsername(), deliveryId).orElse(null));
     }
 

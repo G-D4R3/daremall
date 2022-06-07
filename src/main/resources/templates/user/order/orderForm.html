@@ -233,7 +233,7 @@
         var id = $('#delivery-select option:selected').val();
         $.ajax ({
             url: '/members/findDeliveryInfo',
-            type: 'GET',
+            type: 'POST',
             data: {
                 "delivery_id" : id
             },

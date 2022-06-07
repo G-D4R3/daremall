@@ -166,7 +166,7 @@
         if(idReg.test(loginId)==true) {
             $.ajax({
                 url: '/members/new/loginIdValidation',
-                type: 'GET',
+                type: 'POST',
                 data: {
                     "loginId" : loginId
                 },
@@ -197,7 +197,7 @@
         if(phoneReg.test(phone)==true) {
             $.ajax ({
                 url: '/members/new/getCertificate',
-                type: 'GET',
+                type: 'POST',
                 data: {
                     "phone" : phone
                 },

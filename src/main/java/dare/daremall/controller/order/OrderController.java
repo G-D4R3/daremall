@@ -29,17 +29,17 @@ public class OrderController {
     private final BaggedItemRepository baggedItemRepository;
     private final DiscountPolicy discountPolicy;
 
-    @PostMapping(value = "/cancel/{orderId}")
+    @PostMapping(value = "/cancel")
     public String cancelOrder(@AuthenticationPrincipal LoginUserDetails member,
-                              @PathVariable("orderId") Long orderId) {
+                              Long orderId) {
         if(member==null) return "redirect:/members/login";
         orderService.cancelOrder(orderId);
         return "redirect:/userinfo/orderList";
     }
 
-    @PostMapping(value = "/delete/{orderId}")
+    @PostMapping(value = "/delete")
     public String deleteOrder(@AuthenticationPrincipal LoginUserDetails member,
-                              @PathVariable("orderId") Long orderId) {
+                              Long orderId) {
         if(member==null) return "redirect:/members/login";
         orderService.deleteOrder(orderId);
         return "redirect:/userinfo/orderList";
