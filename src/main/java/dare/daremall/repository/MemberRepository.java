@@ -15,12 +15,13 @@ public class MemberRepository {
 
     private final EntityManager em;
 
-    public void save(Member member) {
+    public Member save(Member member) {
         if(member.getId() == null) {
             em.persist(member);
+            return member;
         }
         else {
-            em.merge(member);
+            return em.merge(member);
         }
     }
 

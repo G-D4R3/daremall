@@ -46,7 +46,7 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Order> orders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LikeItem> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -77,7 +77,7 @@ public class Member {
     }
 
     public void encryptPassword(PasswordEncoder passwordEncoder){
-        password = passwordEncoder.encode(password);
+        this.password = passwordEncoder.encode(this.password);
     }
 
     public void addLikeItem(LikeItem likeItem) {

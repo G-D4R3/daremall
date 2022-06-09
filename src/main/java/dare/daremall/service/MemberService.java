@@ -32,15 +32,16 @@ public class MemberService {
     private final BaggedItemRepository baggedItemRepository;
 
     @Transactional
-    public Long join(MemberSignupRequestDto memberDto) {
+    public Long join(MemberSignupRequestDto memberDto){
         validateDuplicateMember(memberDto);
+        validateNoMoreThan3(memberDto);
         Member newMember = new Member(memberDto.getName(),
-                                        memberDto.getLoginId(),
-                                        memberDto.getPassword(),
-                                        memberDto.getPhone(),
-                                        new Address(memberDto.getZipcode(),
-                                                memberDto.getStreet(),
-                                                memberDto.getDetail()));
+                memberDto.getLoginId(),
+                memberDto.getPassword(),
+                memberDto.getPhone(),
+                new Address(memberDto.getZipcode(),
+                        memberDto.getStreet(),
+                        memberDto.getDetail()));
         newMember.encryptPassword(passwordEncoder);
         memberRepository.save(newMember);
         return newMember.getId();
@@ -51,6 +52,9 @@ public class MemberService {
         if(dupicateMember != null) {
             throw new IllegalStateException("이미 사용중인 아이디입니다.");
         }
+    }
+
+    private void validateNoMoreThan3(MemberSignupRequestDto member) {
         List<Member> loginId = memberRepository.findLoginIdByName(member.getName(), member.getPhone());
         if(loginId.size()>=3) {
             throw new IllegalStateException("같은 이름, 휴대폰 번호 조합으로 3회까지만 회원가입을 시도할 수 있습니다.");
@@ -75,6 +79,7 @@ public class MemberService {
         Member member = memberRepository.findByLoginId(loginId).orElse(null);
         BaggedItem baggedItem = BaggedItem.createBaggedItem(member, item, item.getPrice(), count);
         member.addBaggedItem(baggedItem);
+        memberRepository.save(member);
     }
 
     @Transactional
@@ -136,6 +141,7 @@ public class MemberService {
         deliveryInfo.setIsDefault(deliveryInfoForm.getIsDefault());
 
         member.addDelivery(deliveryInfo);
+        memberRepository.save(member);
     }
 
     @Transactional
@@ -149,20 +155,22 @@ public class MemberService {
             }
             else member.removeDelivery(deliveryInfo);
         }
+        memberRepository.save(member);
 
     }
 
     @Transactional
     public void updateDeliveryInfo(String loginId, UpdateDeliveryInfoForm updateDeliveryInfoForm) {
 
+        Member findMember = memberRepository.findByLoginId(loginId).orElse(null);
         DeliveryInfo deliveryInfo = memberRepository.findDeliveryinfo(loginId, updateDeliveryInfoForm.getId()).orElse(null);
-        DeliveryInfo defaultDeliveryInfo = memberRepository.findByLoginId(loginId).orElse(null).getDefaultDelivery();
+        DeliveryInfo defaultDeliveryInfo = findMember.getDefaultDelivery();
 
         if(defaultDeliveryInfo == null){
             throw new IllegalStateException("배송지 수정에 문제가 생겼습니다.");
         }
 
-        if(defaultDeliveryInfo.getId()== deliveryInfo.getId() && updateDeliveryInfoForm.getIsDefault() == false) {
+        if(defaultDeliveryInfo.getId() == deliveryInfo.getId() && updateDeliveryInfoForm.getIsDefault() == false) {
             throw new IllegalStateException("기본 배송지는 삭제할 수 없습니다.");
         }
         else {
@@ -170,9 +178,18 @@ public class MemberService {
             deliveryInfo.setPhone(updateDeliveryInfoForm.getPhone());
             deliveryInfo.setNickname(updateDeliveryInfoForm.getNickname());
             deliveryInfo.setAddress(new Address(updateDeliveryInfoForm.getZipcode(), updateDeliveryInfoForm.getStreet(), updateDeliveryInfoForm.getDetail()));
+        }
+
+        if(defaultDeliveryInfo.getId() != deliveryInfo.getId() && updateDeliveryInfoForm.getIsDefault() == true) {
             deliveryInfo.setIsDefault(true);
             defaultDeliveryInfo.setIsDefault(false);
+            findMember.setDefaultDelivery(deliveryInfo);
         }
+        else if (defaultDeliveryInfo.getId() != deliveryInfo.getId() && updateDeliveryInfoForm.getIsDefault() == false){
+            deliveryInfo.setIsDefault(false);
+        }
+
+        memberRepository.save(findUser(loginId));
     }
 
     public void selectAllBagItem(String loginId) {
