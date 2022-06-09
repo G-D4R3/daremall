@@ -34,6 +34,7 @@ public class OrderService {
     public void cancelOrder(Long orderId) {
         Order order = orderRepository.findOne(orderId);
         order.cancel();
+        memberRepository.save(order.getMember());
     }
 
     public Order findOne(Long orderId) {
@@ -52,6 +53,12 @@ public class OrderService {
 
         List<BaggedItem> baggedItems = baggedItemRepository.findSelected(loginId);
 
+        for(BaggedItem baggedItem : baggedItems) {
+            if(baggedItem.getCount() > baggedItem.getItem().getStockQuantity()) {
+                throw new IllegalStateException("주문 수량을 초과하였습니다.");
+            }
+        }
+
         List<OrderItem> orderItems = baggedItems.stream().map(bi -> {
             return OrderItem.createOrderItem(bi.getItem(), bi.getPrice(), bi.getCount());
         }).collect(Collectors.toList());
@@ -61,6 +68,7 @@ public class OrderService {
         for(BaggedItem item:baggedItems) member.removeBaggedItem(item);
 
         orderRepository.save(order);
+        memberRepository.save(member);
         return order.getId();
     }
 
