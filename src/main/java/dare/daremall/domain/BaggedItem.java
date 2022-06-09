@@ -24,7 +24,7 @@ public class BaggedItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    @JsonIgnore
+    //@JsonIgnore
     private Member member;
 
     private int price;
