@@ -35,8 +35,7 @@ public class ItemService {
             findItem.setPrice(price);
             findItem.setStockQuantity(stockQuantity);
         }
-
-
+        itemRepository.save(findItem);
     }
 
     public List<Item> findItems() {

@@ -32,7 +32,7 @@ public class ItemRepository {
 
     public List<Item> findByName(String name) {
         return em.createQuery("select i from Item i" +
-                        " where i.name like upper(:name)", Item.class)
+                        " where upper(i.name) like upper(:name)", Item.class)
                 .setParameter("name", "%"+name+"%")
                 .getResultList();
     }
@@ -53,16 +53,16 @@ public class ItemRepository {
 
     public List<Book> findBookByName(String name) {
         return em.createQuery("select b from Book b" +
-                " where b.name like upper(:name)" +
-                " or b.author like upper(:name)", Book.class)
+                " where upper(b.name) like upper(:name)" +
+                " or upper(b.author) like upper(:name)", Book.class)
                 .setParameter("name", "%"+name+"%")
                 .getResultList();
     }
 
     public List<Album> findAlbumByName(String name) {
         return em.createQuery("select a from Album a" +
-                " where a.name like upper(:name)" +
-                " or a.artist like upper(:name)", Album.class)
+                " where upper(a.name) like upper(:name)" +
+                " or upper(a.artist) like upper(:name)", Album.class)
                 .setParameter("name", "%"+name+"%")
                 .getResultList();
     }
