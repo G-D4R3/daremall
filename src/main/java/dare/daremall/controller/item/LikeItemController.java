@@ -1,11 +1,7 @@
 package dare.daremall.controller.item;
 
 import dare.daremall.controller.member.auth.LoginUserDetails;
-import dare.daremall.domain.LikeItem;
 import dare.daremall.domain.Member;
-import dare.daremall.domain.item.Item;
-import dare.daremall.service.ItemService;
-import dare.daremall.service.LikeItemService;
 import dare.daremall.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,21 +14,18 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping(value = "like")
+@RequestMapping(value = "/like")
 public class LikeItemController {
 
     private final MemberService memberService;
-    private final ItemService itemService;
-    private final LikeItemService likeItemService;
 
-    @GetMapping(value = "/")
+    @GetMapping(value = "")
     public String likes(@AuthenticationPrincipal LoginUserDetails member, Model model) {
 
         if(member==null) return "redirect:/members/login";
 
         Member findMember = memberService.findUser(member.getUsername());
-        List<LikeItem> likeItems = findMember.getLikes();
-        List<Item> items = likeItems.stream().map(likeItem -> likeItem.getItem()).collect(Collectors.toList());
+        List<LikeItemDto> items = findMember.getLikes().stream().map(li -> new LikeItemDto(li)).collect(Collectors.toList());
         model.addAttribute("items", items);
         return "/user/likeList";
 
@@ -44,34 +37,18 @@ public class LikeItemController {
 
         if(member==null) return "redirect:/members/login";
 
-        Member findMember = memberService.findUser(member.getUsername());
-        Item findItem = itemService.findOne(itemId);
+        memberService.changeLikeItem(member.getUsername(), itemId);
 
-        LikeItem findLikeItem = likeItemService.findOne(findMember.getId(), itemId);
-        if(findLikeItem==null) {
-            LikeItem likeItem = new LikeItem();
-            likeItem.setItem(findItem);
-
-            findMember.addLikeItem(likeItem);
-            likeItemService.save(likeItem);
-        }
-        else {
-            findMember.removeLikeItem(findLikeItem);
-            likeItemService.remove(findLikeItem.getId());
-        }
         return "redirect:/items/detail?itemId="+itemId;
     }
 
-    @PostMapping(value = "/like/cancel/{itemId}")
+    @PostMapping(value = "/cancel")
     public String cancelLike(@AuthenticationPrincipal LoginUserDetails member,
-                              @PathVariable("itemId") Long itemId) {
+                              @RequestParam("itemId") Long itemId) {
 
         if(member==null) return "redirect:/members/login";
 
-        Member findMember = memberService.findUser(member.getUsername());
-        LikeItem likeItem = likeItemService.findOne(findMember.getId(), itemId);
-        findMember.removeLikeItem(likeItem);
-        likeItemService.remove(likeItem.getId());
+        memberService.changeLikeItem(member.getUsername(), itemId);
 
         return "redirect:/likes";
     }

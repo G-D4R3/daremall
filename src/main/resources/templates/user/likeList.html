@@ -20,7 +20,7 @@
                 <td><a th:text="${item.name}" th:href="@{/items/detail(itemId=${item.id})}"></a></td>
                 <td th:text="${item.price}"></td>
                 <td>
-                    <a href="#" th:href="'javascript:cancel('+${item.id}+')'">취소</a>
+                    <a href="#" th:href="'javascript:cancel('+${item.id}+')'">삭제</a>
                 </td>
             </tr>
             </tbody>
@@ -33,7 +33,14 @@
     function cancel(id) {
         var form = document.createElement("form");
         form.setAttribute("method", "post");
-        form.setAttribute("action", "/like/cancel/" + id);
+        form.setAttribute("action", "/like/cancel");
+
+        var idInput = document.createElement("input");
+        idInput.setAttribute("type","hidden");
+        idInput.setAttribute("name","itemId");
+        idInput.setAttribute("value", id);
+
+        form.appendChild(idInput);
         document.body.appendChild(form);
         form.submit();
     }

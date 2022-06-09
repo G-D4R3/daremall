@@ -31,11 +31,11 @@ public class LikeItemRepository {
                 .getResultList();
     }
 
-    public Optional<LikeItem> findByIds(Long memberId, Long itemId) {
+    public Optional<LikeItem> findByIds(String loginId, Long itemId) {
         return em.createQuery("select li from LikeItem li" +
-                        " where li.member.id = :memberId" +
+                        " where li.member.loginId = :loginId" +
                         " and li.item.id = :itemId", LikeItem.class)
-                .setParameter("memberId", memberId)
+                .setParameter("loginId", loginId)
                 .setParameter("itemId", itemId)
                 .getResultList().stream().findAny();
     }

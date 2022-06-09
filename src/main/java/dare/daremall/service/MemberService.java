@@ -4,13 +4,11 @@ import dare.daremall.controller.member.auth.MemberSignupRequestDto;
 import dare.daremall.controller.member.mypage.ChangePasswordForm;
 import dare.daremall.controller.member.mypage.DeliveryInfoForm;
 import dare.daremall.controller.member.mypage.UpdateDeliveryInfoForm;
-import dare.daremall.domain.Address;
-import dare.daremall.domain.BaggedItem;
-import dare.daremall.domain.DeliveryInfo;
-import dare.daremall.domain.Member;
+import dare.daremall.domain.*;
 import dare.daremall.domain.item.Item;
 import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.repository.ItemRepository;
+import dare.daremall.repository.LikeItemRepository;
 import dare.daremall.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +28,8 @@ public class MemberService {
 
     private final ItemRepository itemRepository;
     private final BaggedItemRepository baggedItemRepository;
+    private final LikeItemRepository likeItemRepository;
+
 
     @Transactional
     public Long join(MemberSignupRequestDto memberDto){
@@ -192,11 +192,32 @@ public class MemberService {
         memberRepository.save(findUser(loginId));
     }
 
+    @Transactional
     public void selectAllBagItem(String loginId) {
         Member member = memberRepository.findByLoginId(loginId).orElse(null);
         for(BaggedItem baggedItem:member.getShoppingBag()) {
             baggedItem.setChecked(true);
         }
+    }
+
+    @Transactional
+    public void changeLikeItem(String loginId, Long itemId) {
+
+        LikeItem findLikeItem = likeItemRepository.findByIds(loginId, itemId).orElse(null);
+        Item findItem = itemRepository.findById(itemId).orElse(null);
+        Member findMember = memberRepository.findByLoginId(loginId).orElse(null);
+
+        if(findLikeItem==null) {
+            LikeItem likeItem = new LikeItem();
+            likeItem.setItem(findItem);
+
+            findMember.addLikeItem(likeItem);
+        }
+        else {
+            findMember.removeLikeItem(findLikeItem);
+            likeItemRepository.remove(findLikeItem.getId());
+        }
+        memberRepository.save(findMember);
     }
 }
 
