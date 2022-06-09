@@ -548,4 +548,37 @@ public class MemberServiceTest {
 
     }
 
+    @Test
+    public void 장바구니_상품_수량_초과() {
+        // given
+        MemberSignupRequestDto memberDto = new MemberSignupRequestDto();
+        memberDto.setName("지창민");
+        memberDto.setLoginId("jcm115");
+        memberDto.setPassword("pass1234");
+        memberDto.setPhone("010-1111-2222");
+        memberDto.setZipcode("00000");
+        memberDto.setStreet("강가 1번길");
+        memberDto.setDetail("어딘가");
+        memberService.join(memberDto);
+
+        Book book = new Book();
+        book.setName("book1");
+        book.setPrice(1000);
+        book.setStockQuantity(10);
+        book.setAuthor("author1");
+        book.setIsbn("111-111-1111");
+        itemService.saveItem(book);
+
+        memberService.addShoppingBag(book.getId(), memberDto.getLoginId(), 2);
+        Member findMember = memberService.findUser(memberDto.getLoginId());
+
+        // when
+        BaggedItem baggedItem = findMember.getShoppingBag().get(0);
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> memberService.updateBaggedItemCount(baggedItem.getId(), 11));
+
+        // then
+        assertThat(e.getMessage()).isEqualTo("재고 수량을 초과했습니다.");
+
+    }
+
 }

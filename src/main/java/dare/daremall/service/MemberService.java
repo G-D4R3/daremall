@@ -93,6 +93,9 @@ public class MemberService {
     @Transactional
     public void updateBaggedItemCount(Long bagItemId, int count) {
         BaggedItem item = baggedItemRepository.findById(bagItemId);
+        if(item.getItem().getStockQuantity() < count) {
+            throw new IllegalStateException("재고 수량을 초과했습니다.");
+        }
         item.setCount(count);
     }
 

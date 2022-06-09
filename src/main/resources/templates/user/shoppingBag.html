@@ -28,7 +28,7 @@
                     <td>
                         <form th:action="@{/shop/update}" method="post">
                             <input type="hidden" th:value="${item.id}" name="id">
-                            <input onclick="submit();" name="count" type="number" class="form-control" th:min="1" th:max="${item.stockQuantity}>10? 10:${item.stockQuantity}" th:value="${item.count}"/>
+                            <input onclick="submit();" name="count" type="number" class="form-control" th:min="1" th:max="${item.stockQuantity}" th:value="${item.count}"/>
                         </form>
 
                     </td>
