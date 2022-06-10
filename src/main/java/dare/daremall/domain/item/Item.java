@@ -26,8 +26,12 @@ public abstract class Item {
 
     private int stockQuantity;
 
+    private String imagePath;
+
     @ManyToMany(mappedBy = "items")
     private List<Category> categories = new ArrayList<>();
+
+    private Boolean forSale;
 
     public void addStock(int quantity) {
         this.stockQuantity += quantity;
