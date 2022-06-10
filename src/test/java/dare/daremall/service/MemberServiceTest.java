@@ -9,6 +9,7 @@ import dare.daremall.domain.Member;
 import dare.daremall.domain.item.Book;
 import dare.daremall.domain.item.Item;
 import dare.daremall.repository.BaggedItemRepository;
+import dare.daremall.repository.MemberRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +32,7 @@ public class MemberServiceTest {
 
     @Autowired ItemService itemService;
     @Autowired BaggedItemRepository baggedItemRepository;
+    @Autowired MemberRepository memberRepository;
 
     @Test
     public void 회원가입_성공() {
@@ -344,7 +346,7 @@ public class MemberServiceTest {
 
         // when
         Member findMember = memberService.findUser(memberDto.getLoginId());
-        DeliveryInfo deliveryInfo = findMember.getDefaultDelivery();
+        DeliveryInfo deliveryInfo = memberRepository.findDefaultDeliveryInfo(findMember.getLoginId()).orElse(null);
 
         UpdateDeliveryInfoForm updateDeliveryInfoForm = new UpdateDeliveryInfoForm();
         updateDeliveryInfoForm.setId(deliveryInfo.getId());
@@ -360,7 +362,7 @@ public class MemberServiceTest {
         findMember = memberService.findUser(memberDto.getLoginId());
 
         // then
-        DeliveryInfo updatedDefaultDeliveryInfo = findMember.getDefaultDelivery();
+        DeliveryInfo updatedDefaultDeliveryInfo = memberRepository.findDefaultDeliveryInfo(findMember.getLoginId()).orElse(null);
         assertThat(findMember.getDeliveryInfos().size()).isEqualTo(1);
         assertThat(updatedDefaultDeliveryInfo.getId()).isEqualTo(deliveryInfo.getId());
         assertThat(updatedDefaultDeliveryInfo.getName()).isEqualTo("김선우");
@@ -388,7 +390,7 @@ public class MemberServiceTest {
 
         // when
         Member findMember = memberService.findUser(memberDto.getLoginId());
-        DeliveryInfo deliveryInfo = findMember.getDefaultDelivery();
+        DeliveryInfo deliveryInfo = memberRepository.findDefaultDeliveryInfo(findMember.getLoginId()).orElse(null);
 
         UpdateDeliveryInfoForm updateDeliveryInfoForm = new UpdateDeliveryInfoForm();
         updateDeliveryInfoForm.setId(deliveryInfo.getId());
@@ -421,7 +423,7 @@ public class MemberServiceTest {
         memberService.join(memberDto);
 
         Member findMember = memberService.findUser(memberDto.getLoginId());
-        DeliveryInfo deliveryInfo = findMember.getDefaultDelivery();
+        DeliveryInfo deliveryInfo = memberRepository.findDefaultDeliveryInfo(findMember.getLoginId()).orElse(null);
 
         // when
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> memberService.deleteDeliveryInfo(findMember.getLoginId(), deliveryInfo.getId()));
@@ -501,7 +503,7 @@ public class MemberServiceTest {
 
         //then
 
-        updatedDeliveryInfo = findMember.getDefaultDelivery();
+        updatedDeliveryInfo = memberRepository.findDefaultDeliveryInfo(findMember.getLoginId()).orElse(null);
         assertThat(updatedDeliveryInfo.getId()).isEqualTo(deliveryInfo.getId());
         assertThat(updatedDeliveryInfo.getName()).isEqualTo("김선우");
         assertThat(updatedDeliveryInfo.getNickname()).isEqualTo("친구");

@@ -143,6 +143,11 @@ public class MemberService {
         deliveryInfo.setAddress(new Address(deliveryInfoForm.getZipcode(), deliveryInfoForm.getStreet(), deliveryInfoForm.getDetail()));
         deliveryInfo.setIsDefault(deliveryInfoForm.getIsDefault());
 
+        DeliveryInfo defaultDelivery = memberRepository.findDefaultDeliveryInfo(loginId).orElse(null);
+        if(deliveryInfo.getIsDefault() == true) {
+            defaultDelivery.setIsDefault(false);
+        }
+
         member.addDelivery(deliveryInfo);
         memberRepository.save(member);
     }
@@ -165,9 +170,11 @@ public class MemberService {
     @Transactional
     public void updateDeliveryInfo(String loginId, UpdateDeliveryInfoForm updateDeliveryInfoForm) {
 
+        System.out.println("is default : "+updateDeliveryInfoForm.getIsDefault());
+
         Member findMember = memberRepository.findByLoginId(loginId).orElse(null);
         DeliveryInfo deliveryInfo = memberRepository.findDeliveryinfo(loginId, updateDeliveryInfoForm.getId()).orElse(null);
-        DeliveryInfo defaultDeliveryInfo = findMember.getDefaultDelivery();
+        DeliveryInfo defaultDeliveryInfo = memberRepository.findDefaultDeliveryInfo(loginId).orElse(null);
 
         if(defaultDeliveryInfo == null){
             throw new IllegalStateException("배송지 수정에 문제가 생겼습니다.");
@@ -176,17 +183,15 @@ public class MemberService {
         if(defaultDeliveryInfo.getId() == deliveryInfo.getId() && updateDeliveryInfoForm.getIsDefault() == false) {
             throw new IllegalStateException("기본 배송지는 삭제할 수 없습니다.");
         }
-        else {
-            deliveryInfo.setName(updateDeliveryInfoForm.getName());
-            deliveryInfo.setPhone(updateDeliveryInfoForm.getPhone());
-            deliveryInfo.setNickname(updateDeliveryInfoForm.getNickname());
-            deliveryInfo.setAddress(new Address(updateDeliveryInfoForm.getZipcode(), updateDeliveryInfoForm.getStreet(), updateDeliveryInfoForm.getDetail()));
-        }
+
+        deliveryInfo.setName(updateDeliveryInfoForm.getName());
+        deliveryInfo.setPhone(updateDeliveryInfoForm.getPhone());
+        deliveryInfo.setNickname(updateDeliveryInfoForm.getNickname());
+        deliveryInfo.setAddress(new Address(updateDeliveryInfoForm.getZipcode(), updateDeliveryInfoForm.getStreet(), updateDeliveryInfoForm.getDetail()));
 
         if(defaultDeliveryInfo.getId() != deliveryInfo.getId() && updateDeliveryInfoForm.getIsDefault() == true) {
             deliveryInfo.setIsDefault(true);
             defaultDeliveryInfo.setIsDefault(false);
-            findMember.setDefaultDelivery(deliveryInfo);
         }
         else if (defaultDeliveryInfo.getId() != deliveryInfo.getId() && updateDeliveryInfoForm.getIsDefault() == false){
             deliveryInfo.setIsDefault(false);

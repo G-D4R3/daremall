@@ -38,10 +38,6 @@ public class Member {
     @Embedded
     private Address address;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "delivery_info_id")
-    private DeliveryInfo defaultDelivery;
-
     @JsonIgnore
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Order> orders = new ArrayList<>();
@@ -61,7 +57,7 @@ public class Member {
         this.loginId = loginId;
         this.password = password;
         this.phone = phone;
-        this.role = MemberRole.USER;
+        this.role = MemberRole.ROLE_USER;
         this.address = address;
 
         DeliveryInfo deliveryInfo = new DeliveryInfo();
@@ -73,7 +69,6 @@ public class Member {
 
         this.deliveryInfos.add(deliveryInfo);
         deliveryInfo.setMember(this);
-        this.defaultDelivery = deliveryInfo;
     }
 
     public void encryptPassword(PasswordEncoder passwordEncoder){
@@ -110,12 +105,6 @@ public class Member {
     }
 
     public void addDelivery(DeliveryInfo deliveryInfo) {
-
-        if(deliveryInfo.getIsDefault()==true) {
-            this.defaultDelivery.setIsDefault(false);
-            this.defaultDelivery = deliveryInfo;
-        }
-
         deliveryInfos.add(deliveryInfo);
         deliveryInfo.setMember(this);
     }

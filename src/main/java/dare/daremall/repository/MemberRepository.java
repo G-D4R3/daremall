@@ -64,9 +64,9 @@ public class MemberRepository {
     public Optional<DeliveryInfo> findDeliveryinfo(String loginId, Long deliveryId) {
         return em.createQuery("select di from DeliveryInfo di" +
                 " where di.id = :deliveryId" +
-                " and di.member.loginId = :memberId", DeliveryInfo.class)
+                " and di.member.loginId = :loginId", DeliveryInfo.class)
                 .setParameter("deliveryId", deliveryId)
-                .setParameter("memberId", loginId)
+                .setParameter("loginId", loginId)
                 .getResultList().stream().findAny();
     }
 
@@ -76,5 +76,13 @@ public class MemberRepository {
                 " order by di.isDefault desc, di.id", DeliveryInfo.class)
                 .setParameter("loginId", loginId)
                 .getResultList();
+    }
+
+    public Optional<DeliveryInfo> findDefaultDeliveryInfo(String loginId) {
+        return em.createQuery("select di from DeliveryInfo di" +
+                " where di.member.loginId = :loginId" +
+                " and di.isDefault = true", DeliveryInfo.class)
+                .setParameter("loginId", loginId)
+                .getResultList().stream().findAny();
     }
 }
