@@ -1,4 +1,9 @@
 spring:
+  devtools:
+    livereload:
+      enabled: true
+  freemarker:
+    cache: false
   datasource:
     #
     url: jdbc:h2:tcp://localhost/~/daremall
@@ -14,6 +19,8 @@ spring:
         #       show_sql: true sout로 찍는거라 logger로 찍어야 함
         format_sql: true
         default_batch_fetch_size: 100
+  #mvc:
+    #static-path-pattern: /webapp/**
 logging:
   level:
     org.hibernate.SQL: debug

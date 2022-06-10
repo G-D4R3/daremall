@@ -1,0 +1,406 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"/>
+<body>
+<div class="container">
+    <div th:replace="fragments/adminHeader :: adminHeader" />
+    <div class="admin-item">
+        <a href="/admin/item"><h3> 상품 관리 </h3></a>
+        <div class="admin-search-bar">
+            <form role="form" method="get" th:action="@{/admin/item/search}" class="flex-row">
+                <div class="search flex-row">
+                    <a> 상품 찾기 : </a>
+                    <input type="text" placeholder="책 제목 / 작가 / 앨범 검색" name="item" th:value="${item}"/>
+                </div>
+                <button type="submit" class="btn btn-dark">검색</button>
+                <button id="add" type="button" class="btn btn-primary" onclick="addItemBtn()">추가</button>
+            </form>
+        </div>
+        <table class="table table-striped">
+            <thead> <tr>
+                <th> </th> <th>상품</th> <th></th> <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}">
+                <td>
+                    <a th:href="@{/items/detail(itemId=${item.id})}">
+                        <img th:src="@{${item.imageUrl}}" style="height: 160px; width: 120px">
+                    </a>
+                </td>
+                <td>
+                    <div style="padding-top: 3%; padding-bottom: 3%">
+                        <p><a style="font-size: 14pt" th:text="${item.name}" th:href="@{/items/detail(itemId=${item.id})}"></a></p>
+                        <p th:text="'판매가 : '+${item.price}+'원'" style="color: #d82c50; font-weight: bolder; font-size: 12pt"></p>
+                        <p style="color: #777777" th:text="${item.etc}"></p>
+                    </div>
+                </td>
+                <td class="admin-table-a">
+                    <a th:href="'javascript:updateItemBtn('+${item.id}+')'">수정</a>
+                </td>
+                <td class="admin-table-a">
+                    <a th:onclick="deleteItemBtn([[${item.id}]],[[${item.name}]])">삭제</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="addItemModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">상품 추가</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form enctype="multipart/form-data" id="addItemForm" th:object="${addItemForm}" method="post" action="/items/add" onsubmit="return checkAddForm();">
+                        <input id="addId" hidden th:field="*{id}">
+                        <div class="update-image">
+                            <img id="addImage" style="height: 260px; width: 200px">
+                            <div class="flex-row">
+                                <input type="file" class="form-control-file" name="imgFile" id="addFile" onchange="setAddImg(event);">
+                            </div>
+                        </div>
+                        <div class="flex-row">
+                            <label>상품명</label>
+                            <input class="form-control" type="text" id="name" th:field="*{name}" placeholder="상품명을 입력해주세요">
+                        </div>
+                        <div class="flex-row">
+                            <label>가격 (원)</label>
+                            <input class="form-control" type="number" id="price" th:field="*{price}" placeholder="가격을 입력해주세요">
+                        </div>
+                        <div class="flex-row">
+                            <label>재고</label>
+                            <input class="form-control" type="number" id="stockQuantity" th:field="*{stockQuantity}" placeholder="재고를 입력해주세요">
+                        </div>
+                        <div class="flex-row">
+                            <label th:for="delivery-select">상품 분류 선택</label>
+                            <select id="type" class="form-control" th:field="*{type}" onchange="addTypeChange()">
+                                <option value="option">분류 선택</option>
+                                <option value="A">앨범</option>
+                                <option value="B">책</option>
+                            </select>
+                        </div>
+                        <div id="album">
+                            <div class="flex-row">
+                                <label>아티스트</label>
+                                <input class="form-control" type="text" id="artist" th:field="*{artist}"
+                                       placeholder="아티스트명을 입력해주세요">
+                            </div>
+                            <div class="flex-row">
+                                <label>기타</label>
+                                <input class="form-control" type="text" id="etc" th:field="*{etc}"
+                                       placeholder="기타사항을 입력해주세요">
+                            </div>
+                        </div>
+                        <div id="book">
+                            <div class="flex-row">
+                                <label>저자</label>
+                                <input class="form-control" type="text" id="author" th:field="*{author}"
+                                       placeholder="저자를 입력해주세요">
+                            </div>
+                            <div class="flex-row">
+                                <label>ISBN</label>
+                                <input class="form-control" type="text" id="isbn" th:field="*{isbn}"
+                                       placeholder="ISBN을 입력해주세요">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="addItem" type="button" class="btn btn-primary" style="margin: auto">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="updateItemModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">상품 수정</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form enctype="multipart/form-data" id="updateItemForm" th:object="${updateItemForm}" method="post" action="/items/update" onsubmit="return checkUpdateForm();">
+                        <input id="updateId" hidden th:field="*{id}">
+                        <div class="update-image">
+                            <img id="updateImage" style="height: 260px; width: 200px">
+                            <div class="flex-row">
+                                <input type="file" class="form-control-file" name="imgFile" id="updateFile" onchange="setUpdatedImg(event);">
+                            </div>
+                        </div>
+                        <div class="flex-row">
+                            <label>상품명</label>
+                            <input class="form-control" type="text" id="updateName" th:field="*{name}" placeholder="상품명을 입력해주세요">
+                        </div>
+                        <div class="flex-row">
+                            <label>가격 (원)</label>
+                            <input class="form-control" type="number" id="updatePrice" th:field="*{price}" placeholder="가격을 입력해주세요">
+                        </div>
+                        <div class="flex-row">
+                            <label>재고</label>
+                            <input class="form-control" type="number" id="updateStockQuantity" th:field="*{stockQuantity}" placeholder="재고를 입력해주세요">
+                        </div>
+                        <div class="flex-row">
+                            <label th:for="delivery-select">상품 분류 선택</label>
+                            <select id="updateType" class="form-control" th:field="*{type}" onchange="updateTypeChange()">
+                                <option value="option">분류 선택</option>
+                                <option value="A">앨범</option>
+                                <option value="B">책</option>
+                            </select>
+                        </div>
+                        <div id="updateAlbum">
+                            <div class="flex-row">
+                                <label>아티스트</label>
+                                <input class="form-control" type="text" id="updateArtist" th:field="*{artist}"
+                                       placeholder="아티스트명을 입력해주세요">
+                            </div>
+                            <div class="flex-row">
+                                <label>기타</label>
+                                <input class="form-control" type="text" id="updateEtc" th:field="*{etc}"
+                                       placeholder="기타사항을 입력해주세요">
+                            </div>
+                        </div>
+                        <div id="updateBook">
+                            <div class="flex-row">
+                                <label>저자</label>
+                                <input class="form-control" type="text" id="updateAuthor" th:field="*{author}"
+                                       placeholder="저자를 입력해주세요">
+                            </div>
+                            <div class="flex-row">
+                                <label>ISBN</label>
+                                <input class="form-control" type="text" id="updateIsbn" th:field="*{isbn}"
+                                       placeholder="ISBN을 입력해주세요">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="updateItem" type="button" class="btn btn-primary" style="margin: auto">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+</body>
+<style>
+    #add {
+        margin-left: 20px;
+    }
+
+    .table .admin-table-a {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .admin-table-a a {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    .modal-body form {
+        margin-top: 20px;
+        margin-bottom: 20px
+    }
+
+    .modal-body .flex-row {
+        margin-bottom: 10px;
+    }
+
+    .modal-body .flex-row label {
+        flex: 1;
+        margin: auto;
+        height: fit-content;
+    }
+
+    .modal-body .update-image {
+        margin: auto;
+        text-align: center;
+    }
+
+    .modal-body .update-image .flex-row {
+        margin-bottom: 20px;
+    }
+
+    .modal-body .flex-row input{
+        flex: 3;
+    }
+
+    .modal-body .flex-row select{
+        flex: 3;
+    }
+
+</style>
+
+<script>
+
+    /** modal 창 띄우기 **/
+    function addItemBtn() {
+        $('#album').hide();
+        $('#book').hide();
+        $('#addItemModal').modal('toggle');
+    }
+
+    function updateItemBtn(id) {
+        $.ajax({
+            url: '/items/findItem',
+            type: 'POST',
+            data: {
+                "itemId" : id
+            },
+            success: function (data) {
+
+                document.getElementById("updateId").value = data.id;
+                document.getElementById("updateName").value = data.name;
+                document.getElementById("updatePrice").value = data.price;
+                document.getElementById("updateStockQuantity").value = data.stockQuantity;
+                if(data.type=="A") {
+                    document.getElementById("updateArtist").value = data.artist;
+                    document.getElementById("updateEtc").value = data.etc;
+
+                    document.getElementById("updateAuthor").value = null;
+                    document.getElementById("updateIsbn").value = null;
+
+                    document.getElementById("updateAlbum").hidden = false;
+                    document.getElementById("updateBook").hidden = true;
+                }
+                else if(data.type=="B") {
+                    document.getElementById("updateAuthor").value = data.author;
+                    document.getElementById("updateIsbn").value = data.isbn;
+
+                    document.getElementById("updateArtist").value = null;
+                    document.getElementById("updateEtc").value = null;
+
+                    document.getElementById("updateBook").hidden = false;
+                    document.getElementById("updateAlbum").hidden = true;
+                }
+                document.getElementById("updateType").value = data.type;
+                document.getElementById("updateImage").setAttribute("src", data.imagePath);
+                $("#updateType").not(":selected").attr("disabled", "disabled");
+
+                $('#updateItemModal').modal('toggle');
+            }
+        });
+    }
+
+    /** 상품 삭제 **/
+    function deleteItemBtn(id, name) {
+
+        if(confirm(name+"을 정말로 삭제하시겠습니까?")==true) {
+            var form = document.createElement("form");
+            form.setAttribute("method", "post");
+            form.setAttribute("action", "/items/delete");
+
+            var itemId = document.createElement("input");
+            itemId.setAttribute("type","hidden");
+            itemId.setAttribute("name","itemId");
+            itemId.setAttribute("value",id);
+
+            form.appendChild(itemId);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    /** form submit button **/
+    $('#addItem').click(function (){
+        $('#addItemForm').submit();
+    });
+
+
+    $('#updateItem').click(function (){
+        $('#updateItemForm').submit();
+    });
+
+    /** 이미지 업데이트 시 미리보기 **/
+    function setAddImg(event) {
+        var fr = new FileReader();
+
+        fr.onload = function(event) {
+            document.getElementById("addImage").setAttribute("src", event.target.result);
+        };
+
+        fr.readAsDataURL(event.target.files[0]);
+        //출처: https://sinna94.tistory.com/entry/JavaScript-이미지-업로드-미리보기-만들기 [Chungs:티스토리]
+    }
+
+    function setUpdatedImg(event) {
+        var fr = new FileReader();
+
+        fr.onload = function(event) {
+            document.getElementById("updateImage").setAttribute("src", event.target.result);
+        };
+
+        fr.readAsDataURL(event.target.files[0]);
+        //출처: https://sinna94.tistory.com/entry/JavaScript-이미지-업로드-미리보기-만들기 [Chungs:티스토리]
+    }
+
+    /** form validation **/
+    function checkAddForm() {
+        if($('#name').val().length === 0) {
+            alert("상품명을 입력해주세요");
+            return false;
+        }
+        if($('#type').val() === "option") {
+            alert("상품 분류를 선택해주세요");
+            return false;
+        }
+        if($('#type').val() === "A") {
+            if($('#artist').val().length === 0) {
+                alert("아티스트명을 입력해주세요");
+                return false;
+            }
+        }
+        else if ($('#type').val() === "B") {
+            if($('#author').val().length === 0) {
+                alert("저자명을 입력해주세요");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function checkUpdateForm() {
+        if($('#updateName').val().length === 0) {
+            alert("상품명을 입력해주세요");
+            return false;
+        }
+        if($('#updateType').val() === "A") {
+            if($('#updateArtist').val().length === 0) {
+                alert("아티스트명을 입력해주세요");
+                return false;
+            }
+        }
+        else if ($('#updateType').val() === "B") {
+            if($('#updateAuthor').val().length === 0) {
+                alert("저자명을 입력해주세요");
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /** type change **/
+    function addTypeChange() {
+        if ($('#type').val() == "A") {
+            $("#album").show();
+            $("#book").hide();
+        } else if ($('#type').val() == "B") {
+            $("#book").show();
+            $("#album").hide();
+        }
+    }
+
+</script>
+</html>

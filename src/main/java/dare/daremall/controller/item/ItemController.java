@@ -11,13 +11,18 @@ import dare.daremall.repository.MemberRepository;
 import dare.daremall.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Controller
@@ -62,6 +67,7 @@ public class ItemController {
         item.setPrice(findItem.getPrice());
         item.setStockQuantity(findItem.getStockQuantity());
         item.setImageUrl("/images/"+findItem.getId()+".png");
+        item.setForSale(findItem.getForSale());
         model.addAttribute("item", item);
 
         if(member!=null) {
@@ -95,13 +101,6 @@ public class ItemController {
         else if(itemSearch.getOption().equals("book")) {
             items = itemService.findBooks(itemSearch).stream().map(i -> new ItemListDto(i)).collect(Collectors.toList());
         }
-
-        items.sort(new Comparator<ItemListDto>() {
-            @Override
-            public int compare(ItemListDto o1, ItemListDto o2) {
-                return Long.compare(o1.getId(),o2.getId());
-            }
-        });
         model.addAttribute("items", items);
         model.addAttribute("option", option);
         model.addAttribute("name", name);
@@ -112,31 +111,33 @@ public class ItemController {
     /** ADMIN **/
 
     // 관리자 추가용
-    @PostMapping(value = "/new")
-    @Secured({"ROLE_ADMIN"})
-    public String addItem(@RequestBody ItemDto itemDto) {
-        if(itemDto.getType().equals("B")) {
-            Book book = new Book();
-            book.setName(itemDto.getName());
-            book.setPrice(itemDto.getPrice());
-            book.setStockQuantity(itemDto.getStockQuantity());
-            book.setAuthor(itemDto.getAuthor());
-            book.setIsbn(itemDto.getIsbn());
-            itemService.saveItem(book);
+    @PostMapping(value = "/add")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String addItem(@Validated ItemDto itemDto, MultipartFile imgFile) throws Exception{
+
+        if(!imgFile.isEmpty()) {
+            String oriImgName = imgFile.getOriginalFilename();
+            String imgName = "";
+
+            String projectPath = System.getProperty("user.dir") + "/src/main/resources/static/images/";
+            String savedFileName = oriImgName;
+            imgName = savedFileName;
+            File saveFile = new File(projectPath, imgName);
+            imgFile.transferTo(saveFile);
+
+            itemDto.setImagePath("/images/" + imgName);
         }
-        else if(itemDto.getType().equals("A")) {
-            Album album = new Album();
-            album.setName(itemDto.getName());
-            album.setPrice(itemDto.getPrice());
-            album.setStockQuantity(itemDto.getStockQuantity());
-            album.setArtist(itemDto.getArtist());
-            album.setEtc(itemDto.getEtc());
-            itemService.saveItem(album);
+        else {
+            itemDto.setImagePath("/images/default.png");
         }
+
+        itemService.saveItem(itemDto);
+
         return "redirect:/admin/item";
     }
 
     @PostMapping(value = "/findItem")
+    @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody ItemDto findItem(Long itemId) {
         Item findItem = itemService.findOne(itemId);
         ItemDto item = new ItemDto();
@@ -144,6 +145,8 @@ public class ItemController {
         item.setName(findItem.getName());
         item.setPrice(findItem.getPrice());
         item.setStockQuantity(findItem.getStockQuantity());
+        item.setImagePath(findItem.getImagePath());
+        item.setForSale(findItem.getForSale());
 
         if(findItem.getClass().equals(Album.class)) {
             item.setArtist(((Album) findItem).getArtist());
@@ -157,6 +160,40 @@ public class ItemController {
         }
 
         return item;
+    }
+
+    @PostMapping(value = "/update")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String updateItem (@Validated ItemDto itemDto, MultipartFile imgFile) throws Exception{
+
+        if(!imgFile.isEmpty()) {
+            String oriImgName = imgFile.getOriginalFilename();
+            String imgName = "";
+
+            String projectPath = System.getProperty("user.dir") + "/src/main/resources/static/images/";
+
+            // UUID 를 이용하여 파일명 새로 생성
+            // UUID - 서로 다른 객체들을 구별하기 위한 클래스
+            //UUID uuid = UUID.randomUUID();
+            //String savedFileName = uuid + "_" + oriImgName; // 파일명 -> imgName
+            String savedFileName = oriImgName;
+            imgName = savedFileName;
+            File saveFile = new File(projectPath, imgName);
+            imgFile.transferTo(saveFile);
+
+            itemDto.setImagePath("/images/" + imgName);
+        }
+
+        itemService.updateItem(itemDto);
+
+        return "redirect:/admin/item";
+    }
+
+    @PostMapping(value = "/delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteItem(Long itemId) {
+        itemService.delete(itemId);
+        return "redirect:/admin/item";
     }
 
 

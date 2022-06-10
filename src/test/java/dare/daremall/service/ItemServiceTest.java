@@ -60,7 +60,7 @@ class ItemServiceTest {
         itemService.saveItem(album);
 
         // when
-        itemService.updateItem(album.getId(), "album2", 2000, 5);
+        //itemService.updateItem(album.getId(), "album2", 2000, 5);
         Item findItem = itemService.findOne(album.getId());
 
         // then

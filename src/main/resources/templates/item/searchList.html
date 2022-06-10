@@ -12,9 +12,14 @@
     </div>
     <div th:if="${items.size()}>0">
         <table class="table table-striped">
-            <thead> <tr>
-                <th> </th> <th>상품</th>
-            </tr>
+            <colgroup>
+                <col width="20%" />
+                <col width="80%" />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th></th> <th>상품</th>
+                </tr>
             </thead>
             <tbody>
             <tr th:each="item : ${items}">

@@ -12,4 +12,5 @@ public class ItemDetailDto {
     private int price;
     private int stockQuantity;
     private String imageUrl;
+    private Boolean forSale;
 }

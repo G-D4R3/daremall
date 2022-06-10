@@ -19,7 +19,7 @@ public class ItemListDto {
         this.name = item.getName();
         this.price = item.getPrice();
         this.stockQuantity = item.getStockQuantity();
-        this.imageUrl = "/images/"+item.getId()+".png";
+        this.imageUrl = item.getImagePath();
         if(item.getClass().equals(Album.class)) {
             this.etc = ((Album) item).getArtist();
         }
