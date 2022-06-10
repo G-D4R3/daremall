@@ -20,23 +20,11 @@ public class ItemListDto {
         this.price = item.getPrice();
         this.stockQuantity = item.getStockQuantity();
         this.imageUrl = "/images/"+item.getId()+".png";
-    }
-
-    public ItemListDto(Album album) {
-        this.id = album.getId();
-        this.name = album.getName();
-        this.price = album.getPrice();
-        this.stockQuantity = album.getStockQuantity();
-        this.imageUrl = "/images/"+album.getId()+".png";
-        this.etc = album.getArtist();
-    }
-
-    public ItemListDto(Book book) {
-        this.id = book.getId();
-        this.name = book.getName();
-        this.price = book.getPrice();
-        this.stockQuantity = book.getStockQuantity();
-        this.imageUrl = "/images/"+book.getId()+".png";
-        this.etc = book.getAuthor();
+        if(item.getClass().equals(Album.class)) {
+            this.etc = ((Album) item).getArtist();
+        }
+        else if (item.getClass().equals(Book.class)){
+            this.etc = ((Book) item).getAuthor();
+        }
     }
 }
