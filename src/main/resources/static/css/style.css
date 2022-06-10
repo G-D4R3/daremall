@@ -83,12 +83,22 @@
     margin-right: 5px;
 }
 
-#logout {
+#logout-admin {
     color: #888888;
     text-decoration: none;
 }
 
-#hello {
+#logout-member {
+    color: #888888;
+    text-decoration: none;
+}
+
+#hello-admin {
+    text-decoration: none;
+    color: #268aff;
+}
+
+#hello-member {
     text-decoration: none;
     color: #268aff;
 }
@@ -116,6 +126,33 @@
     width: fit-content;
     height: fit-content;
     border: 2px solid #666666;
+}
+
+/** admin **/
+.admin-header {
+    margin-top: 5%;
+    margin-bottom: 3%;
+    display: flex;
+    flex-direction: row;
+    vertical-align: center;
+}
+
+.admin-header a {
+    text-decoration: none;
+    color: black;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 20px;
+}
+
+.admin-header a img {
+    width: 200px;
+}
+
+.menu-bar {
+    background-color: #333333;
+    width: 100%;
+    margin-top: 30px;
 }
 
 .search-option {
@@ -150,4 +187,31 @@
     background-color: #333333;
     width: 100%;
     margin-top: 30px;
+}
+
+.admin-item a {
+    text-decoration: none;
+    color: black;
+}
+
+.admin-item h3 {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.admin-search-bar {
+    padding: 10px;
+}
+
+.admin-search-bar .search a {
+    flex: 1;
+    margin: auto;
+}
+.admin-search-bar .search input {
+    width: 500px;
+    height: 40px;
+    flex: 5;
+    border: solid 1px #333333;
+    border-radius: 5px;
+    padding: 3px;
 }

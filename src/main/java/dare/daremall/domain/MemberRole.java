@@ -1,5 +1,5 @@
 package dare.daremall.domain;
 
 public enum MemberRole {
-    USER, ADMIN
+    ROLE_USER, ROLE_ADMIN
 }

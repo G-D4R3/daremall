@@ -4,18 +4,25 @@
     <div class="body-header">
         <div class="topper">
             <ul class="nav nav-pills pull-right">
-                <li sec:authorize="isAuthenticated()">
+                <li sec:authorize="isAuthenticated() && !hasRole('ROLE_ADMIN')">
                     <a style="margin-right: 10px;">
-                        <a id="hello" th:text="${#authentication.name}" href="/userinfo">회원</a>님 안녕하세요!
+                        <a id="hello-member" th:text="${#authentication.name}" href="/userinfo">회원</a>님 안녕하세요!
                     </a>
                     <a class="right" href="/shop">장바구니</a>
                     <a class="right" href="/userinfo/orderList">주문내역</a>
                     <a class="right" href="/like">찜 목록</a>
-                    <a href="/logout" id="logout">로그아웃</a>
+                    <a href="/logout" id="logout-member">로그아웃</a>
                 </li>
                 <li sec:authorize="!isAuthenticated()">
                     <a href="/members/login" class="right">Login</a>
                     <a href="/members/new">회원가입</a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a style="margin-right: 10px;">
+                        <a id="hello-admin" th:text="${#authentication.name}" href="/userinfo">관리자</a>님 안녕하세요!
+                    </a>
+                    <a class="right" href="/admin">관리자 페이지</a>
+                    <a href="/logout" id="logout-admin">로그아웃</a>
                 </li>
             </ul>
         </div>

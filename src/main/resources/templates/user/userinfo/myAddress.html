@@ -202,6 +202,7 @@
                 "deliveryId" : id
             },
             success: function(data) {
+
                 document.getElementById("updateId").value = data.id;
                 document.getElementById("updateName").value = data.name;
                 document.getElementById("updatePhone").value = data.phone;
@@ -210,9 +211,6 @@
                 document.getElementById("updateStreet").value = data.street;
                 document.getElementById("updateDetail").value = data.detail;
                 document.getElementById("updateIsDefault").checked = data.isDefault;
-                if(document.getElementById("updateIsDefault").checked == true) {
-                    document.getElementById("updateIsDefault").setAttribute("disabled", true);
-                }
                 $('#updateDeliveryModal').modal('toggle');
             }
         })
@@ -263,12 +261,12 @@
             alert("기본 배송지로 설정합니다");
         }
         else {
-            alert("기본 배송지로 설정하지 않습니다.");
+            alert("새로운 배송지를 추가합니다");
         }
-        alert("새로운 배송지를 추가합니다");
     }
 
     function checkUpdateForm() {
+
         if($('#updateName').val().length===0) {
             alert("이름을 입력해주세요");
             return false;
@@ -294,12 +292,11 @@
             return false;
         }
         if($('#updateIsDefault').is(":checked")===true) {
-            alert("기본 배송지로 설정합니다");
+            alert("기본 배송지로 설정합니다.");
         }
         else {
-            alert("기본 배송지로 설정하지 않습니다.");
+            alert("배송지를 수정합니다.");
         }
-        alert("배송지를 수정합니다.");
     }
 
     // [출처] : https://ws-pace.tistory.com/38
@@ -324,11 +321,11 @@
                         extraAddr += (extraAddr !== ''? ', ' + data.buildingName: data.buildingName);
                     }
                     if(extraAddr !== '') {
-                        extraAddr += ' ('+extraAddr+')';
+                        extraAddr = ' ('+extraAddr+')';
                     }
                 }
                 document.getElementById(zipcode).value = data.zonecode;
-                document.getElementById(street).value = addr;
+                document.getElementById(street).value = addr+extraAddr;
                 document.getElementById(detail).readOnly = false;
                 document.getElementById(detail).focus();
             }
