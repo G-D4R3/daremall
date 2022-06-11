@@ -13,18 +13,34 @@
             </thead>
             <tbody>
             <tr th:each="album : ${albums}">
-                <td>
-                    <a th:href="@{/items/detail(itemId=${album.id})}">
-                        <img th:src="@{${album.imageUrl}}" style="height: 160px; width: 120px">
-                    </a>
-                </td>
-                <td>
-                    <div style="padding-top: 3%; padding-bottom: 3%">
-                        <p><a style="font-size: 14pt" th:text="${album.name}" th:href="@{/items/detail(itemId=${album.id})}"></a></p>
-                        <p th:text="'판매가 : '+${album.price}+'원'" style="color: #d82c50; font-weight: bolder; font-size: 12pt"></p>
-                        <p style="color: #777777" th:text="${album.etc}"></p>
-                    </div>
-                </td>
+                <th:block class="forSale" th:if="${album.forSale==true}">
+                    <td>
+                        <a th:href="@{/items/detail(itemId=${album.id})}">
+                            <img th:src="@{${album.imageUrl}}">
+                        </a>
+                    </td>
+                    <td>
+                        <div style="padding-top: 3%; padding-bottom: 3%">
+                            <p><a style="font-size: 14pt" th:text="${album.name}" th:href="@{/items/detail(itemId=${album.id})}"></a></p>
+                            <p th:text="'판매가 : '+${album.price}+'원'" style="color: #d82c50; font-weight: bolder; font-size: 12pt"></p>
+                            <p style="color: #777777" th:text="${album.etc}"></p>
+                        </div>
+                    </td>
+                </th:block>
+                <th:block class="notForSale" th:if="${album.forSale}==false">
+                    <td bgcolor="#cccccc">
+                        <a th:href="@{/items/detail(itemId=${album.id})}">
+                            <img class="notForSale-img" th:src="@{${album.imageUrl}}">
+                        </a>
+                    </td>
+                    <td bgcolor="#cccccc">
+                        <div style="padding-top: 3%; padding-bottom: 3%">
+                            <p><a style="font-size: 14pt; text-decoration: line-through" th:text="'[판매 중단] '+${album.name}" th:href="@{/items/detail(itemId=${album.id})}"></a></p>
+                            <p th:text="'판매가 : '+${album.price}+'원'" style="color: #555555; font-size: 12pt"></p>
+                            <p style="color: #555555" th:text="${album.etc}"></p>
+                        </div>
+                    </td>
+                </th:block>
             </tr>
             </tbody>
         </table>
@@ -61,4 +77,23 @@
     <div th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->
 </body>
+<style>
+    td img {
+        width: 120px;
+        height: 160px;
+        margin: auto;
+    }
+
+    td a {
+        text-decoration: none;
+    }
+
+    .forSale a{
+        font-size: 14pt
+    }
+
+    .notForSale-img {
+        filter: brightness(0.5);
+    }
+</style>
 </html>

@@ -13,6 +13,7 @@ public class ItemListDto {
     private int stockQuantity;
     private String imageUrl;
     private String etc;
+    private Boolean forSale;
 
     public ItemListDto(Item item) {
         this.id = item.getId();
@@ -26,5 +27,6 @@ public class ItemListDto {
         else if (item.getClass().equals(Book.class)){
             this.etc = ((Book) item).getAuthor();
         }
+        this.forSale = item.getForSale();
     }
 }

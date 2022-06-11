@@ -66,7 +66,7 @@ public class ItemController {
         item.setName(findItem.getName());
         item.setPrice(findItem.getPrice());
         item.setStockQuantity(findItem.getStockQuantity());
-        item.setImageUrl("/images/"+findItem.getId()+".png");
+        item.setImageUrl(findItem.getImagePath());
         item.setForSale(findItem.getForSale());
         model.addAttribute("item", item);
 
