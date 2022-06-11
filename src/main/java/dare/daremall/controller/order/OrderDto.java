@@ -19,8 +19,7 @@ public class OrderDto {
 
     public OrderDto(Order order) {
         this.id = order.getId();
-        this.title = order.getOrderItems().get(0).getItem().getName();
-        if(order.getOrderItems().size()>1) this.title += " 외 " + (order.getOrderItems().size()-1);
+        this.title = order.getTitle();
         this.price = order.getOrderItems().stream().mapToInt(i->i.getTotalPrice()).sum();
         this.orderDate = order.getOrderDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
         this.imgUrl = "/images/"+order.getOrderItems().get(0).getItem().getId()+".png";

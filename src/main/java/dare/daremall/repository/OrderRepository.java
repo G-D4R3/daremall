@@ -45,6 +45,10 @@ public class OrderRepository {
 
     // order 상태가 ORDER인 주문 상품 삭제
     public void removeOrderItem(Long itemId) {
-        em.createQuery("delete from OrderItem oi where oi.item in (select i from Item i where i.id = :itemId) and oi.order in (select o from Order o where o.status = 'ORDER')").setParameter("itemId", itemId).executeUpdate();
+        em.createQuery("delete from OrderItem oi" +
+                " where oi.item in (select i from Item i where i.id = :itemId)" +
+                " and oi.order in (select o from Order o where o.status = 'ORDER')")
+                .setParameter("itemId", itemId)
+                .executeUpdate();
     }
 }

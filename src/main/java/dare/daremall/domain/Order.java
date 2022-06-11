@@ -30,6 +30,8 @@ public class Order {
     @JoinColumn(name = "delivery_id") // 연관관계의 주인을 order로 설정
     private Delivery delivery;
 
+    private String title;
+
     private LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
@@ -55,6 +57,8 @@ public class Order {
             order.addOrderItem(orderItem);
         }
         order.setStatus(orderStatus);
+        order.setTitle(orderItems.get(0).getItem().getName());
+        if(orderItems.size()>1) order.setTitle(order.getTitle() + " 외 " + (order.getOrderItems().size()-1));
         order.setOrderDate(LocalDateTime.now());
         if(order.getOrderItems().stream().mapToInt(oi->oi.getTotalPrice()).sum() >= 50000) order.setShippingFee(false);
         else order.setShippingFee(true);
