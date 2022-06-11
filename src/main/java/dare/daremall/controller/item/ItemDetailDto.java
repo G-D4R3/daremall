@@ -1,5 +1,6 @@
 package dare.daremall.controller.item;
 
+import dare.daremall.domain.item.ItemStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,5 +13,5 @@ public class ItemDetailDto {
     private int price;
     private int stockQuantity;
     private String imageUrl;
-    private Boolean forSale;
+    private String itemStatus;
 }

@@ -58,7 +58,7 @@
                                 <option th:each="delivery : ${myDeliveries}"
                                         th:value="${delivery.id}"
                                         th:text="${delivery.nickname}"
-                                        th:onselect="javascript:getDelivery([[${delivery.id}]])"/>
+                                        th:onselect="getDelivery([[${delivery.id}]])"/>
                             </select>
                         </div>
                         <p class="field-error-text" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Incorrect date</p>

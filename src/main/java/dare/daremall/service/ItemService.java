@@ -1,10 +1,8 @@
 package dare.daremall.service;
 
 import dare.daremall.controller.item.ItemDto;
-import dare.daremall.domain.item.Album;
-import dare.daremall.domain.item.Book;
-import dare.daremall.domain.item.Item;
-import dare.daremall.domain.item.ItemSearch;
+import dare.daremall.domain.item.*;
+import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +16,7 @@ import java.util.List;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final BaggedItemRepository baggedItemRepository;
 
     @Transactional
     public void saveItem(ItemDto itemDto) {
@@ -29,7 +28,7 @@ public class ItemService {
             book.setAuthor(itemDto.getAuthor());
             book.setIsbn(itemDto.getIsbn());
             book.setImagePath(itemDto.getImagePath());
-            book.setForSale(itemDto.getForSale());
+            book.setItemStatus(ItemStatus.valueOf(itemDto.getItemStatus()));
             itemRepository.save(book);
         }
         else if(itemDto.getType().equals("A")) {
@@ -40,7 +39,7 @@ public class ItemService {
             album.setArtist(itemDto.getArtist());
             album.setEtc(itemDto.getEtc());
             album.setImagePath(itemDto.getImagePath());
-            album.setForSale(itemDto.getForSale());
+            album.setItemStatus(ItemStatus.valueOf(itemDto.getItemStatus()));
             itemRepository.save(album);
         }
         else {
@@ -71,12 +70,22 @@ public class ItemService {
             if(itemDto.getImagePath()!=null) {
                 findItem.setImagePath(itemDto.getImagePath());
             }
+            findItem.setItemStatus(ItemStatus.valueOf(itemDto.getItemStatus()));
         }
         itemRepository.save(findItem);
+        if(ItemStatus.valueOf(itemDto.getItemStatus())!=ItemStatus.FOR_SALE){
+            baggedItemRepository.removeByItemId(findItem.getId());
+        }
+        baggedItemRepository.updateCount(findItem.getId(), itemDto.getStockQuantity());
+
     }
 
     public List<Item> findItems() {
         return itemRepository.findAll();
+    }
+
+    public List<Item> findItemsExceptHide() {
+        return itemRepository.findExceptHide();
     }
 
     public Item findOne(Long id) {

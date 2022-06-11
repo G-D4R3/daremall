@@ -12,7 +12,7 @@
             </thead>
             <tbody>
             <tr th:each="item : ${items}">
-                <th:block class="forSale" th:if="${item.forSale==true}">
+                <th:block class="forSale" th:if="${item.itemStatus=='FOR_SALE'}">
                     <td>
                         <a th:href="@{/items/detail(itemId=${item.id})}">
                             <img th:src="@{${item.imageUrl}}">
@@ -26,7 +26,7 @@
                         </div>
                     </td>
                 </th:block>
-                <th:block class="notForSale" th:if="${item.forSale}==false">
+                <th:block class="notForSale" th:if="${item.itemStatus=='NOT_FOR_SALE'}">
                     <td bgcolor="#cccccc">
                         <a th:href="@{/items/detail(itemId=${item.id})}">
                             <img class="notForSale-img" th:src="@{${item.imageUrl}}">

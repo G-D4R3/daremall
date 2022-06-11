@@ -6,14 +6,14 @@
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
     <div class="jumbotron" th:object="${item}" style="overflow: hidden">
         <div style="height: 100%; width: 45%; float: left; text-align: center;">
-            <img style="height: 260px; width: 200px;" th:src="@{${item.imageUrl}}" th:classappend="${item.forSale==true}? '':'notForSale-img'">
+            <img style="height: 260px; width: 200px;" th:src="@{${item.imageUrl}}" th:classappend="${item.itemStatus=='FOR_SALE'}? '':'notForSale-img'">
         </div>
         <div style="height: 100%; width: 50%; float: left">
-                <h3 th:text="${item.forSale==true}? ${item.name}:'[판매 중단] '+${item.name}"></h3>
+                <h3 th:text="${item.itemStatus=='FOR_SALE'}? ${item.name}:'[판매 중단] '+${item.name}"></h3>
                 <p>
                     가격 : <a style="color: #c0183a; font-weight: bolder; font-size: 16pt" th:text="${item.price}+' 원'"></a>
                 </p>
-                <p th:if="${item.forSale}" th:text="'재고 수량 : '+${item.stockQuantity}+'개'"></p>
+                <p th:if="${item.itemStatus=='FOR_SALE'}" th:text="'재고 수량 : '+${item.stockQuantity}+'개'"></p>
             <form role="form" method="post" th:action="@{/order/new/addItem}">
                 <div class="form-group">
                     <label for="item">옵션 선택</label>
@@ -26,16 +26,16 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    1<label th:for="count">주문 수량</label>
+                    <label th:for="count">주문 수량</label>
                     <input name="count" th:data-suffix="개" th:value="1" th:min="1" th:max="${item.stockQuantity}"
-                           type="number" class="form-control" th:disabled="${item.forSale==false}"/>
+                           type="number" class="form-control" th:disabled="${item.itemStatus=='NOT_FOR_SALE'}"/>
                 </div>
-                <th:block th:if="${item.forSale==true}">
+                <th:block th:if="${item.itemStatus=='FOR_SALE'}">
                     <button type="submit" class="btn btn-primary">주문하기</button>
                     <button type="submit" class="btn btn-outline-primary" th:formaction="@{/shop/add}">장바구니</button>
                     <button type="submit" class="btn" th:classappend="${isLikeItem}" th:formaction="@{/like/add}">찜</button>
                 </th:block>
-                <th:block th:if="${item.forSale==false}">
+                <th:block th:if="${item.itemStatus=='NOT_FOR_SALE'}">
                     <div class="flex-row">
                         <span class="notForSale">판매 중단</span>
                         <button type="submit" class="btn" th:classappend="${isLikeItem}" th:formaction="@{/like/add}">찜</button>

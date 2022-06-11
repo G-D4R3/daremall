@@ -1,0 +1,13 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header :: header"/>
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <div class="jumbotron" th:object="${item}" style="overflow: hidden">
+        <h3>상품을 찾을 수 없습니다.</h3>
+    </div>
+    <div style="clear: both" th:replace="fragments/footer :: footer"/>
+</div> <!-- /container -->
+</body>
+</html>

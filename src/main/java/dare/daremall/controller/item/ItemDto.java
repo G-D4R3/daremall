@@ -1,6 +1,7 @@
 package dare.daremall.controller.item;
 
 import dare.daremall.domain.item.Item;
+import dare.daremall.domain.item.ItemStatus;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +31,6 @@ public class ItemDto {
 
     private String type;
 
-    private Boolean forSale;
+    private String itemStatus;
 
 }

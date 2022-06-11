@@ -34,30 +34,42 @@ public class ItemRepository {
     public List<Item> findByName(String name) {
         return em.createQuery("select i from Item i" +
                         " where upper(i.name) like upper(:name)" +
-                        " order by i.forSale desc", Item.class)
+                        " and i.itemStatus <> 'HIDE'" +
+                        " order by i.itemStatus", Item.class)
                 .setParameter("name", "%"+name+"%")
                 .getResultList();
     }
 
     public List<Item> findAll() {
-        return em.createQuery("select i from Item i order by i.forSale desc", Item.class).getResultList();
+        return em.createQuery("select i from Item i order by i.itemStatus", Item.class).getResultList();
+    }
+
+    public List<Item> findExceptHide() {
+        return em.createQuery("select i from Item i where i.itemStatus <> 'HIDE'" +
+                " order by i.itemStatus", Item.class).getResultList();
     }
 
     public List findByType(String type) {
         if(type.equals("album")) {
-            return em.createQuery("select a from Album a order by a.forSale desc", Album.class).getResultList();
+            return em.createQuery("select a from Album a" +
+                    " where a.itemStatus <> 'HIDE'"  +
+                    " order by a.itemStatus", Album.class).getResultList();
         }
         else if(type.equals("book")) {
-            return em.createQuery("select b from Book b order by b.forSale desc", Book.class).getResultList();
+            return em.createQuery("select b from Book b" +
+                    " where b.itemStatus <> 'HIDE'"  +
+                    " order by b.itemStatus", Book.class).getResultList();
         }
-        else return em.createQuery("select i from Item i order by i.forSale desc", Item.class).getResultList();
+        else return em.createQuery("select i from Item i where i.itemStatus <> 'HIDE'" +
+                    " order by i.itemStatus", Item.class).getResultList();
     }
 
     public List<Book> findBookByName(String name) {
         return em.createQuery("select b from Book b" +
                 " where upper(b.name) like upper(:name)" +
                 " or upper(b.author) like upper(:name)" +
-                        " order by b.forSale desc", Book.class)
+                        " and b.itemStatus <> 'HIDE'" +
+                        " order by b.itemStatus", Book.class)
                 .setParameter("name", "%"+name+"%")
                 .getResultList();
     }
@@ -66,7 +78,8 @@ public class ItemRepository {
         return em.createQuery("select a from Album a" +
                 " where upper(a.name) like upper(:name)" +
                 " or upper(a.artist) like upper(:name)" +
-                        " order by a.forSale desc", Album.class)
+                        " and a.itemStatus <> 'HIDE'" +
+                        " order by a.itemStatus", Album.class)
                 .setParameter("name", "%"+name+"%")
                 .getResultList();
     }

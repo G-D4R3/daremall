@@ -42,4 +42,15 @@ public class BaggedItemRepository {
         List<BaggedItem> baggedItems = findByMember(loginId);
         for(BaggedItem item : baggedItems) item.setChecked(true);
     }
+
+    public void removeByItemId(Long itemId) {
+        em.createQuery("delete from BaggedItem bi where bi.item.id =: itemId").setParameter("itemId", itemId).executeUpdate();
+    }
+
+    public void updateCount(Long itemId, int stockQuantity) {
+        em.createQuery("update BaggedItem bi set bi.count = :stockQuantity where bi.count > :stockQuantity and bi.item.id = :itemId")
+                .setParameter("stockQuantity", stockQuantity)
+                .setParameter("itemId", itemId)
+                .executeUpdate();
+    }
 }

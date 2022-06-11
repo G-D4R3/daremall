@@ -3,6 +3,7 @@ package dare.daremall.controller.item;
 import dare.daremall.domain.item.Album;
 import dare.daremall.domain.item.Book;
 import dare.daremall.domain.item.Item;
+import dare.daremall.domain.item.ItemStatus;
 import lombok.Data;
 
 @Data
@@ -13,7 +14,7 @@ public class ItemListDto {
     private int stockQuantity;
     private String imageUrl;
     private String etc;
-    private Boolean forSale;
+    private String itemStatus;
 
     public ItemListDto(Item item) {
         this.id = item.getId();
@@ -27,6 +28,6 @@ public class ItemListDto {
         else if (item.getClass().equals(Book.class)){
             this.etc = ((Book) item).getAuthor();
         }
-        this.forSale = item.getForSale();
+        this.itemStatus = item.getItemStatus().toString();
     }
 }

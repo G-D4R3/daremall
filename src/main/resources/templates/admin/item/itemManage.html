@@ -33,6 +33,9 @@
                         <p><a style="font-size: 14pt" th:text="${item.name}" th:href="@{/items/detail(itemId=${item.id})}"></a></p>
                         <p th:text="'판매가 : '+${item.price}+'원'" style="color: #d82c50; font-weight: bolder; font-size: 12pt"></p>
                         <p style="color: #777777" th:text="${item.etc}"></p>
+                        <p th:if="${item.itemStatus=='FOR_SALE'}" style="color: #009d00">판매 중</p>
+                        <p th:if="${item.itemStatus=='NOT_FOR_SALE'}" style="color: #c90000">판매 중단</p>
+                        <p th:if="${item.itemStatus=='HIDE'}" style="color: #b89f0d">숨김</p>
                     </div>
                 </td>
                 <td class="admin-table-a">
@@ -107,6 +110,9 @@
                                        placeholder="ISBN을 입력해주세요">
                             </div>
                         </div>
+                        <!-- <div class="form-control flex-row">
+                            <label><input id="isForSale" class="form-check-input" type="checkbox" th:field="*{itemStatus}">판매 중</label>
+                        </div> -->
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -177,6 +183,15 @@
                                        placeholder="ISBN을 입력해주세요">
                             </div>
                         </div>
+                        <div class="flex-row">
+                            <label>판매 상태</label>
+                            <select th:field="*{itemStatus}" name="forsale" id="updateForSale" class="form-control">
+                                <option value="option">옵션 선택</option>
+                                <option value="FOR_SALE">판매</option>
+                                <option value="NOT_FOR_SALE">판매 중단</option>
+                                <option value="HIDE">숨기기</option>
+                            </select>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -239,6 +254,10 @@
         flex: 3;
     }
 
+    .forSale {
+        text-align: center;
+    }
+
 </style>
 
 <script>
@@ -286,6 +305,7 @@
                 document.getElementById("updateType").value = data.type;
                 document.getElementById("updateImage").setAttribute("src", data.imagePath);
                 $("#updateType").not(":selected").attr("disabled", "disabled");
+                document.getElementById("updateForSale").value = data.itemStatus;
 
                 $('#updateItemModal').modal('toggle');
             }

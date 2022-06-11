@@ -3,12 +3,10 @@ package dare.daremall.controller.item;
 import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.domain.LikeItem;
 import dare.daremall.domain.Member;
-import dare.daremall.domain.item.Album;
-import dare.daremall.domain.item.Book;
-import dare.daremall.domain.item.Item;
-import dare.daremall.domain.item.ItemSearch;
+import dare.daremall.domain.item.*;
 import dare.daremall.repository.MemberRepository;
 import dare.daremall.service.ItemService;
+import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,10 +30,11 @@ public class ItemController {
 
     private final ItemService itemService;
     private final MemberRepository memberRepository;
+    private final OrderService orderService;
 
     @GetMapping(value = "")
     public String items(Model model) {
-        List<ItemListDto> items = itemService.findItems().stream().map(i -> new ItemListDto(i)).collect(Collectors.toList());
+        List<ItemListDto> items = itemService.findItemsExceptHide().stream().map(i -> new ItemListDto(i)).collect(Collectors.toList());
         model.addAttribute("items", items);
         return "item/itemList";
     }
@@ -61,13 +60,18 @@ public class ItemController {
     @GetMapping(value = "/detail")
     public String itemDetailsWithMember(@AuthenticationPrincipal LoginUserDetails member, @RequestParam("itemId") Long itemId, Model model) {
         Item findItem = itemService.findOne(itemId);
+
+        if(findItem.getItemStatus()== ItemStatus.HIDE) {
+            return "/item/hide";
+        }
+
         ItemDetailDto item = new ItemDetailDto();
         item.setId(findItem.getId());
         item.setName(findItem.getName());
         item.setPrice(findItem.getPrice());
         item.setStockQuantity(findItem.getStockQuantity());
         item.setImageUrl(findItem.getImagePath());
-        item.setForSale(findItem.getForSale());
+        item.setItemStatus(findItem.getItemStatus().toString());
         model.addAttribute("item", item);
 
         if(member!=null) {
@@ -146,7 +150,7 @@ public class ItemController {
         item.setPrice(findItem.getPrice());
         item.setStockQuantity(findItem.getStockQuantity());
         item.setImagePath(findItem.getImagePath());
-        item.setForSale(findItem.getForSale());
+        item.setItemStatus(findItem.getItemStatus().toString());
 
         if(findItem.getClass().equals(Album.class)) {
             item.setArtist(((Album) findItem).getArtist());
@@ -185,6 +189,10 @@ public class ItemController {
         }
 
         itemService.updateItem(itemDto);
+
+        if(ItemStatus.valueOf(itemDto.getItemStatus())!=ItemStatus.FOR_SALE) {
+            orderService.deleteOrderItem(itemDto.getId(), itemDto.getName());
+        }
 
         return "redirect:/admin/item";
     }

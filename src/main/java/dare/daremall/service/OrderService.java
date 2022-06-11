@@ -3,11 +3,13 @@ package dare.daremall.service;
 import dare.daremall.controller.order.OrderDto;
 import dare.daremall.controller.order.OrderForm;
 import dare.daremall.domain.*;
+import dare.daremall.domain.item.ItemStatus;
 import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.repository.ItemRepository;
 import dare.daremall.repository.MemberRepository;
 import dare.daremall.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.hibernate.mapping.Bag;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +25,8 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
-    private final ItemRepository itemRepository;
     private final BaggedItemRepository baggedItemRepository;
+    private final CertificationService certificationService;
 
     public List<Order> findOrders(String loginId) {
         return orderRepository.findByLoginId(loginId);
@@ -57,7 +59,7 @@ public class OrderService {
             if(baggedItem.getCount() > baggedItem.getItem().getStockQuantity()) {
                 throw new IllegalStateException("주문 수량을 초과하였습니다.");
             }
-            if(baggedItem.getItem().getForSale() == false) {
+            if(baggedItem.getItem().getItemStatus() != ItemStatus.FOR_SALE) {
                 baggedItemRepository.remove(baggedItem.getId());
                 throw new IllegalStateException("판매 중단된 상품은 주문할 수 없습니다.");
             }
@@ -86,5 +88,12 @@ public class OrderService {
         else {
             throw new IllegalStateException("취소하지 않은 주문은 삭제할 수 없습니다.");
         }
+    }
+
+    public void deleteOrderItem(Long itemId, String itemName) throws CoolsmsException {
+        List<Order> orders = orderRepository.findByItemId(itemId);
+        List<String> memberPhoneNumbers = orders.stream().map(o -> o.getMember().getPhone()).collect(Collectors.toList());
+        orderRepository.removeOrderItem(itemId);
+        // certificationService.itemNotSaleOrderCancel(memberPhoneNumbers, itemName); 주문 상품 주문 취소 문자 보내기
     }
 }

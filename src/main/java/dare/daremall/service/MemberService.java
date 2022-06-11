@@ -6,6 +6,7 @@ import dare.daremall.controller.member.mypage.DeliveryInfoForm;
 import dare.daremall.controller.member.mypage.UpdateDeliveryInfoForm;
 import dare.daremall.domain.*;
 import dare.daremall.domain.item.Item;
+import dare.daremall.domain.item.ItemStatus;
 import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.repository.ItemRepository;
 import dare.daremall.repository.LikeItemRepository;
@@ -77,7 +78,7 @@ public class MemberService {
     public void addShoppingBag(Long itemId, String loginId, int count) {
         Item item = itemRepository.findById(itemId).orElse(null); //  나중에 예외처리 필요
 
-        if(item.getForSale()==false) {
+        if(item.getItemStatus()!= ItemStatus.FOR_SALE) {
             throw new IllegalStateException("판매 중단된 상품은 장바구니에 추가할 수 없습니다.");
         }
 
