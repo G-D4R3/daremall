@@ -26,7 +26,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label th:for="count">주문 수량</label>
+                    1<label th:for="count">주문 수량</label>
                     <input name="count" th:data-suffix="개" th:value="1" th:min="1" th:max="${item.stockQuantity}"
                            type="number" class="form-control" th:disabled="${item.forSale==false}"/>
                 </div>

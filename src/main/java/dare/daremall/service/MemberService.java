@@ -76,6 +76,11 @@ public class MemberService {
     @Transactional
     public void addShoppingBag(Long itemId, String loginId, int count) {
         Item item = itemRepository.findById(itemId).orElse(null); //  나중에 예외처리 필요
+
+        if(item.getForSale()==false) {
+            throw new IllegalStateException("판매 중단된 상품은 장바구니에 추가할 수 없습니다.");
+        }
+
         Member member = memberRepository.findByLoginId(loginId).orElse(null);
         BaggedItem baggedItem = BaggedItem.createBaggedItem(member, item, item.getPrice(), count);
         member.addBaggedItem(baggedItem);

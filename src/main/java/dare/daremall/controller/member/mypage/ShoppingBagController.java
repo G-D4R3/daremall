@@ -36,6 +36,7 @@ public class ShoppingBagController {
         return "redirect:/items/detail?itemId="+itemId;
     }
 
+
     @PostMapping(value = "/{bagItemId}/delete")
     public String cancel(@AuthenticationPrincipal LoginUserDetails member,
                              @PathVariable("bagItemId") Long bagItemId) {

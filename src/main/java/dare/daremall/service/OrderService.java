@@ -57,6 +57,10 @@ public class OrderService {
             if(baggedItem.getCount() > baggedItem.getItem().getStockQuantity()) {
                 throw new IllegalStateException("주문 수량을 초과하였습니다.");
             }
+            if(baggedItem.getItem().getForSale() == false) {
+                baggedItemRepository.remove(baggedItem.getId());
+                throw new IllegalStateException("판매 중단된 상품은 주문할 수 없습니다.");
+            }
         }
 
         List<OrderItem> orderItems = baggedItems.stream().map(bi -> {

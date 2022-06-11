@@ -50,6 +50,6 @@ public class LikeItemController {
 
         memberService.changeLikeItem(member.getUsername(), itemId);
 
-        return "redirect:/likes";
+        return "redirect:/like";
     }
 }
