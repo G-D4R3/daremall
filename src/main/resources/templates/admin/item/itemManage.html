@@ -39,10 +39,10 @@
                     </div>
                 </td>
                 <td class="admin-table-a">
-                    <a th:href="'javascript:updateItemBtn('+${item.id}+')'">수정</a>
+                    <a th:href="'javascript:updateItemBtn('+${item.id}+')'" style="color: dodgerblue">수정</a>
                 </td>
                 <td class="admin-table-a">
-                    <a th:onclick="deleteItemBtn([[${item.id}]],[[${item.name}]])">삭제</a>
+                    <a th:onclick="deleteItemBtn([[${item.id}]],[[${item.name}]])" style="color: #e93d3d">삭제</a>
                 </td>
             </tr>
             </tbody>
@@ -53,7 +53,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">상품 추가</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="reset" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -110,9 +110,15 @@
                                        placeholder="ISBN을 입력해주세요">
                             </div>
                         </div>
-                        <!-- <div class="form-control flex-row">
-                            <label><input id="isForSale" class="form-check-input" type="checkbox" th:field="*{itemStatus}">판매 중</label>
-                        </div> -->
+                        <div class="flex-row">
+                            <label>판매 상태</label>
+                            <select th:field="*{itemStatus}" name="forsale" id="addForSale" class="form-control">
+                                <option value="option">옵션 선택</option>
+                                <option value="FOR_SALE">판매</option>
+                                <option value="NOT_FOR_SALE">판매 중단</option>
+                                <option value="HIDE">숨기기</option>
+                            </select>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -264,8 +270,20 @@
 
     /** modal 창 띄우기 **/
     function addItemBtn() {
+        $('#name').val('');
+        $('#price').val(0);
+        $('#stockQuantity').val(0);
+        $('#type').val("option");
+
+        $('#artist').val('');
+        $('#etc').val('');
+
+        $('#author').val('');
+        $('#isbn').val('');
+
         $('#album').hide();
         $('#book').hide();
+        $('#addForSale').val("option");
         $('#addItemModal').modal('toggle');
     }
 
@@ -386,6 +404,10 @@
                 alert("저자명을 입력해주세요");
                 return false;
             }
+        }
+        if($('#addForSale').val() === "option") {
+            alert("상품 판매 상태를 설정해주세요");
+            return false;
         }
         return true;
     }
