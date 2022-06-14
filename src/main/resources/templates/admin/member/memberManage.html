@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"/>
+<body>
+<div class="container">
+    <div th:replace="fragments/adminHeader :: adminHeader" />
+    <div class="admin-member">
+        <a href="/admin/member"><h3> 회원 관리 </h3></a>
+        <div class="admin-search-bar">
+            <form role="form" method="get" th:action="@{/admin/member/search}" class="flex-row">
+                <div class="search flex-row">
+                    <button type="reset" class="btn btn-dark" onclick="window.location.href = '/admin/member'">전체보기</button>
+                    <button type="reset" class="btn btn-dark" onclick="window.location.href = '/admin/member?role=admin'">관리자보기</button>
+                    <input type="text" placeholder="이름, 아이디 검색" name="memberSearch" th:value="${memberSearch}"/>
+                </div>
+                <button type="submit" class="btn btn-dark">검색</button>
+            </form>
+        </div>
+        <table id="members" class="table table-striped">
+            <thead> <tr>
+                <th>아이디</th> <th>이름</th> <th>등급</th> <th>세부사항</th> <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="member : ${members}">
+                <td th:text="${member.loginId}"></td>
+                <td th:text="${member.name}"></td>
+                <td th:text="${member.role}=='ROLE_ADMIN'? '관리자':'회원'">
+                    <!-- <a th:text="${member.role}=='ROLE_ADMIN'? '관리자':'회원'"></a> -->
+                    <select id="role" hidden th:value="${member.role}">
+                        <option value="ROLE_ADMIN">관리</option>
+                        <option value="ROLE_USER">회원</option>
+                    </select>
+                </td>
+                <td style="text-align: left">
+                    <p th:text="'휴대폰 번호 : '+${member.phone}"></p>
+                    <p th:text="'주소 : ('+${member.address.zipcode}+') '+${member.address.street}+', '+${member.address.detail}"></p>
+                </td>
+                <td class="admin-table-a">
+                    <a th:onclick="updateRole([[${member}]])" style="color: dodgerblue">권한수정</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+</body>
+<style>
+    .table .admin-table-a {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .admin-table-a a {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    th, td {
+        text-align: center;
+    }
+
+</style>
+<script>
+
+    function updateRole(member) {
+        if(member.role == 'ROLE_USER') {
+            if(confirm(member.name+"("+member.loginId+") 에게 관리자 권한을 부여하겠습니까?")){
+                $.ajax({
+                    url : '/members/updateRole',
+                    method: 'POST',
+                    data: {
+                        "loginId" : member.loginId,
+                        "newRole" : "ROLE_ADMIN"
+                    },
+                    success: function (data) {
+                        alert(data);
+                        window.location.href = '/admin/member';
+                    }
+                })
+            }
+        }
+        else if(member.role == 'ROLE_ADMIN') {
+            if(confirm(member.name+"("+member.loginId+") 에게서 관리자 권한을 회수하겠습니까?")){
+                $.ajax({
+                    url : '/members/updateRole',
+                    method: 'POST',
+                    data: {
+                        "loginId" : member.loginId,
+                        "newRole" : "ROLE_USER"
+                    },
+                    success: function (data) {
+                        alert(data);
+                        window.location.href = '/admin/member';
+                    }
+                })
+            }
+        }
+    }
+
+</script>
+</html>

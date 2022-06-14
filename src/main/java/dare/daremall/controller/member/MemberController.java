@@ -5,12 +5,16 @@ import dare.daremall.controller.member.auth.MemberSignupRequestDto;
 import dare.daremall.controller.member.forget.ChangePasswordForm;
 import dare.daremall.controller.order.DeliveryInfoDto;
 import dare.daremall.domain.Member;
+import dare.daremall.domain.MemberRole;
 import dare.daremall.repository.ItemRepository;
 import dare.daremall.repository.MemberRepository;
 import dare.daremall.service.CertificationService;
 import dare.daremall.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -162,6 +166,13 @@ public class MemberController {
     public @ResponseBody DeliveryInfoDto findDeliveryInfo(@AuthenticationPrincipal LoginUserDetails member,
                                                           @RequestParam(name="delivery_id") Long deliveryId) {
         return new DeliveryInfoDto(memberRepository.findDeliveryinfo(member.getUsername(), deliveryId).orElse(null));
+    }
+
+    @PostMapping(value = "/updateRole")
+    @PreAuthorize("hasRole('ADMIN')")
+    public @ResponseBody ResponseEntity updateRole(@RequestParam("loginId") String loginId, @RequestParam("newRole") String newRole) {
+        memberService.updateRole(loginId, MemberRole.valueOf(newRole));
+        return new ResponseEntity("권한을 성공적으로 수정했습니다.", HttpStatus.OK);
     }
 
 }

@@ -85,4 +85,17 @@ public class MemberRepository {
                 .setParameter("loginId", loginId)
                 .getResultList().stream().findAny();
     }
+
+    public List<Member> findMembers(String search) {
+        return em.createQuery("select m from Member m" +
+                " where upper(m.name) like upper(:search)" +
+                " or upper(m.loginId) like upper(:search)", Member.class)
+                .setParameter("search", "%"+search+"%")
+                .getResultList();
+    }
+
+    public List<Member> findAdmins() {
+        return em.createQuery("select m from Member m" +
+                " where m.role = 'ROLE_ADMIN'", Member.class).getResultList();
+    }
 }

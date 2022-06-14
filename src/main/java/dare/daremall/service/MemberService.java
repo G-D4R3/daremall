@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -232,6 +233,22 @@ public class MemberService {
             likeItemRepository.remove(findLikeItem.getId());
         }
         memberRepository.save(findMember);
+    }
+
+    public List<Member> findMembers(String search) {
+        return memberRepository.findMembers(search);
+    }
+
+    public List<Member> findAdmins() {
+        return memberRepository.findAdmins();
+    }
+
+    @Transactional
+    public void updateRole(String loginId, MemberRole newRole) {
+        Member member = memberRepository.findByLoginId(loginId).orElse(null);
+        member.setRole(newRole);
+        memberRepository.save(member);
+
     }
 }
 

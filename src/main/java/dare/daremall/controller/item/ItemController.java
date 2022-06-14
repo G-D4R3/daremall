@@ -123,13 +123,13 @@ public class ItemController {
             String oriImgName = imgFile.getOriginalFilename();
             String imgName = "";
 
-            String projectPath = System.getProperty("user.dir") + "/src/main/resources/static/images/";
+            String projectPath = System.getProperty("user.dir") + "/src/main/resources/static/images/item/thumb/";
             String savedFileName = oriImgName;
             imgName = savedFileName;
             File saveFile = new File(projectPath, imgName);
             imgFile.transferTo(saveFile);
 
-            itemDto.setImagePath("/images/" + imgName);
+            itemDto.setImagePath("/images/item/thumb/" + imgName);
         }
         else {
             itemDto.setImagePath("/images/default.png");
@@ -174,7 +174,7 @@ public class ItemController {
             String oriImgName = imgFile.getOriginalFilename();
             String imgName = "";
 
-            String projectPath = System.getProperty("user.dir") + "/src/main/resources/static/images/";
+            String projectPath = System.getProperty("user.dir") + "/src/main/resources/static/images/item/thumb/";
 
             // UUID 를 이용하여 파일명 새로 생성
             // UUID - 서로 다른 객체들을 구별하기 위한 클래스
@@ -185,7 +185,7 @@ public class ItemController {
             File saveFile = new File(projectPath, imgName);
             imgFile.transferTo(saveFile);
 
-            itemDto.setImagePath("/images/" + imgName);
+            itemDto.setImagePath("/images/item/thumb/" + imgName);
         }
 
         itemService.updateItem(itemDto);
