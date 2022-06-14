@@ -9,7 +9,7 @@
         <div class="admin-search-bar">
             <form role="form" method="get" th:action="@{/admin/item/search}" class="flex-row">
                 <div class="search flex-row">
-                    <a> 상품 찾기 : </a>
+                    <button type="reset" class="btn btn-dark" onclick="window.location.href = '/admin/item'">전체보기</button>
                     <input type="text" placeholder="책 제목 / 작가 / 앨범 검색" name="item" th:value="${item}"/>
                 </div>
                 <button type="submit" class="btn btn-dark">검색</button>
@@ -270,20 +270,7 @@
 
     /** modal 창 띄우기 **/
     function addItemBtn() {
-        $('#name').val('');
-        $('#price').val(0);
-        $('#stockQuantity').val(0);
-        $('#type').val("option");
-
-        $('#artist').val('');
-        $('#etc').val('');
-
-        $('#author').val('');
-        $('#isbn').val('');
-
-        $('#album').hide();
-        $('#book').hide();
-        $('#addForSale').val("option");
+        document.getElementById("addItemForm").reset();
         $('#addItemModal').modal('toggle');
     }
 

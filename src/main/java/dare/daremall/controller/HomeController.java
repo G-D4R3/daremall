@@ -17,7 +17,7 @@ public class HomeController {
 
     @RequestMapping("/")
     public String home(Model model) {
-        List<MainAd> ads = adService.findMainAd();
+        List<MainAd> ads = adService.findMainAdNow();
         model.addAttribute("ads", ads);
         return "home";
     }
