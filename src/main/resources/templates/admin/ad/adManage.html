@@ -19,11 +19,15 @@
         <table id="members" class="table table-striped">
             <thead>
             <tr>
-                <th></th> <th></th> <th>세부 사항</th> <th></th> <th></th>
+                <th></th> <th></th> <th></th> <th>세부 사항</th> <th></th> <th></th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="ad : ${ads}">
+                <td>
+                    <p th:if="${ad.status.toString()}=='NOW'" style="color: green">광고 중</p>
+                    <p th:if="${ad.status.toString()}=='NOT'"  style="color: darkred">광고 미표시</p>
+                </td>
                 <td>
                     <img th:src="@{${ad.imagePath}}" style="width: 200px; height: 80px">
                 </td>
@@ -34,7 +38,8 @@
                     </div>
                 </td>
                 <td>
-                    <a th:text="'사이트 연결 : '+${ad.href}" th:href="${ad.href}"></a>
+                    <a th:if="${ad.href.length==0}">사이트 연결 없음</a>
+                    <a th:if="${ad.href.length>0}" th:text="'사이트 연결 : '+${ad.href}" th:href="${ad.href}"></a>
                 </td>
                 <td>
                     <a th:onclick="update([[${ad.id}]])">수정</a>
@@ -89,7 +94,7 @@
                             <select id="updateStatus" class="form-control" th:field="*{status}">
                                 <option value="option">광고 상태</option>
                                 <option value="NOW">광고 표시</option>
-                                <option value="NOT">광고 비표시</option>
+                                <option value="NOT">광고 미표시</option>
                             </select>
                         </div>
                         <div class="flex-row">
@@ -146,7 +151,7 @@
                             <select id="status" class="form-control" th:field="*{status}">
                                 <option value="option">광고 상태</option>
                                 <option value="NOW">광고 표시</option>
-                                <option value="NOT">광고 비표시</option>
+                                <option value="NOT">광고 미표시</option>
                             </select>
                         </div>
                         <div class="flex-row">
@@ -176,7 +181,7 @@
     }
 
     th, td {
-        text-align: center;
+        margin: auto;
     }
 
     .modal-body form {

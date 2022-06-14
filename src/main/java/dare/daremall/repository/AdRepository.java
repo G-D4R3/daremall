@@ -30,11 +30,12 @@ public class AdRepository {
     }
 
     public List<Ad> findAll() {
-        return em.createQuery("select a from Ad a", Ad.class).getResultList();
+        return em.createQuery("select a from Ad a order by a.status", Ad.class).getResultList();
     }
 
     public List<MainAd> findMainAd() {
-        return em.createQuery("select ma from MainAd ma", MainAd.class).getResultList();
+        return em.createQuery("select ma from MainAd ma" +
+                " order by ma.status", MainAd.class).getResultList();
     }
 
     public List<MainAd> findMainAdNow() {
@@ -52,7 +53,8 @@ public class AdRepository {
 
     public List<Ad> findByName(String search) {
         return em.createQuery("select a from Ad a" +
-                " where upper(a.name) like upper(:name)", Ad.class)
+                " where upper(a.name) like upper(:name)" +
+                        " order by a.status", Ad.class)
                 .setParameter("name", "%"+search+"%")
                 .getResultList();
     }
