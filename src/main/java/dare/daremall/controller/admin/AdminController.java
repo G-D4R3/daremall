@@ -1,11 +1,16 @@
-package dare.daremall.controller;
+package dare.daremall.controller.admin;
 
 import dare.daremall.controller.item.ItemDto;
 import dare.daremall.controller.item.ItemListDto;
+import dare.daremall.domain.ad.Ad;
+import dare.daremall.domain.ad.MainAd;
 import dare.daremall.domain.item.ItemSearch;
+import dare.daremall.repository.AdRepository;
 import dare.daremall.service.ItemService;
+import dare.daremall.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +28,8 @@ import java.util.stream.Collectors;
 public class AdminController {
 
     private final ItemService itemService;
+    private final MemberService memberService;
+    private final AdRepository adRepository;
 
     @GetMapping(value = "")
     @Secured({"ROLE_ADMIN"})
@@ -58,4 +65,41 @@ public class AdminController {
 
         return "/admin/item/itemManage";
     }
+
+    @GetMapping(value = "/member")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String memberManage(Model model, @RequestParam(value = "role", required = false) String role) {
+        if(role!=null){
+            if(role.equals("admin")){
+                List<MemberDto> members = memberService.findAdmins().stream().map(m->new MemberDto(m)).collect(Collectors.toList());
+                model.addAttribute("members", members);
+            }
+        }
+        else {
+            List<MemberDto> members = memberService.findMembers().stream().map(m->new MemberDto(m)).collect(Collectors.toList());
+            model.addAttribute("members", members);
+        }
+        model.addAttribute("memberSearch", new String());
+        return "admin/member/memberManage";
+    }
+
+    @GetMapping(value = "/member/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String memberSearch(Model model, @RequestParam("memberSearch") String memberSearch) {
+        List<MemberDto> members = memberService.findMembers(memberSearch).stream().map(m->new MemberDto(m)).collect(Collectors.toList());
+        model.addAttribute("members", members);
+        model.addAttribute("memberSearch", memberSearch);
+        return "/admin/member/memberManage";
+    }
+
+    @GetMapping(value = "/ad")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String adManage(Model model) {
+        List<Ad> ads = adRepository.findAll();
+        model.addAttribute("ads", ads);
+        model.addAttribute("adSearch", new String());
+        model.addAttribute("addAdForm", new AdForm());
+        return "/admin/ad/adManage";
+    }
+
 }
