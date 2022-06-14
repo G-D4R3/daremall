@@ -45,4 +45,15 @@ public class AdRepository {
                 .setParameter("date", LocalDate.now())
                 .getResultList();
     }
+
+    public void remove(Long adId) {
+        em.remove(em.find(Ad.class, adId));
+    }
+
+    public List<Ad> findByName(String search) {
+        return em.createQuery("select a from Ad a" +
+                " where upper(a.name) like upper(:name)", Ad.class)
+                .setParameter("name", "%"+search+"%")
+                .getResultList();
+    }
 }

@@ -99,6 +99,18 @@ public class AdminController {
         model.addAttribute("ads", ads);
         model.addAttribute("adSearch", new String());
         model.addAttribute("addAdForm", new AdForm());
+        model.addAttribute("updateAdForm", new AdForm());
+        return "/admin/ad/adManage";
+    }
+
+    @GetMapping(value = "/ad/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String adManage(Model model, @RequestParam("adSearch") String search) {
+        List<Ad> ads = adRepository.findByName(search);
+        model.addAttribute("ads", ads);
+        model.addAttribute("adSearch", new String());
+        model.addAttribute("addAdForm", new AdForm());
+        model.addAttribute("updateAdForm", new AdForm());
         return "/admin/ad/adManage";
     }
 

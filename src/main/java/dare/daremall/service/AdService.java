@@ -43,4 +43,31 @@ public class AdService {
     public List<MainAd> findMainAd() {
         return adRepository.findMainAd();
     }
+
+    @Transactional
+    public void remove(Long adId) {
+        adRepository.remove(adId);
+    }
+
+    public Ad find(Long adId) {
+        return adRepository.findOne(adId);
+    }
+
+    @Transactional
+    public void update(AdForm adForm) {
+        if(adForm.getType().equals("main")) {
+            MainAd ad = (MainAd) adRepository.findOne(adForm.getId());
+            ad.setName(adForm.getName());
+            if(adForm.getImagePath() != null) ad.setImagePath(adForm.getImagePath());
+            ad.setStart(LocalDate.parse(adForm.getStart(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            ad.setEnd(LocalDate.parse(adForm.getEnd(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            ad.setStatus(AdStatus.valueOf(adForm.getStatus()));
+            ad.setHref(adForm.getHref());
+            adRepository.save(ad);
+        }
+    }
+
+    public List<MainAd> findMainAdNow() {
+        return adRepository.findMainAdNow();
+    }
 }
