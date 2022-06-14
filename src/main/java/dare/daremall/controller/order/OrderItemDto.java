@@ -10,6 +10,7 @@ public class OrderItemDto {
     private String name;
     private int count;
     private int price;
+    private String imagePath;
 
     public OrderItemDto(OrderItem orderItem) {
         this.id = orderItem.getId();
@@ -17,6 +18,6 @@ public class OrderItemDto {
         this.name = orderItem.getItem().getName();
         this.count = orderItem.getCount();
         this.price = orderItem.getTotalPrice();
-
+        this.imagePath = orderItem.getItem().getImagePath();
     }
 }
