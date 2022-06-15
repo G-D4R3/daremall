@@ -30,7 +30,7 @@ public class AdRepository {
     }
 
     public List<Ad> findAll() {
-        return em.createQuery("select a from Ad a order by a.status", Ad.class).getResultList();
+        return em.createQuery("select a from Ad a order by a.status desc", Ad.class).getResultList();
     }
 
     public List<MainAd> findMainAd() {
@@ -42,7 +42,8 @@ public class AdRepository {
         return em.createQuery("select ma from MainAd ma" +
                 " where ma.start <= :date" +
                 " and ma.end >= :date" +
-                " and ma.status = 'NOW'", MainAd.class)
+                " and ma.status = 'NOW'" +
+                        " order by ma.status", MainAd.class)
                 .setParameter("date", LocalDate.now())
                 .getResultList();
     }

@@ -30,7 +30,10 @@ public class AdService {
             ad.setImagePath(adForm.getImagePath());
             ad.setStart(LocalDate.parse(adForm.getStart(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             ad.setEnd(LocalDate.parse(adForm.getEnd(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            ad.setStatus(AdStatus.valueOf(adForm.getStatus()));
+            if(ad.getEnd().isBefore(LocalDate.now())) {
+                ad.setStatus(AdStatus.END);
+            }
+            else ad.setStatus(AdStatus.valueOf(adForm.getStatus()));
             ad.setHref(adForm.getHref());
             adRepository.save(ad);
         }
@@ -61,7 +64,10 @@ public class AdService {
             if(adForm.getImagePath() != null) ad.setImagePath(adForm.getImagePath());
             ad.setStart(LocalDate.parse(adForm.getStart(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             ad.setEnd(LocalDate.parse(adForm.getEnd(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            ad.setStatus(AdStatus.valueOf(adForm.getStatus()));
+            if(ad.getEnd().isBefore(LocalDate.now())) {
+                ad.setStatus(AdStatus.END);
+            }
+            else ad.setStatus(AdStatus.valueOf(adForm.getStatus()));
             ad.setHref(adForm.getHref());
             adRepository.save(ad);
         }

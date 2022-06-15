@@ -27,6 +27,7 @@
                 <td>
                     <p th:if="${ad.status.toString()}=='NOW'" style="color: green">광고 중</p>
                     <p th:if="${ad.status.toString()}=='NOT'"  style="color: darkred">광고 미표시</p>
+                    <p th:if="${ad.status.toString()}=='END'"  style="color: dimgrey">광고 종료</p>
                 </td>
                 <td>
                     <img th:src="@{${ad.imagePath}}" style="width: 200px; height: 80px">
@@ -80,7 +81,7 @@
                         </div>
                         <div class="flex-row">
                             <label>광고 종료</label>
-                            <input class="form-control" type="date" id="updateEnd" th:field="*{end}" placeholder="광고 종료 날짜를 선택해주세요">
+                            <input class="form-control" type="date" id="updateEnd" th:field="*{end}" placeholder="광고 종료 날짜를 선택해주세요" onchange="updateEndSelected()">
                         </div>
                         <div class="flex-row">
                             <label>광고 유형 선택</label>
@@ -95,6 +96,7 @@
                                 <option value="option">광고 상태</option>
                                 <option value="NOW">광고 표시</option>
                                 <option value="NOT">광고 미표시</option>
+                                <option value="END">광고 종료</option>
                             </select>
                         </div>
                         <div class="flex-row">
@@ -133,11 +135,11 @@
                         </div>
                         <div class="flex-row">
                             <label>광고 시작</label>
-                            <input class="form-control" type="date" id="start" th:field="*{start}" placeholder="광고 시작 날짜를 선택해주세요">
+                            <input class="form-control" type="date" id="start" th:field="*{start}" placeholder="광고 시작 날짜를 선택해주세요" onchange="addStartSelected()">
                         </div>
                         <div class="flex-row">
                             <label>광고 종료</label>
-                            <input class="form-control" type="date" id="end" th:field="*{end}" placeholder="광고 종료 날짜를 선택해주세요">
+                            <input class="form-control" type="date" id="end" th:field="*{end}" placeholder="광고 종료 날짜를 선택해주세요" onchange="addEndSelected()">
                         </div>
                         <div class="flex-row">
                             <label>광고 유형 선택</label>
@@ -152,6 +154,7 @@
                                 <option value="option">광고 상태</option>
                                 <option value="NOW">광고 표시</option>
                                 <option value="NOT">광고 미표시</option>
+                                <option value="END">광고 종료</option>
                             </select>
                         </div>
                         <div class="flex-row">
@@ -219,8 +222,50 @@
 </style>
 <script>
 
+    function addStartSelected() {
+        document.getElementById("end").readOnly = false;
+    }
+
+    function addEndSelected() {
+        if($('#start').val() > $('#end').val()) {
+            alert("시작 날짜보다 이전 날짜는 선택할 수 없습니다.");
+            $('#end').val('');
+        }
+        else {
+            //alert(new Date($('#end').val())+" "+new Date());
+            if(new Date($('#end').val()) < new Date()) {
+                document.getElementById("status").value = "END";
+                document.getElementById("status").disabled = true;
+            }
+            else {
+                document.getElementById("status").value = "option";
+                document.getElementById("status").disabled = false;
+            }
+        }
+
+    }
+
+    function updateEndSelected() {
+        if($('#updateStart').val() > $('#updateEnd').val()) {
+            alert("시작 날짜보다 이전 날짜는 선택할 수 없습니다.");
+            $('#updateEnd').val('');
+        }
+        else {
+            //alert(new Date($('#end').val())+" "+new Date());
+            if(new Date($('#updateEnd').val()) < new Date()) {
+                document.getElementById("updateStatus").value = "END";
+                document.getElementById("updateStatus").disabled = true;
+            }
+            else {
+                document.getElementById("updateStatus").disabled = false;
+            }
+        }
+
+    }
+
     $('#addAd').click(function () {
         document.getElementById("addAdForm").reset();
+        document.getElementById("end").readOnly = true;
         $('#addModal').modal('toggle');
     });
 
