@@ -1,7 +1,8 @@
 package dare.daremall.service;
 
-import dare.daremall.controller.order.OrderDto;
+import dare.daremall.controller.admin.OrderDto;
 import dare.daremall.controller.order.OrderForm;
+import dare.daremall.controller.order.UpdateOrderDto;
 import dare.daremall.domain.*;
 import dare.daremall.domain.item.ItemStatus;
 import dare.daremall.repository.BaggedItemRepository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -95,5 +97,18 @@ public class OrderService {
         List<String> memberPhoneNumbers = orders.stream().map(o -> o.getMember().getPhone()).collect(Collectors.toList());
         orderRepository.removeOrderItem(itemId);
         // certificationService.itemNotSaleOrderCancel(memberPhoneNumbers, itemName); 주문 상품 주문 취소 문자 보내기
+    }
+
+    public List<Order> findAll() {
+        return orderRepository.findAll();
+    }
+
+    public List<Order> findByName(String search) {
+        return orderRepository.findByName(search);
+    }
+
+    public void update(UpdateOrderDto updateOrderDto) {
+        Order findOrder = orderRepository.findOne(updateOrderDto.getId());
+
     }
 }

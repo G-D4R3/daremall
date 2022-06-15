@@ -7,6 +7,9 @@ import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.service.MemberService;
 import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -126,4 +129,18 @@ public class OrderController {
         return "/user/order/orderDetail";
     }
 
+
+    @PostMapping(value = "/findOrder")
+    @PreAuthorize("hasRole('ADMIN')")
+    public @ResponseBody UpdateOrderDto findOrder(@RequestParam("orderId") Long orderId){
+        Order findOrder = orderService.findOne(orderId);
+        return new UpdateOrderDto(findOrder);
+    }
+
+    @PostMapping(value = "/update")
+    @PreAuthorize("hasRole('ADMIN')")
+    public @ResponseBody ResponseEntity updateOrder(UpdateOrderDto updateOrderDto) {
+        orderService.update(updateOrderDto);
+        return new ResponseEntity("주문 수정이 성공적으로 완료되었습니다.", HttpStatus.OK);
+    }
 }

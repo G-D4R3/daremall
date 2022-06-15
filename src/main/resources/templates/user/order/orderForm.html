@@ -19,7 +19,7 @@
                 <tbody>
                 <tr th:each="item : ${items}">
                     <td class="td-image">
-                        <img th:src="@{'/images/'+${item.itemId}+'.png'}">
+                        <img th:src="@{${item.imagePath}}">
                         <a th:href="@{/items/detail(itemId=${item.itemId})}" th:text="${item.name}"></a>
                     </td>
                     <td th:text="${item.count}" style="vertical-align: middle"></td>

@@ -2,12 +2,16 @@ package dare.daremall.controller.admin;
 
 import dare.daremall.controller.item.ItemDto;
 import dare.daremall.controller.item.ItemListDto;
+import dare.daremall.controller.order.UpdateOrderDto;
+import dare.daremall.domain.Order;
 import dare.daremall.domain.ad.Ad;
 import dare.daremall.domain.ad.MainAd;
 import dare.daremall.domain.item.ItemSearch;
 import dare.daremall.repository.AdRepository;
+import dare.daremall.repository.OrderRepository;
 import dare.daremall.service.ItemService;
 import dare.daremall.service.MemberService;
+import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,6 +34,8 @@ public class AdminController {
     private final ItemService itemService;
     private final MemberService memberService;
     private final AdRepository adRepository;
+    private final OrderService orderService;
+    private final OrderRepository orderRepository;
 
     @GetMapping(value = "")
     @Secured({"ROLE_ADMIN"})
@@ -105,13 +111,47 @@ public class AdminController {
 
     @GetMapping(value = "/ad/search")
     @PreAuthorize("hasRole('ADMIN')")
-    public String adManage(Model model, @RequestParam("adSearch") String search) {
+    public String adSearch(Model model, @RequestParam("adSearch") String search) {
         List<Ad> ads = adRepository.findByName(search);
         model.addAttribute("ads", ads);
         model.addAttribute("adSearch", new String());
         model.addAttribute("addAdForm", new AdForm());
         model.addAttribute("updateAdForm", new AdForm());
         return "/admin/ad/adManage";
+    }
+
+    @GetMapping(value = "/order")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String orderManage(Model model, @RequestParam(value = "status", required = false) String status) {
+        if(status==null) {
+            List<OrderDto> orders = orderService.findAll().stream().map(o->new OrderDto(o)).collect(Collectors.toList());
+            model.addAttribute("orders", orders);
+        }
+        else if(status.equals("now")) {
+            List<OrderDto> orders = orderRepository.findNow().stream().map(o->new OrderDto(o)).collect(Collectors.toList());
+            model.addAttribute("orders", orders);
+        }
+        else if(status.equals("comp")) {
+            List<OrderDto> orders = orderRepository.findComp().stream().map(o->new OrderDto(o)).collect(Collectors.toList());
+            model.addAttribute("orders", orders);
+        }
+        else if(status.equals("cancel")) {
+            List<OrderDto> orders = orderRepository.findCancel().stream().map(o->new OrderDto(o)).collect(Collectors.toList());
+            model.addAttribute("orders", orders);
+
+        }
+        model.addAttribute("orderSearch", new String());
+        model.addAttribute("updateOrderForm", new UpdateOrderDto());
+        return "/admin/order/orderManage";
+    }
+
+    @GetMapping(value = "/order/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String orderSearch(Model model, @RequestParam("orderSearch") String search) {
+        List<OrderDto> orders = orderService.findByName(search).stream().map(o->new OrderDto(o)).collect(Collectors.toList());
+        model.addAttribute("orders", orders);
+        model.addAttribute("orderSearch", search);
+        return "/admin/order/orderManage";
     }
 
 }

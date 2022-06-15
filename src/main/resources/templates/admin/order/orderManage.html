@@ -1,0 +1,210 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"/>
+<body>
+<div class="container">
+    <div th:replace="fragments/adminHeader :: adminHeader" />
+    <div class="admin-member">
+        <a href="/admin/order"><h3> 주문 관리 </h3></a>
+        <div class="admin-search-bar">
+            <form role="form" method="get" th:action="@{/admin/order/search}" class="flex-row">
+                <div class="search flex-row">
+                    <button type="reset" class="btn btn-dark" onclick="window.location.href = '/admin/order'">전체보기</button>
+                    <button type="reset" class="btn btn-dark" onclick="window.location.href = '/admin/order?status=now'">진행 중인 주문</button>
+                    <button type="reset" class="btn btn-dark" onclick="window.location.href = '/admin/order?status=comp'">진행 완료 주문</button>
+                    <button type="reset" class="btn btn-dark" onclick="window.location.href = '/admin/order?status=cancel'">취소된 주문</button>
+                    <input type="text" placeholder="주문 번호, 주문자 이름, 주문자 아이디 검색" name="orderSearch" th:value="${orderSearch}"/>
+                </div>
+                <button type="submit" class="btn btn-dark">검색</button>
+            </form>
+        </div>
+        <table class="table table-striped" th:if="${orders.size()>0}" style="text-align: center">
+            <thead>
+            <tr style="color: #37a3e3">
+                <th>주문자 명</th> <th>주문자 아이디</th> <th>주문 번호</th> <th>주문 일자</th> <th>주문 내역</th> <th>주문 금액</th> <th>주문 상태</th> <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td>
+                    <p th:text="${order.name}"></p>
+                </td>
+                <td>
+                    <p th:text="${order.loginId}"></p>
+                </td>
+                <td>
+                    <p th:text="${order.id}"></p>
+                </td>
+                <td>
+                    <p th:text="${order.orderDate}"></p>
+                </td>
+                <td>
+                    <p><a th:href="@{/order/detail(orderId=${order.id})}" th:text="${order.title}"></a></p>
+                </td>
+                <td>
+                    <p th:text="${order.price}+'원'"></p>
+                </td>
+                <td>
+                    <p th:text="${order.status}"></p>
+                </td>
+                <td class="admin-table-a">
+                    <a th:href="'javascript:updateOrderBtn('+${order.id}+')'" style="color: dodgerblue">수정</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="updateModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">주문 수정</h5>
+                    <button type="reset" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form enctype="multipart/form-data" id="updateForm" th:object="${updateOrderForm}" method="post" action="/order/update" onsubmit="return checkForm();">
+                        <div class="flex-row">
+                            <label>주문 번호</label>
+                            <input class="form-control" type="text" id="id" th:field="*{id}" readonly>
+                        </div>
+                        <div class="flex-row">
+                            <label>주문자 명</label>
+                            <input class="form-control" type="text" id="name" readonly>
+                        </div>
+                        <div class="flex-row">
+                            <label>주문자 아이디</label>
+                            <input class="form-control" type="text" id="loginId" readonly>
+                        </div>
+                        <div class="flex-row">
+                            <label>주문 일자</label>
+                            <input class="form-control" type="text" id="orderDate" readonly>
+                        </div>
+                        <div class="flex-row">
+                            <label>주문 내역</label>
+                            <input class="form-control" type="text" id="order" readonly>
+                        </div>
+                        <div class="flex-row">
+                            <label>주문 상태</label>
+                            <select id="orderStatus" class="form-control" th:field="*{orderStatus}" onchange="orderStatusChange()">
+                                <option value="option">주문 상태</option>
+                                <option value="ORDER">주문 완료</option>
+                                <option value="PAY">결제 완료</option>
+                                <option value="CANCEL">주문 취소</option>
+                            </select>
+                        </div>
+                        <div class="flex-row">
+                            <label>배송 상태</label>
+                            <select id="deliveryStatus" class="form-control" th:field="*{deliveryStatus}" onchange="deliveryStatusChange()">
+                                <option value="option">주문 상태</option>
+                                <option value="NONE">====</option>
+                                <option value="READY">배송 준비</option>
+                                <option value="SHIP">배송 중</option>
+                                <option value="COMP">배송 완료</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="updateBtn" type="button" class="btn btn-primary" style="margin: auto">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+</body>
+<style>
+    .modal-body form {
+        margin-top: 20px;
+        margin-bottom: 20px
+    }
+
+    .modal-body .flex-row {
+        margin-bottom: 10px;
+    }
+
+    .modal-body .flex-row label {
+        flex: 1;
+        margin: auto;
+        height: fit-content;
+    }
+
+    .modal-body .flex-row input{
+        flex: 3;
+    }
+
+    .modal-body .flex-row select{
+        flex: 3;
+    }
+</style>
+<script>
+
+    function updateOrderBtn(id) {
+
+        $.ajax({
+            url: '/order/findOrder',
+            method: 'POST',
+            data: {
+                "orderId" : id
+            },
+            success: function(data) {
+                document.getElementById("id").value = data.id;
+                document.getElementById("name").value = data.name;
+                document.getElementById("loginId").value = data.loginId;
+                document.getElementById("orderDate").value = data.orderDate;
+                document.getElementById("orderStatus").value = data.orderStatus;
+                document.getElementById("deliveryStatus").value = data.deliveryStatus;
+                if(data.orderStatus=='ORDER') {
+                    document.getElementById("deliveryStatus").disabled = true;
+                }
+                $('#updateModal').modal('toggle');
+            },
+            error: function(err) {
+                alert(err);
+            }
+        })
+
+
+    }
+
+    $('#updateBtn').click(function () {
+        $('#updateForm').submit();
+    });
+
+    function orderStatusChange() {
+        if($('#orderStatus').val() == "ORDER") {
+            document.getElementById("deliveryStatus").value = "NONE";
+            document.getElementById("deliveryStatus").disabled = true;
+        }
+        else {
+            document.getElementById("deliveryStatus").disabled = false;
+        }
+    }
+
+    function deliveryStatusChange() {
+        if($('#orderStatus').val() == "ORDER" && $('#deliveryStatus').val() != "NONE") {
+            alert("결제가 왼료되지 않았습니다. 배송 상태를 수정할 수 없습니다.");
+            document.getElementById("deliveryStatus").value = "NONE";
+            document.getElementById("deliveryStatus").disabled = true;
+        }
+    }
+
+    function checkForm() {
+        if($('#orderStatus').val()=="option") {
+            alert("주문 상태를 선택해주세요");
+            return false;
+        }
+        if($('#deliveryStatus').val()=="option") {
+            alert("배송 상태를 선택해주세요");
+            return false;
+        }
+        if($('#orderStatus').val() == "ORDER" && $('#deliveryStatus').val() != "NONE") {
+            alert("결제가 왼료되지 않았습니다. 배송 상태를 수정할 수 없습니다.");
+        }
+        return true;
+    }
+
+</script>
+</html>

@@ -11,6 +11,7 @@ public class BaggedItemOrderDto {
     private int price;
     private int count;
     private int totalPrice;
+    private String imagePath;
 
 
     public BaggedItemOrderDto(BaggedItem baggedItem) {
@@ -19,5 +20,6 @@ public class BaggedItemOrderDto {
         this.price = baggedItem.getPrice();
         this.count = baggedItem.getCount();
         this.totalPrice = baggedItem.getTotalPrice();
+        this.imagePath = baggedItem.getItem().getImagePath();
     }
 }
