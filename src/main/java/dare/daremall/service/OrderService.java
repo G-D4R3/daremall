@@ -107,8 +107,11 @@ public class OrderService {
         return orderRepository.findByName(search);
     }
 
+    @Transactional
     public void update(UpdateOrderDto updateOrderDto) {
         Order findOrder = orderRepository.findOne(updateOrderDto.getId());
-
+        findOrder.setStatus(OrderStatus.valueOf(updateOrderDto.getOrderStatus()));
+        findOrder.getDelivery().setStatus(DeliveryStatus.valueOf(updateOrderDto.getDeliveryStatus()));
+        orderRepository.save(findOrder);
     }
 }

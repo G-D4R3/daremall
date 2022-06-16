@@ -19,46 +19,43 @@
             </form>
         </div>
         <table class="table table-striped" th:if="${orders.size()>0}" style="text-align: center">
+            <colgroup>
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="30%">
+                <col width="10%">
+                <col width="10%">
+            </colgroup>
             <thead>
             <tr style="color: #37a3e3">
-                <th>주문자 명</th> <th>주문자 아이디</th> <th>주문 번호</th> <th>주문 일자</th> <th>주문 내역</th> <th>주문 금액</th> <th>주문 상태</th> <th></th>
+                <th>주문자 명</th> <th>주문자 아이디</th> <th>주문 번호</th> <th>주문 일자</th> <th>주문 내역</th> <th>주문 상태</th> <th></th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="order : ${orders}">
+                <td th:text="${order.name}"></td>
+                <td th:text="${order.loginId}"></td>
+                <td th:text="${order.id}"></td>
+                <td th:text="${order.orderDate}"></td>
                 <td>
-                    <p th:text="${order.name}"></p>
+                    <a th:href="@{/order/detail(orderId=${order.id})}" th:text="${order.title}"></a>
                 </td>
-                <td>
-                    <p th:text="${order.loginId}"></p>
-                </td>
-                <td>
-                    <p th:text="${order.id}"></p>
-                </td>
-                <td>
-                    <p th:text="${order.orderDate}"></p>
-                </td>
-                <td>
-                    <p><a th:href="@{/order/detail(orderId=${order.id})}" th:text="${order.title}"></a></p>
-                </td>
-                <td>
-                    <p th:text="${order.price}+'원'"></p>
-                </td>
-                <td>
-                    <p th:text="${order.status}"></p>
+                <td th:text="${order.status}">
                 </td>
                 <td class="admin-table-a">
-                    <a th:href="'javascript:updateOrderBtn('+${order.id}+')'" style="color: dodgerblue">수정</a>
+                    <a th:href="'javascript:updateOrderBtn('+${order.id}+')'" style="color: dodgerblue">상세 내역 조회</a>
                 </td>
             </tr>
             </tbody>
         </table>
     </div>
     <div id="updateModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">주문 수정</h5>
+                    <h5 class="modal-title">주문 상세</h5>
                     <button type="reset" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -82,10 +79,6 @@
                             <input class="form-control" type="text" id="orderDate" readonly>
                         </div>
                         <div class="flex-row">
-                            <label>주문 내역</label>
-                            <input class="form-control" type="text" id="order" readonly>
-                        </div>
-                        <div class="flex-row">
                             <label>주문 상태</label>
                             <select id="orderStatus" class="form-control" th:field="*{orderStatus}" onchange="orderStatusChange()">
                                 <option value="option">주문 상태</option>
@@ -104,10 +97,27 @@
                                 <option value="COMP">배송 완료</option>
                             </select>
                         </div>
+                        <div>
+                            <label>주문 내역</label>
+                            <div class="orderItems-table">
+                                <table id="orderItems" class="table" th:if="${orders.size()>0}" style="text-align: center">
+                                    <thead>
+                                    <tr style="color: #37a3e3">
+                                        <th>id</th> <th>주문 상품</th> <th>수량</th> <th>금액</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="flex-row">
+                            <label>주문 금액</label>
+                            <input class="form-control" type="text" id="price" readonly>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button id="updateBtn" type="button" class="btn btn-primary" style="margin: auto">저장</button>
+                    <button id="updateBtn" type="button" class="btn btn-primary" style="margin: auto">수정</button>
                 </div>
             </div>
         </div>
@@ -116,6 +126,7 @@
 </div> <!-- /container -->
 </body>
 <style>
+
     .modal-body form {
         margin-top: 20px;
         margin-bottom: 20px
@@ -138,6 +149,21 @@
     .modal-body .flex-row select{
         flex: 3;
     }
+
+    .modal-content {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .orderItems-table {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
 </style>
 <script>
 
@@ -159,6 +185,26 @@
                 if(data.orderStatus=='ORDER') {
                     document.getElementById("deliveryStatus").disabled = true;
                 }
+                $('#orderItems tr').nextAll().detach();
+                var table = document.getElementById("orderItems");
+
+                for(let i=0; i<data.orderItems.length; i++) {
+                    let tr = table.insertRow();
+                    let itemId = tr.insertCell(0);
+                    itemId.textContent = data.orderItems[i].itemId;
+
+                    let name = tr.insertCell(1);
+                    name.textContent = data.orderItems[i].name;
+
+                    let count = tr.insertCell(2);
+                    count.textContent = data.orderItems[i].count;
+
+                    let price = tr.insertCell(3);
+                    price.textContent = data.orderItems[i].price;
+
+                }
+
+                document.getElementById("price").value = data.totalPrice;
                 $('#updateModal').modal('toggle');
             },
             error: function(err) {
