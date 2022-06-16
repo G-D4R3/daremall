@@ -39,21 +39,9 @@ public class AdService {
         }
     }
 
-    public List<String> getMainAdSrc() {
-        return adRepository.findMainAdNow().stream().map(ma->ma.getImagePath()).collect(Collectors.toList());
-    }
-
-    public List<MainAd> findMainAd() {
-        return adRepository.findMainAd();
-    }
-
     @Transactional
     public void remove(Long adId) {
         adRepository.remove(adId);
-    }
-
-    public Ad find(Long adId) {
-        return adRepository.findOne(adId);
     }
 
     @Transactional
@@ -73,7 +61,16 @@ public class AdService {
         }
     }
 
+    public Ad find(Long adId) {
+        return adRepository.findOne(adId);
+    }
+
+    // 메인 화면 표시 광고
     public List<MainAd> findMainAdNow() {
         return adRepository.findMainAdNow();
+    }
+
+    public List<MainAd> findMainAd() {
+        return adRepository.findMainAd();
     }
 }

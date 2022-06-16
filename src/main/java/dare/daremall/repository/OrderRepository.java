@@ -32,10 +32,19 @@ public class OrderRepository {
                 .getResultList();
     }
 
+    public List<Order> findAll() {
+        return em.createQuery("select o from Order o order by o.id, o.status", Order.class).getResultList();
+    }
+
     public void remove(Order order) {
         em.remove(order);
     }
 
+    /**
+     * 해당 상품을 주문한 주문 조회
+     * @param itemId
+     * @return
+     */
     public List<Order> findByItemId(Long itemId) {
         return em.createQuery("select o from Order o, OrderItem oi " +
                 " where oi.order = o" +
@@ -53,9 +62,13 @@ public class OrderRepository {
                 .executeUpdate();
     }
 
-    public List<Order> findAll() {
-        return em.createQuery("select o from Order o order by o.id, o.status", Order.class).getResultList();
-    }
+    /** **/
+
+
+    /**
+     * 관리자 페이지 - /order
+     */
+
 
     public List<Order> findByName(String search) {
         if(search.matches("[0-9]+")) {
@@ -75,8 +88,6 @@ public class OrderRepository {
                     .setParameter("search", "%"+search+"%")
                     .getResultList();
         }
-
-
     }
 
     public List<Order> findNow() {
@@ -98,4 +109,6 @@ public class OrderRepository {
                 " where o.status = 'CANCEL'", Order.class)
                 .getResultList();
     }
+
+    /** **/
 }

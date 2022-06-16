@@ -13,13 +13,19 @@ public class BaggedItemRepository {
 
     private final EntityManager em;
 
+    public BaggedItem findById(Long baggedItemId) {
+        return em.find(BaggedItem.class, baggedItemId);
+    }
+
     public void remove(Long id) {
         em.remove(em.find(BaggedItem.class, id));
     }
 
-    public BaggedItem findById(Long baggedItemId) {
-        return em.find(BaggedItem.class, baggedItemId);
-    }
+    /**
+     * 주문
+     * @param loginId
+     * @return
+     */
 
     public List<BaggedItem> findSelected(String loginId) {
         return em.createQuery("select bi from BaggedItem bi" +
@@ -53,4 +59,6 @@ public class BaggedItemRepository {
                 .setParameter("itemId", itemId)
                 .executeUpdate();
     }
+
+    /** **/
 }

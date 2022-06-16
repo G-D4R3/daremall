@@ -43,6 +43,12 @@ public class MemberRepository {
                 .getResultList().stream().findAny();
     }
 
+    /**
+     * 회원가입시 같은 이름, 휴대폰 번호 조합으로 가입된 계정 조회
+     * @param name
+     * @param phone
+     * @return
+     */
     public List<Member> findLoginIdByName(String name, String phone) {
         return em.createQuery("select m from Member m" +
                         " where m.name = :name" +
@@ -52,6 +58,12 @@ public class MemberRepository {
                 .getResultList();
     }
 
+    /**
+     * 비밀번호 찾기 시 사용자 조회
+     * @param loginId
+     * @param phone
+     * @return
+     */
     public Optional<Member> findMemberByLoginId(String loginId, String phone) {
         return em.createQuery("select m from Member m" +
                 " where m.loginId = :loginId" +
@@ -70,6 +82,15 @@ public class MemberRepository {
                 .getResultList().stream().findAny();
     }
 
+    /**
+     * 회원 정보 관리 페이지
+     */
+
+    /**
+     * 배송지 조회
+     * @param loginId
+     * @return
+     */
     public List<DeliveryInfo> findDeliveryInfos(String loginId) {
         return em.createQuery("select di from DeliveryInfo di" +
                 " where di.member.loginId = :loginId" +
@@ -78,6 +99,11 @@ public class MemberRepository {
                 .getResultList();
     }
 
+    /**
+     * 기본 배송지 조회
+     * @param loginId
+     * @return
+     */
     public Optional<DeliveryInfo> findDefaultDeliveryInfo(String loginId) {
         return em.createQuery("select di from DeliveryInfo di" +
                 " where di.member.loginId = :loginId" +
@@ -86,6 +112,18 @@ public class MemberRepository {
                 .getResultList().stream().findAny();
     }
 
+    /** **/
+
+
+    /**
+     * 관리자 페이지 - /member
+     */
+
+    /**
+     * 관리자 페이지 회원 이름, 아이디로 조회
+     * @param search
+     * @return
+     */
     public List<Member> findMembers(String search) {
         return em.createQuery("select m from Member m" +
                 " where upper(m.name) like upper(:search)" +
@@ -94,8 +132,14 @@ public class MemberRepository {
                 .getResultList();
     }
 
+    /**
+     * 관리자 페이지
+     * @return 관리자 계정
+     */
     public List<Member> findAdmins() {
         return em.createQuery("select m from Member m" +
                 " where m.role = 'ROLE_ADMIN'", Member.class).getResultList();
     }
+
+    /** **/
 }

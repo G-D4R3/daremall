@@ -32,6 +32,21 @@ public class ItemRepository {
         return Optional.ofNullable(em.find(Item.class, itemId));
     }
 
+    public List<Item> findAll() {
+        return em.createQuery("select i from Item i order by i.itemStatus", Item.class).getResultList();
+    }
+
+    public void remove(Long itemId) {
+        em.remove(em.find(Item.class, itemId));
+    }
+
+    /**
+     * 사용자 페이지
+     */
+
+    /**
+     * @return 상품 검색
+     */
     public List<Item> findByName(String name) {
         return em.createQuery("select i from Item i" +
                         " where upper(i.name) like upper(:name)" +
@@ -39,10 +54,6 @@ public class ItemRepository {
                         " order by i.itemStatus", Item.class)
                 .setParameter("name", "%"+name+"%")
                 .getResultList();
-    }
-
-    public List<Item> findAll() {
-        return em.createQuery("select i from Item i order by i.itemStatus", Item.class).getResultList();
     }
 
     public List<Item> findExceptHide() {
@@ -84,11 +95,13 @@ public class ItemRepository {
                 .setParameter("name", "%"+name+"%")
                 .getResultList();
     }
+    /** **/
 
-    public void remove(Long itemId) {
-        em.remove(em.find(Item.class, itemId));
-    }
 
+    /**
+     * 관리자 페이지 - /item
+     * @return status별 조회
+     */
     public List<Item> findByStatus(String status) {
         return em.createQuery("select i from Item i" +
                 " where i.itemStatus = upper(:status)", Item.class)

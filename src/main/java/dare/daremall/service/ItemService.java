@@ -47,6 +47,10 @@ public class ItemService {
         }
     }
 
+    public Item findOne(Long id) {
+        return itemRepository.findById(id).orElse(null);
+    }
+
     @Transactional
     public void updateItem(ItemDto itemDto) { // UpdateItemDto로 만들어서 관리해도 됨
 
@@ -80,16 +84,16 @@ public class ItemService {
 
     }
 
-    public List<Item> findItems() {
-        return itemRepository.findAll();
-    }
+    /**
+     * 사용자 상품 조회
+     */
 
     public List<Item> findItemsExceptHide() {
         return itemRepository.findExceptHide();
     }
 
-    public Item findOne(Long id) {
-        return itemRepository.findById(id).orElse(null);
+    public List<Item> findItems() {
+        return itemRepository.findAll();
     }
 
     public List<Item> findByName(String name) {
@@ -103,6 +107,11 @@ public class ItemService {
     public List<Book> findBooks() {
         return itemRepository.findByType("book");
     }
+
+    /** **/
+
+
+    /** 관리자 페이지 **/
 
     public List<Item> findItems(ItemSearch itemSearch) {
         return itemRepository.findByName(itemSearch.getName());
@@ -120,4 +129,6 @@ public class ItemService {
     public void delete(Long itemId) {
         itemRepository.remove(itemId);
     }
+
+    /** **/
 }

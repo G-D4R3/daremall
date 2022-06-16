@@ -30,19 +30,14 @@ public class OrderService {
     private final BaggedItemRepository baggedItemRepository;
     private final CertificationService certificationService;
 
-    public List<Order> findOrders(String loginId) {
-        return orderRepository.findByLoginId(loginId);
-    }
-
-    @Transactional
-    public void cancelOrder(Long orderId) {
-        Order order = orderRepository.findOne(orderId);
-        order.cancel();
-        memberRepository.save(order.getMember());
-    }
-
     public Order findOne(Long orderId) {
         return orderRepository.findOne(orderId);
+    }
+
+
+    /** 사용자 주문 **/
+    public List<Order> findOrders(String loginId) {
+        return orderRepository.findByLoginId(loginId);
     }
 
     @Transactional
@@ -81,6 +76,13 @@ public class OrderService {
     }
 
     @Transactional
+    public void cancelOrder(Long orderId) {
+        Order order = orderRepository.findOne(orderId);
+        order.cancel();
+        memberRepository.save(order.getMember());
+    }
+
+    @Transactional
     public void deleteOrder(Long orderId) {
         Order order = orderRepository.findOne(orderId);
         if(order.getStatus()==OrderStatus.CANCEL) {
@@ -92,6 +94,12 @@ public class OrderService {
         }
     }
 
+    /** **/
+
+    /**
+     * 관리자 페이지 -/item
+     * 상품 삭제시 주문 상품 삭제
+     */
     public void deleteOrderItem(Long itemId, String itemName) throws CoolsmsException {
         List<Order> orders = orderRepository.findByItemId(itemId);
         List<String> memberPhoneNumbers = orders.stream().map(o -> o.getMember().getPhone()).collect(Collectors.toList());
@@ -99,6 +107,10 @@ public class OrderService {
         // certificationService.itemNotSaleOrderCancel(memberPhoneNumbers, itemName); 주문 상품 주문 취소 문자 보내기
     }
 
+
+    /**
+     * 관리자 페이지 - /item
+     */
     public List<Order> findAll() {
         return orderRepository.findAll();
     }
@@ -114,4 +126,6 @@ public class OrderService {
         findOrder.getDelivery().setStatus(DeliveryStatus.valueOf(updateOrderDto.getDeliveryStatus()));
         orderRepository.save(findOrder);
     }
+
+    /** **/
 }

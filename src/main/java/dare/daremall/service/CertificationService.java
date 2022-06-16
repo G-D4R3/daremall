@@ -10,6 +10,8 @@ import java.util.Random;
 
 @Service
 public class CertificationService {
+
+    // 사용자 인증시 사용
     public String PhoneNumberCheck(String to) throws CoolsmsException {
 
         String api_key = "NCSAZ5LKT10MKKDR";
@@ -36,6 +38,7 @@ public class CertificationService {
 
     }
 
+    // 상품 수량 update시 문자 전송
     public void itemNotSaleOrderCancel(List<String> phones, String name) throws CoolsmsException {
 
         String api_key = "NCSAZ5LKT10MKKDR";

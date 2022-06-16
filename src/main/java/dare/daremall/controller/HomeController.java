@@ -17,8 +17,12 @@ public class HomeController {
 
     @RequestMapping("/")
     public String home(Model model) {
+
+        // 메인 화면 광고 배너
         List<MainAd> ads = adService.findMainAdNow();
         model.addAttribute("ads", ads);
+
+
         return "home";
     }
 }

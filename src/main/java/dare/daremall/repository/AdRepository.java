@@ -33,11 +33,32 @@ public class AdRepository {
         return em.createQuery("select a from Ad a order by a.status desc", Ad.class).getResultList();
     }
 
+    public void remove(Long adId) {
+        em.remove(em.find(Ad.class, adId));
+    }
+
+    /**
+     * 관리자 페이지 - ad
+     * @return
+     */
     public List<MainAd> findMainAd() {
         return em.createQuery("select ma from MainAd ma" +
                 " order by ma.status", MainAd.class).getResultList();
     }
 
+    public List<Ad> findByName(String search) {
+        return em.createQuery("select a from Ad a" +
+                        " where upper(a.name) like upper(:name)" +
+                        " order by a.status", Ad.class)
+                .setParameter("name", "%"+search+"%")
+                .getResultList();
+    }
+    /** **/
+
+
+    /**
+     * @return 메인 페이지에 표시될
+     */
     public List<MainAd> findMainAdNow() {
         return em.createQuery("select ma from MainAd ma" +
                 " where ma.start <= :date" +
@@ -48,15 +69,4 @@ public class AdRepository {
                 .getResultList();
     }
 
-    public void remove(Long adId) {
-        em.remove(em.find(Ad.class, adId));
-    }
-
-    public List<Ad> findByName(String search) {
-        return em.createQuery("select a from Ad a" +
-                " where upper(a.name) like upper(:name)" +
-                        " order by a.status", Ad.class)
-                .setParameter("name", "%"+search+"%")
-                .getResultList();
-    }
 }

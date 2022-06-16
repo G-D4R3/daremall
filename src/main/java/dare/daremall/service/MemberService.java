@@ -32,6 +32,19 @@ public class MemberService {
     private final BaggedItemRepository baggedItemRepository;
     private final LikeItemRepository likeItemRepository;
 
+    public Member findOne(Long id) {
+        return memberRepository.findById(id).orElse(null); // Optional로 받아서 처리하기
+    }
+
+    public Member findUser(String loginId) {
+        return memberRepository.findByLoginId(loginId).orElse(null);
+    }
+
+    public List<Member> findMembers() {
+        return memberRepository.findAll();
+    }
+
+    /** 회원가입 **/
 
     @Transactional
     public Long join(MemberSignupRequestDto memberDto){
@@ -63,17 +76,9 @@ public class MemberService {
         }
     }
 
-    public List<Member> findMembers() {
-        return memberRepository.findAll();
-    }
+    /** **/
 
-    public Member findOne(Long id) {
-        return memberRepository.findById(id).orElse(null); // Optional로 받아서 처리하기
-    }
-
-    public Member findUser(String loginId) {
-        return memberRepository.findByLoginId(loginId).orElse(null);
-    }
+    /** 장바구니 **/
 
     @Transactional
     public void addShoppingBag(Long itemId, String loginId, int count) {
@@ -116,9 +121,26 @@ public class MemberService {
         return baggedItemRepository.findSelected(loginId);
     }
 
+    @Transactional
+    public void selectAllBagItem(String loginId) {
+        Member member = memberRepository.findByLoginId(loginId).orElse(null);
+        for(BaggedItem baggedItem:member.getShoppingBag()) {
+            baggedItem.setChecked(true);
+        }
+    }
 
+    /** **/
+
+
+    /** 아이디 찾기 사용자 조회 **/
     public List<String> findLoginIdByName(String name, String phone) {
         return memberRepository.findLoginIdByName(name, phone).stream().map(m->m.getLoginId()).collect(Collectors.toList());
+    }
+
+    /** 비밀번호 찾기 **/
+
+    public Member findMemberByLoginId(String loginId, String phone) {
+        return memberRepository.findMemberByLoginId(loginId, phone).orElse(null);
     }
 
     @Transactional
@@ -127,10 +149,9 @@ public class MemberService {
         member.setPassword(newPassword);
         member.encryptPassword(passwordEncoder);
     }
+    /** **/
 
-    public Member findMemberByLoginId(String loginId, String phone) {
-        return memberRepository.findMemberByLoginId(loginId, phone).orElse(null);
-    }
+    /** 회원 정보 관리 페이지 **/
 
     @Transactional
     public void updateUserInfo(String loginId, String phone, String zipcode, String street, String detail) {
@@ -206,15 +227,10 @@ public class MemberService {
 
         memberRepository.save(findUser(loginId));
     }
+    /** **/
 
-    @Transactional
-    public void selectAllBagItem(String loginId) {
-        Member member = memberRepository.findByLoginId(loginId).orElse(null);
-        for(BaggedItem baggedItem:member.getShoppingBag()) {
-            baggedItem.setChecked(true);
-        }
-    }
 
+    /** 상품 좋아요 **/
     @Transactional
     public void changeLikeItem(String loginId, Long itemId) {
 
@@ -235,6 +251,10 @@ public class MemberService {
         memberRepository.save(findMember);
     }
 
+
+    /**
+     * 관리자 페이지 - /member
+     */
     public List<Member> findMembers(String search) {
         return memberRepository.findMembers(search);
     }
@@ -250,5 +270,6 @@ public class MemberService {
         memberRepository.save(member);
 
     }
+    /** **/
 }
 
