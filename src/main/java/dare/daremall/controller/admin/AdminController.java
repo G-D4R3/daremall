@@ -13,6 +13,7 @@ import dare.daremall.repository.OrderRepository;
 import dare.daremall.service.ItemService;
 import dare.daremall.service.MemberService;
 import dare.daremall.service.OrderService;
+import dare.daremall.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +39,7 @@ public class AdminController {
     private final AdRepository adRepository;
     private final OrderService orderService;
     private final OrderRepository orderRepository;
+    private final StatisticsService statisticsService;
 
     @GetMapping(value = "")
     @Secured({"ROLE_ADMIN"})
@@ -172,6 +174,7 @@ public class AdminController {
     @GetMapping(value = "/analysis")
     @PreAuthorize("hasRole('ADMIN')")
     public String analysis(Model model) {
+        model.addAttribute("orderStatistics", statisticsService.findAllOrderStatistics());
         return "/admin/analysis/analysis";
     }
 

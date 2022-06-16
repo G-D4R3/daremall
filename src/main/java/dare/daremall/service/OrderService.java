@@ -29,6 +29,7 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final BaggedItemRepository baggedItemRepository;
     private final CertificationService certificationService;
+    private final StatisticsService statisticsService;
 
     public Order findOne(Long orderId) {
         return orderRepository.findOne(orderId);
@@ -72,6 +73,7 @@ public class OrderService {
 
         orderRepository.save(order);
         memberRepository.save(member);
+        statisticsService.updateOrderStatistics(order);
         return order.getId();
     }
 
@@ -80,6 +82,7 @@ public class OrderService {
         Order order = orderRepository.findOne(orderId);
         order.cancel();
         memberRepository.save(order.getMember());
+        statisticsService.updateOrderStatistics(order);
     }
 
     @Transactional
@@ -104,6 +107,7 @@ public class OrderService {
         List<Order> orders = orderRepository.findByItemId(itemId);
         List<String> memberPhoneNumbers = orders.stream().map(o -> o.getMember().getPhone()).collect(Collectors.toList());
         orderRepository.removeOrderItem(itemId);
+        // 주문 상품 취소된 만큼 order 통계 다시 내기
         // certificationService.itemNotSaleOrderCancel(memberPhoneNumbers, itemName); 주문 상품 주문 취소 문자 보내기
     }
 
@@ -125,6 +129,7 @@ public class OrderService {
         findOrder.setStatus(OrderStatus.valueOf(updateOrderDto.getOrderStatus()));
         findOrder.getDelivery().setStatus(DeliveryStatus.valueOf(updateOrderDto.getDeliveryStatus()));
         orderRepository.save(findOrder);
+        //statisticsService.updateOrderStatistics(findOrder);
     }
 
     /** **/

@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"/>
+<body>
+<div class="container">
+    <div th:replace="fragments/adminHeader :: adminHeader" />
+    <div class="admin-member">
+        <a href="/admin/analysis"><h3> 통계 </h3></a>
+    </div>
+    <div>
+        <table id="order" class="table table-striped">
+            <thead>
+            <tr style="color: #37a3e3">
+                <th>날짜</th> <th>주문량</th> <th>판매액</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="statistic : ${orderStatistics}">
+                <td th:text="${statistic.date}"></td>
+                <td th:text="${statistic.orderQuantity}"></td>
+                <td th:text="${statistic.revenue}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+</body>
+<style>
+    .table td, th {
+        vertical-align: middle;
+        text-align: center;
+    }
+</style>
+</html>
