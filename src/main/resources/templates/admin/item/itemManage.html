@@ -10,10 +10,13 @@
             <form role="form" method="get" th:action="@{/admin/item/search}" class="flex-row">
                 <div class="search flex-row">
                     <button type="reset" class="btn btn-dark" onclick="window.location.href = '/admin/item'">전체보기</button>
+                    <button type="reset" class="btn btn-dark" onclick="window.location.href = '/admin/item?status=for_sale'">판매 중인 상품</button>
+                    <button type="reset" class="btn btn-dark" onclick="window.location.href = '/admin/item?status=not_for_sale'">판매 중단 상품</button>
+                    <button type="reset" class="btn btn-dark" onclick="window.location.href = '/admin/item?status=hide'">숨긴 상품</button>
                     <input type="text" placeholder="책 제목 / 작가 / 앨범 검색" name="item" th:value="${item}"/>
                 </div>
                 <button type="submit" class="btn btn-dark">검색</button>
-                <button id="add" type="button" class="btn btn-primary" onclick="addItemBtn()">추가</button>
+                <button type="button" class="btn btn-primary" onclick="addItemBtn()">추가</button>
             </form>
         </div>
         <table class="table table-striped">
@@ -210,10 +213,6 @@
 </div> <!-- /container -->
 </body>
 <style>
-    #add {
-        margin-left: 20px;
-    }
-
     .table .admin-table-a {
         vertical-align: middle;
         text-align: center;
@@ -271,6 +270,8 @@
     /** modal 창 띄우기 **/
     function addItemBtn() {
         document.getElementById("addItemForm").reset();
+        $("#album").hide();
+        $("#book").hide();
         $('#addItemModal').modal('toggle');
     }
 
@@ -428,6 +429,10 @@
         } else if ($('#type').val() == "B") {
             $("#book").show();
             $("#album").hide();
+        }
+        else if($('#type').val() == "option") {
+            $("#album").hide();
+            $("#book").hide();
         }
     }
 

@@ -8,6 +8,7 @@ import dare.daremall.domain.ad.Ad;
 import dare.daremall.domain.ad.MainAd;
 import dare.daremall.domain.item.ItemSearch;
 import dare.daremall.repository.AdRepository;
+import dare.daremall.repository.ItemRepository;
 import dare.daremall.repository.OrderRepository;
 import dare.daremall.service.ItemService;
 import dare.daremall.service.MemberService;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 public class AdminController {
 
     private final ItemService itemService;
+    private final ItemRepository itemRepository;
     private final MemberService memberService;
     private final AdRepository adRepository;
     private final OrderService orderService;
@@ -45,11 +47,16 @@ public class AdminController {
 
     @GetMapping(value = "/item")
     @Secured({"ROLE_ADMIN"})
-    public String itemManage(Model model) {
+    public String itemManage(Model model, @RequestParam(value = "status", required = false) String status) {
 
-        List<ItemListDto> items = itemService.findItems().stream().map(i -> new ItemListDto(i)).collect(Collectors.toList());
-
-        model.addAttribute("items", items);
+        if(status==null) {
+            List<ItemListDto> items = itemService.findItems().stream().map(i -> new ItemListDto(i)).collect(Collectors.toList());
+            model.addAttribute("items", items);
+        }
+        else {
+            List<ItemListDto> items = itemRepository.findByStatus(status).stream().map(i -> new ItemListDto(i)).collect(Collectors.toList());
+            model.addAttribute("items", items);
+        }
         model.addAttribute("addItemForm", new ItemDto());
         model.addAttribute("updateItemForm", new ItemDto());
         model.addAttribute("item", new String());
@@ -60,6 +67,8 @@ public class AdminController {
     @GetMapping(value = "/item/search")
     @Secured({"ROLE_ADMIN"})
     public String itemSearch(Model model, @RequestParam("item") String item) {
+
+        if(item.isEmpty()) return "redirect:/admin/item";
 
         ItemSearch itemSearch = new ItemSearch(item, "all");
         List<ItemListDto> items = itemService.findItems(itemSearch).stream().map(i -> new ItemListDto(i)).collect(Collectors.toList());
@@ -92,6 +101,7 @@ public class AdminController {
     @GetMapping(value = "/member/search")
     @PreAuthorize("hasRole('ADMIN')")
     public String memberSearch(Model model, @RequestParam("memberSearch") String memberSearch) {
+        if(memberSearch.isEmpty()) return "redirect:/admin/member";
         List<MemberDto> members = memberService.findMembers(memberSearch).stream().map(m->new MemberDto(m)).collect(Collectors.toList());
         model.addAttribute("members", members);
         model.addAttribute("memberSearch", memberSearch);
@@ -112,6 +122,7 @@ public class AdminController {
     @GetMapping(value = "/ad/search")
     @PreAuthorize("hasRole('ADMIN')")
     public String adSearch(Model model, @RequestParam("adSearch") String search) {
+        if(search.isEmpty()) return "redirect:/admin/ad";
         List<Ad> ads = adRepository.findByName(search);
         model.addAttribute("ads", ads);
         model.addAttribute("adSearch", new String());
@@ -148,10 +159,21 @@ public class AdminController {
     @GetMapping(value = "/order/search")
     @PreAuthorize("hasRole('ADMIN')")
     public String orderSearch(Model model, @RequestParam("orderSearch") String search) {
+        if(search.isEmpty()) {
+            return "redirect:/admin/order";
+        }
         List<OrderDto> orders = orderService.findByName(search).stream().map(o->new OrderDto(o)).collect(Collectors.toList());
         model.addAttribute("orders", orders);
         model.addAttribute("orderSearch", search);
+        model.addAttribute("updateOrderForm", new UpdateOrderDto());
         return "/admin/order/orderManage";
     }
+
+    @GetMapping(value = "/analysis")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String analysis(Model model) {
+        return "/admin/analysis/analysis";
+    }
+
 
 }

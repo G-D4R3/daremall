@@ -4,6 +4,7 @@ import dare.daremall.domain.LikeItem;
 import dare.daremall.domain.item.Album;
 import dare.daremall.domain.item.Book;
 import dare.daremall.domain.item.Item;
+import dare.daremall.domain.item.ItemStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -86,5 +87,12 @@ public class ItemRepository {
 
     public void remove(Long itemId) {
         em.remove(em.find(Item.class, itemId));
+    }
+
+    public List<Item> findByStatus(String status) {
+        return em.createQuery("select i from Item i" +
+                " where i.itemStatus = upper(:status)", Item.class)
+                .setParameter("status", status)
+                .getResultList();
     }
 }
