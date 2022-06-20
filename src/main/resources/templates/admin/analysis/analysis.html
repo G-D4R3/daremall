@@ -8,28 +8,206 @@
         <a href="/admin/analysis"><h3> 통계 </h3></a>
     </div>
     <div>
-        <table id="order" class="table table-striped">
-            <thead>
-            <tr style="color: #37a3e3">
-                <th>날짜</th> <th>주문량</th> <th>판매액</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="statistic : ${orderStatistics}">
-                <td th:text="${statistic.date}"></td>
-                <td th:text="${statistic.orderQuantity}"></td>
-                <td th:text="${statistic.revenue}"></td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="order-statistics jumbotron">
+            <h4>주문량 통계</h4>
+            <p>최근 일주일</p>
+            <canvas id="orderStatistics" height="300" width="600"></canvas>
+        </div>
+        <div class="item-statistics jumbotron">
+            <h4>상품 통계</h4>
+            <p>최근 일주일</p>
+            <select id="item-select" name="item-select" class="form-control">
+                <option value="option" >상품</option>
+                <option th:each="item : ${items}"
+                        th:value="${item.id}"
+                        th:text="${item.name}"/>
+            </select>
+            <canvas id="itemStatistics" height="300" width="600"></canvas>
+        </div>
     </div>
     <div th:replace="fragments/footer :: footer" />
 </div> <!-- /container -->
+<script th:src="@{https://code.jquery.com/jquery-3.5.1.slim.min.js}" crossorigin="anonymous"></script>
 </body>
 <style>
     .table td, th {
         vertical-align: middle;
         text-align: center;
     }
+
+    .order-statistics, .item-statistics {
+        margin-top: 30px;
+    }
+
+    .order-statistics h4, .item-statistics h4{
+        color: dodgerblue;
+    }
+
+    .order-statistics p, .item-statistics p{
+        color: #444444;
+    }
 </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+    /** order chart **/
+
+    var orderLabels = [];
+    var revenue = [];
+    var orderQuantity = [];
+
+    $.getJSON("http://localhost:8080/admin/analysis/getOrderStatistics", function(data) {
+        $.each(data, function(inx, obj) {
+
+            orderLabels.push(obj.date);
+            revenue.push(obj.revenue);
+            orderQuantity.push(obj.orderQuantity);
+
+        });
+        createOrderChart();
+    });
+
+    function createOrderChart() {
+        var ctx = document.getElementById("orderStatistics").getContext("2d");
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: orderLabels,
+                datasets: [{
+                    label: '판매액',
+                    yAxisID: 'A',
+                    borderColor: '#ff267d',
+                    backgroundColor: 'white',
+                    data: revenue,
+                    fill: false
+                }, {
+                    label: '주문량',
+                    yAxisID: 'B',
+                    borderColor: '#00aeff',
+                    backgroundColor: 'white',
+                    data: orderQuantity,
+                    fill: false
+                }]
+            },
+            options: {
+                tooltips: {
+                    mode: 'nearest'
+                },
+                scales: {
+                    A: {
+                        id: 'A',
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            text: '판매액'
+                        },
+                        ticks: {
+                            beginAtZero : true,
+                            stepSize: 50000,
+                            fontColor: '#ff267d',
+                            callback: function(value, index, values) {
+                                return value/10000 + ' 만 원';
+                            }
+                        }
+                    },
+                    B : {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            text: '주문량'
+                        },
+                        ticks: {
+                            beginAtZero : true,
+                            stepSize: 1,
+                            fontColor: '#00aeff',
+                            callback: function(value, index, values) {
+                                return value + ' 개';
+                            }
+                        }
+                    }
+                },
+                elements: {
+                    line: {
+                        tension: 0, // disables bezier curves
+                    },
+                    point: {
+                        radius: 4,
+                        borderWidth: 2,
+                        pointStyle: 'circle'
+                    }
+                }
+
+            }
+        });
+
+    }
+
+    /** item chart **/
+
+    var ctx = document.getElementById("itemStatistics").getContext("2d");
+    var config = {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: '판매 수량',
+                borderColor: '#ff267d',
+                backgroundColor: 'white',
+                data: [],
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    type: 'linear',
+                    position: 'left',
+                    ticks: {
+                        beginAtZero: true,
+                        stepSize: 1,
+                        fontColor: '#ff267d',
+                        callback: function(value, index, values) {
+                            return value + ' 개';
+                        }
+                    }
+                }
+            },
+            elements: {
+                line: {
+                    tension: 0, // disables bezier curves
+                },
+                point: {
+                    radius: 4,
+                    borderWidth: 2,
+                    pointStyle: 'circle'
+                }
+            }
+
+        }
+    };
+
+    var itemChart = new Chart(ctx, config);
+
+    $('#item-select').on("change", function() {
+        var id = $('#item-select option:selected').val();
+        if(id=="option") {
+            alert("상품을 선택해주세요");
+        }
+        else {
+            $.getJSON("http://localhost:8080/admin/analysis/getItemStatistics?itemId="+id, function(data) {
+                var itemLabels = [];
+                var salesCounts = [];
+                $.each(data, function(inx, obj) {
+                    itemLabels.push(obj.date);
+                    salesCounts.push(obj.salesCount);
+                });
+                itemChart.data.labels = itemLabels;
+                itemChart.data.datasets[0].data = salesCounts;
+                itemChart.update();
+            });
+        }
+    });
+
+</script>
 </html>
