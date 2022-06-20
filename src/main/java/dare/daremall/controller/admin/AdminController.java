@@ -3,10 +3,11 @@ package dare.daremall.controller.admin;
 import dare.daremall.controller.item.ItemDto;
 import dare.daremall.controller.item.ItemListDto;
 import dare.daremall.controller.order.UpdateOrderDto;
-import dare.daremall.domain.Order;
 import dare.daremall.domain.ad.Ad;
-import dare.daremall.domain.ad.MainAd;
+import dare.daremall.domain.item.Item;
 import dare.daremall.domain.item.ItemSearch;
+import dare.daremall.domain.statistics.ItemStatistics;
+import dare.daremall.domain.statistics.OrderStatistics;
 import dare.daremall.repository.AdRepository;
 import dare.daremall.repository.ItemRepository;
 import dare.daremall.repository.OrderRepository;
@@ -14,6 +15,7 @@ import dare.daremall.service.ItemService;
 import dare.daremall.service.MemberService;
 import dare.daremall.service.OrderService;
 import dare.daremall.service.StatisticsService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,9 +24,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -174,9 +175,37 @@ public class AdminController {
     @GetMapping(value = "/analysis")
     @PreAuthorize("hasRole('ADMIN')")
     public String analysis(Model model) {
-        model.addAttribute("orderStatistics", statisticsService.findAllOrderStatistics());
+        List<ItemSelectDto> items = itemService.findItems().stream().map(i->new ItemSelectDto(i)).collect(Collectors.toList());
+        model.addAttribute("items", items);
         return "/admin/analysis/analysis";
+    }
+
+    @Getter
+    private class ItemSelectDto {
+        Long id;
+        String name;
+
+        private ItemSelectDto(Item item) {
+            this.id = item.getId();
+            this.name = item.getName();
+        }
+    }
+
+    @GetMapping(value = "/analysis/getOrderStatistics")
+    @PreAuthorize("hasRole('ADMIN')")
+    public @ResponseBody List<OrderStatistics> getOrderStatistics() {
+        return statisticsService.findAllOrderStatisticsWeek();
+    }
+
+    @GetMapping(value = "/analysis/getItemStatistics")
+    @PreAuthorize("hasRole('ADMIN')")
+    public @ResponseBody List<ItemStatistics> getItemStatistics(@RequestParam(value = "itemId") Long itemId) {
+        if(itemId==null) {
+            return null;
+        }
+        else return statisticsService.findItemStatistics(itemId);
     }
 
 
 }
+

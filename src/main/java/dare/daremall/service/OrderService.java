@@ -74,6 +74,7 @@ public class OrderService {
         orderRepository.save(order);
         memberRepository.save(member);
         statisticsService.updateOrderStatistics(order);
+        statisticsService.updateItemStatistics(order);
         return order.getId();
     }
 

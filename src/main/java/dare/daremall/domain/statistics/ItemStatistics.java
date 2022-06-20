@@ -1,5 +1,6 @@
 package dare.daremall.domain.statistics;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dare.daremall.domain.item.Item;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,6 +21,8 @@ public class ItemStatistics {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id")
+    @JsonIgnore
     private Item item;
 
     private LocalDate date;

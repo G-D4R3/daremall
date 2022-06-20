@@ -35,4 +35,13 @@ public class OrderStatisticsRepository {
     public List<OrderStatistics> findAll() {
         return em.createQuery("select os from OrderStatistics os", OrderStatistics.class).getResultList();
     }
+
+    public List<OrderStatistics> findAllWeek() {
+        LocalDate now = LocalDate.now();
+        return em.createQuery("select os from OrderStatistics os" +
+                " where os.date between :last and :now", OrderStatistics.class)
+                .setParameter("last", now.minusDays(6))
+                .setParameter("now", now)
+                .getResultList();
+    }
 }
