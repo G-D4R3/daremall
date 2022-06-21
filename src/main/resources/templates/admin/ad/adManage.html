@@ -17,6 +17,14 @@
             </form>
         </div>
         <table id="members" class="table table-striped">
+            <colgroup>
+                <col width="10%">
+                <col width="20%">
+                <col width="30%">
+                <col width="30%">
+                <col width="5%">
+                <col width="5%">
+            </colgroup>
             <thead>
             <tr>
                 <th></th> <th></th> <th></th> <th>세부 사항</th> <th></th> <th></th>
@@ -24,7 +32,7 @@
             </thead>
             <tbody>
             <tr th:each="ad : ${ads}">
-                <td>
+                <td style="text-align: center">
                     <p th:if="${ad.status.toString()}=='NOW'" style="color: green">광고 중</p>
                     <p th:if="${ad.status.toString()}=='NOT'"  style="color: darkred">광고 미표시</p>
                     <p th:if="${ad.status.toString()}=='END'"  style="color: dimgrey">광고 종료</p>

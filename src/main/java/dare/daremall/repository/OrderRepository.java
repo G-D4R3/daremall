@@ -34,7 +34,7 @@ public class OrderRepository {
     }
 
     public List<Order> findAll() {
-        return em.createQuery("select o from Order o order by o.id, o.status", Order.class).getResultList();
+        return em.createQuery("select o from Order o order by o.id desc", Order.class).getResultList();
     }
 
     public void remove(Order order) {
@@ -76,7 +76,7 @@ public class OrderRepository {
             return em.createQuery("select o from Order o " +
                             " where o.id = :orderId" +
                             " or upper(o.member.loginId) like upper(:search)" +
-                            " order by o.id, o.status", Order.class)
+                            " order by o.id desc", Order.class)
                     .setParameter("orderId", Long.parseLong(search))
                     .setParameter("search", "%"+search+"%")
                     .getResultList();
@@ -85,7 +85,7 @@ public class OrderRepository {
             return em.createQuery("select o from Order o " +
                             " where upper(o.member.loginId) like upper(:search)" +
                             " or upper(o.member.name) like upper(:search)" +
-                            " order by o.id, o.status", Order.class)
+                            " order by o.id desc", Order.class)
                     .setParameter("search", "%"+search+"%")
                     .getResultList();
         }
