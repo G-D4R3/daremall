@@ -60,6 +60,8 @@ public class AdRepository {
      * @return 메인 페이지에 표시될
      */
     public List<MainAd> findMainAdNow() {
+        em.createQuery("update MainAd ma set ma.status = 'END' where ma.end <= :today")
+                .setParameter("today", LocalDate.now()).executeUpdate();
         return em.createQuery("select ma from MainAd ma" +
                 " where ma.start <= :date" +
                 " and ma.end >= :date" +

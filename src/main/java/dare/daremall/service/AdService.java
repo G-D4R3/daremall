@@ -66,6 +66,7 @@ public class AdService {
     }
 
     // 메인 화면 표시 광고
+    @Transactional
     public List<MainAd> findMainAdNow() {
         return adRepository.findMainAdNow();
     }
