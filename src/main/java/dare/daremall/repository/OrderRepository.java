@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -110,5 +111,15 @@ public class OrderRepository {
                 .getResultList();
     }
 
+    public Optional<OrderItem> findOrderItem(Long orderId, Long itemId) {
+        return em.createQuery("select oi from OrderItem oi" +
+                " where oi.item.id = :itemId" +
+                " and oi.order.id = :orderId", OrderItem.class)
+                .setParameter("itemId", itemId)
+                .setParameter("orderId", orderId)
+                .getResultList().stream().findAny();
+    }
+
     /** **/
+
 }

@@ -7,6 +7,7 @@ import dare.daremall.domain.statistics.ItemStatistics;
 import dare.daremall.domain.statistics.OrderStatistics;
 import dare.daremall.repository.ItemRepository;
 import dare.daremall.repository.ItemStatisticsRepository;
+import dare.daremall.repository.OrderRepository;
 import dare.daremall.repository.OrderStatisticsRepository;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class StatisticsService {
     private final OrderStatisticsRepository orderStatisticsRepository;
     private final ItemStatisticsRepository itemStatisticsRepository;
     private final ItemRepository itemRepository;
+    private final OrderRepository orderRepository;
 
     public OrderStatistics findOrderStatistics(LocalDate date) {
         return orderStatisticsRepository.findOne(date).orElse(null);
@@ -125,6 +127,31 @@ public class StatisticsService {
                 ItemStatistics itemStatistics = itemStatisticsRepository.findStatistics(item.getItem().getId(), order.getOrderDate().toLocalDate()).orElse(null);
                 itemStatistics.setRevenue(itemStatistics.getRevenue() - item.getTotalPrice());
                 itemStatisticsRepository.save(itemStatistics);
+            }
+        }
+    }
+
+    @Transactional
+    public void deleteOrderItem(List<Order> orders, Long itemId) {
+        for(Order order:orders) {
+            OrderStatistics orderStatistics = orderStatisticsRepository.findOne(order.getOrderDate().toLocalDate()).orElse(null);
+            OrderItem orderItem = orderRepository.findOrderItem(order.getId(), itemId).orElse(null);
+            if(orderItem!=null && orderStatistics!=null) {
+                orderStatistics.setOrderQuantity(orderStatistics.getOrderQuantity()-1);
+                orderStatistics.setRevenue(orderStatistics.getRevenue()-orderItem.getTotalPrice());
+                ItemStatistics itemStatistics = itemStatisticsRepository.findStatistics(itemId, order.getOrderDate().toLocalDate()).orElse(null);
+                if(itemStatistics != null) {
+                    itemStatistics.setSalesCount(itemStatistics.getSalesCount() - orderItem.getCount());
+                    itemStatistics.setRevenue(itemStatistics.getRevenue() - orderItem.getTotalPrice());
+                    itemStatisticsRepository.save(itemStatistics);
+                }
+                else {
+                    throw new IllegalStateException("주문 상품을 취소할 수 없습니다.");
+                }
+                orderStatisticsRepository.save(orderStatistics);
+            }
+            else {
+                throw new IllegalStateException("주문 상품을 취소할 수 없습니다.");
             }
         }
     }

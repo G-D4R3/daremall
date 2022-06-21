@@ -107,8 +107,9 @@ public class OrderService {
     public void deleteOrderItem(Long itemId, String itemName) throws CoolsmsException {
         List<Order> orders = orderRepository.findByItemId(itemId);
         List<String> memberPhoneNumbers = orders.stream().map(o -> o.getMember().getPhone()).collect(Collectors.toList());
-        orderRepository.removeOrderItem(itemId);
         // 주문 상품 취소된 만큼 order 통계 다시 내기
+        statisticsService.deleteOrderItem(orders, itemId);
+        orderRepository.removeOrderItem(itemId);
         // certificationService.itemNotSaleOrderCancel(memberPhoneNumbers, itemName); 주문 상품 주문 취소 문자 보내기
     }
 
@@ -127,10 +128,24 @@ public class OrderService {
     @Transactional
     public void update(UpdateOrderDto updateOrderDto) {
         Order findOrder = orderRepository.findOne(updateOrderDto.getId());
-        findOrder.setStatus(OrderStatus.valueOf(updateOrderDto.getOrderStatus()));
+        if(!findOrder.getStatus().equals(OrderStatus.valueOf(updateOrderDto.getOrderStatus()))
+                && (OrderStatus.valueOf(updateOrderDto.getOrderStatus()).equals(OrderStatus.CANCEL)
+                || OrderStatus.valueOf(updateOrderDto.getOrderStatus()).equals(OrderStatus.ORDER))) {
+            findOrder.setStatus(OrderStatus.valueOf(updateOrderDto.getOrderStatus()));
+            statisticsService.updateOrderStatistics(findOrder);
+            statisticsService.updateItemStatistics(findOrder);
+        }
+        else if (!findOrder.getStatus().equals(OrderStatus.valueOf(updateOrderDto.getOrderStatus()))
+                && OrderStatus.valueOf(updateOrderDto.getOrderStatus()).equals(OrderStatus.PAY)){
+            findOrder.setStatus(OrderStatus.valueOf(updateOrderDto.getOrderStatus()));
+            statisticsService.updateOrderStatistics(findOrder);
+            statisticsService.updateItemStatistics(findOrder);
+        }
+        else {
+            findOrder.setStatus(OrderStatus.valueOf(updateOrderDto.getOrderStatus()));
+        }
         findOrder.getDelivery().setStatus(DeliveryStatus.valueOf(updateOrderDto.getDeliveryStatus()));
         orderRepository.save(findOrder);
-        //statisticsService.updateOrderStatistics(findOrder);
     }
 
     /** **/
