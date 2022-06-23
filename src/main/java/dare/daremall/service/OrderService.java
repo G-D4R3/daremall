@@ -42,7 +42,7 @@ public class OrderService {
     }
 
     @Transactional
-    public Long createOrder(String loginId, OrderForm orderForm, OrderStatus orderStatus) {
+    public Long createOrder(String loginId, OrderForm orderForm, OrderStatus orderStatus, String merchantUid, String impUid) {
         Member member = memberRepository.findByLoginId(loginId).get();
 
         Delivery delivery = new Delivery();
@@ -67,7 +67,7 @@ public class OrderService {
             return OrderItem.createOrderItem(bi.getItem(), bi.getPrice(), bi.getCount());
         }).collect(Collectors.toList());
 
-        Order order = Order.createOrder(member, delivery, orderItems, orderStatus);
+        Order order = Order.createOrder(member, delivery, orderItems, orderStatus, merchantUid, impUid);
 
         for(BaggedItem item:baggedItems) member.removeBaggedItem(item);
 

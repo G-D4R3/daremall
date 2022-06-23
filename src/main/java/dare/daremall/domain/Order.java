@@ -39,6 +39,9 @@ public class Order {
 
     private boolean shippingFee;
 
+    private String merchantUid;
+    private String impUid;
+
     public void addOrderItem(OrderItem orderItem) {
         orderItems.add(orderItem);
         orderItem.setOrder(this);
@@ -49,7 +52,7 @@ public class Order {
         delivery.setOrder(this);
     }
 
-    public static Order createOrder(Member member, Delivery delivery, List<OrderItem> orderItems, OrderStatus orderStatus) {
+    public static Order createOrder(Member member, Delivery delivery, List<OrderItem> orderItems, OrderStatus orderStatus, String merchantUid, String impUid) {
         Order order = new Order();
         order.setMember(member);
         order.setDelivery(delivery);
@@ -62,6 +65,8 @@ public class Order {
         order.setOrderDate(LocalDateTime.now());
         if(order.getOrderItems().stream().mapToInt(oi->oi.getTotalPrice()).sum() >= 50000) order.setShippingFee(false);
         else order.setShippingFee(true);
+        order.setMerchantUid(merchantUid);
+        order.setImpUid(impUid);
         return order;
     }
 

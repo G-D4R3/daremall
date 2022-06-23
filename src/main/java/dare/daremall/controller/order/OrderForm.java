@@ -22,4 +22,7 @@ public class OrderForm {
     @NotEmpty(message = "결제 방식을 선택해주세요")
     private String payment;
 
+    private String merchantUid;
+    private String impUid;
+
 }

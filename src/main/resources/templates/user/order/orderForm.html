@@ -47,19 +47,44 @@
             <p style="color: #AAAAAA; font-size: 9pt">주문 금액 5만원 이상 배송비 무료</p>
         </div>
         <div class="inner-container">
+            <h4>주문자 정보</h4>
+            <div class="flex-row">
+                <div class="order" th:object="${paymentForm}">
+                    <div class="form-group flex-row">
+                        <label th:for="name">주문자 이름</label>
+                        <input id="orderName" type="text" th:field="*{name}" class="form-control" readonly>
+                    </div>
+                    <div class="form-group flex-row">
+                        <label th:for="phone">휴대폰 번호</label>
+                        <input id="orderPhone" type="tel" th:field="*{phone}" class="form-control" readonly>
+                    </div>
+                    <p class="field-error-text" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Incorrect date</p>
+                    <div class="form-group flex-row">
+                        <label th:for="email">이메일</label>
+                        <input id="orderEmail" type="email" th:field="*{email}" class="form-control"
+                               th:class="${#fields.hasErrors('email')}? 'form-control fieldError' : 'form-control'">
+                    </div>
+                    <input id="orderZipcode" type="text" th:field="*{zipcode}" class="form-control" placeholder="우편번호를 입력하세요" hidden>
+                    <input id="orderStreet" type="text" th:field="*{street}" class="form-control" placeholder="도로명 주소를 입력하세요" hidden>
+                    <input id="orderDetail" type="text" th:field="*{detail}" class="form-control" placeholder="상세 주소를 입력하세요" hidden>
+                </div>
+                </form>
+            </div>
+        </div>
+        <div class="inner-container">
             <h4>배송주소</h4>
-            <form onsubmit="return onSubmitOrder()" role="form" action="/order/createOrder" th:object="${orderForm}" method="post">
-                <div class="flex-row">
-                    <div class="delivery">
-                        <div id="delivery-select" class="form-group flex-row delivery-select">
-                            <label th:for="delivery-select">배송지 선택</label>
-                            <select class="form-control">
-                                <option value="option">옵션 선택</option>
-                                <option th:each="delivery : ${myDeliveries}"
-                                        th:value="${delivery.id}"
-                                        th:text="${delivery.nickname}"/>
-                            </select>
-                        </div>
+            <div class="flex-row">
+                <div class="delivery">
+                    <div id="delivery-select" class="form-group flex-row delivery-select">
+                        <label th:for="delivery-select">배송지 선택</label>
+                        <select class="form-control">
+                            <option value="option">옵션 선택</option>
+                            <option th:each="delivery : ${myDeliveries}"
+                                    th:value="${delivery.id}"
+                                    th:text="${delivery.nickname}"/>
+                        </select>
+                    </div>
+                    <form id="orderForm" role="form" action="/order/createOrder" th:object="${orderForm}" method="post">
                         <p class="field-error-text" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Incorrect date</p>
                         <div class="form-group flex-row required">
                             <label th:for="name">수령인 이름</label>
@@ -93,23 +118,25 @@
                             <input id="detail" type="text" th:field="*{detail}" class="form-control" placeholder="상세 주소를 입력하세요"
                                    th:class="${#fields.hasErrors('detail')}? 'form-control fieldError' : 'form-control'">
                         </div>
-                    </div>
-                    <div class="total-amount">
-                        <h4>총 결제 금액</h4>
-                        <p th:text="${totalPrice}"></p>
-                        <button type="submit" class="btn btn-primary">결제하기</button>
-                    </div>
+                        <input id="payment" type="text" th:field="*{payment}" hidden>
+                        <input id="marchantUid" type="text" th:field="*{merchantUid}" hidden>
+                        <input id="impUid" type="text" th:field="*{impUid}" hidden>
+                    </form>
                 </div>
-                <div class="payment-option">
-                    <h4>결제 방법</h4>
-                    <div class="form-check form-check-inline">
-                        <label class="form-check-label"><input name="pay_type" type="radio" th:field="*{payment}" value="deposit" class="form-check-input">무통장 입금</label>
-                        <label class="form-check-label"><input name="pay_type" type="radio" th:field="*{payment}" value="pay" class="form-check-input">카드 결제</label>
-                    </div>
+                <div class="total-amount">
+                    <h4>총 결제 금액</h4>
+                    <p th:text="${totalPrice}"></p>
+                    <button id="payBtn" type="button" class="btn btn-primary">결제하기</button>
                 </div>
-            </form>
+            </div>
+            <div class="payment-option">
+                <h4>결제 방법</h4>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label"><input name="pay_type" type="radio" value="deposit" class="form-check-input">무통장 입금</label>
+                    <label class="form-check-label"><input name="pay_type" type="radio" value="kakao" class="form-check-input">카카오페이</label>
+                </div>
+            </div>
         </div>
-
     </div>
     <div style="clear: both" th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->
@@ -144,12 +171,28 @@
         margin-right: 20px;
     }
 
+    .order {
+        background-color: #EEEEEE;
+        flex: 1;
+        padding: 3%;
+        font-size: 12pt;
+        color: #444444;
+    }
+
+    .order label {
+        width: 20%;
+    }
+
+    .order input {
+        width: 40%;
+    }
+
     .delivery {
         background-color: #EEEEEE;
         padding: 3%;
         flex: 2;
         font-size: 12pt;
-        color: #909de9;
+        color: #444444;
     }
 
     .delivery-select label{
@@ -226,7 +269,7 @@
         padding: 10px
     }
 </style>
-<script>
+<script th:inline="javascript">
 
     $('#delivery-select').on("change", function() {
         var id = $('#delivery-select option:selected').val();
@@ -247,32 +290,60 @@
         });
     })
 
-    function onSubmitOrder() {
-        var radio = $(':radio');
+    function kakao () {
+        var money = [[${totalPrice}]]; // html 소스 조작 방지
 
-        var isChecked = false;
+        var IMP = window.IMP;
+        IMP.init("imp23063635");
 
-        for(var i=0; i<radio.length; i++) {
-            if($(radio[i]).is(':checked')) {
-                isChecked = true;
-                break;
+        IMP.request_pay({
+            pg: 'kakaopay',
+            merchant_uid: 'daremall_' + new Date().getTime(),
+            name: 'DARE MALL 카카오 페이 머니 충전',
+            amount: money,
+            buyer_email: $('#orderEmail').val(),
+            buyer_name: $('#orderName').val(),
+            buyer_tel: $('#orderPhone').val(),
+            buyer_addr: $('#orderStreet').val()+', '+$('#orderDetail').val(),
+            buyer_postcode: $('#orderZipcode').val()
+        }, function (rsp) {
+            // console.log(rsp);
+            if (rsp.success) {
+                var msg = '결제가 완료되었습니다.';
+                /**
+                 * '고유ID : ' + rsp.imp_uid;
+                 * '상점 거래ID : ' + rsp.merchant_uid;
+                 * '결제 금액 : ' + rsp.paid_amount;
+                 * '카드 승인번호 : ' + rsp.apply_num;
+                 */
+
+                alert(msg);
+                document.getElementById("marchantUid").value = rsp.merchant_uid;
+                document.getElementById("impUid").value = rsp.imp_uid;
+                $('#orderForm').submit();
+            } else {
+                var msg = '결제에 실패하였습니다.';
+                msg += '에러내용 : ' + rsp.error_msg;
+                alert(msg);
             }
-        }
-        if(isChecked) return true;
-        else {
-            alert("결제 방법을 선택해주세요");
-            return false;
-        }
-
-/*
-        if(radio==null){
-            alert("결제 방법을 선택해주세요");
-            return false;
-        }
-        return true;
-
- */
+        });
     }
+    // https://velog.io/@kyu9610/Spring-Boot-%EC%87%BC%ED%95%91%EB%AA%B0-User-%EA%B8%88%EC%95%A1-%EC%B6%A9%EC%A0%84%EA%B8%B0%EB%8A%A5
+
+    $('#payBtn').click( function (){
+        var radio = $('input[name=pay_type]:checked').val();
+        if(typeof radio == "undefined") {
+            alert("결제 방식을 선택해주세요");
+        }
+        else if(radio == "kakao") {
+            document.getElementById("payment").value = "kakao";
+            kakao();
+        }
+        else if(radio == "deposit"){
+            document.getElementById("payment").value = "deposit";
+        }
+    });
+
 
 
     // [출처] : https://ws-pace.tistory.com/38

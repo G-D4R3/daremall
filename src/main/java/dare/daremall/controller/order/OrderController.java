@@ -1,5 +1,7 @@
 package dare.daremall.controller.order;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.domain.*;
 import dare.daremall.domain.discountPolicy.DiscountPolicy;
@@ -7,6 +9,14 @@ import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.service.MemberService;
 import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -32,13 +42,83 @@ public class OrderController {
     private final BaggedItemRepository baggedItemRepository;
     private final DiscountPolicy discountPolicy;
 
+
+    public String getImportToken() {
+        String result = "";
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost("https://api.iamport.kr/users/getToken");
+        Map<String,String> m  = new HashMap<String,String>();
+        m.put("imp_key", "7850918775710695");
+        m.put("imp_secret", "4c02feb6adbf7e576849ea0abb51c0c5a4ba50d730aa99ef219d0b459a44a5fff88d3b433a45efc0");
+        try {
+            post.setEntity(new UrlEncodedFormEntity(convertParameter(m)));
+            HttpResponse res = client.execute(post);
+            ObjectMapper mapper = new ObjectMapper();
+            String body = EntityUtils.toString(res.getEntity());
+            JsonNode rootNode = mapper.readTree(body);
+            JsonNode resNode = rootNode.get("response");
+            result = resNode.get("access_token").asText();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+    // 출처: https://zarawebstudy.tistory.com/11 [자라월드:티스토리]
+
     @PostMapping(value = "/cancel")
     public String cancelOrder(@AuthenticationPrincipal LoginUserDetails member,
                               Long orderId) {
         if(member==null) return "redirect:/members/login";
-        orderService.cancelOrder(orderId);
+        Order findOrder = orderService.findOne(orderId);
+        if(cancelPayment(findOrder.getMerchantUid()) == 1) {
+            orderService.cancelOrder(orderId);
+        }
+        else {
+            throw new IllegalStateException("환불에 실패했습니다.");
+        }
         return "redirect:/userinfo/orderList";
     }
+
+    public int cancelPayment(String mid) {
+        String token = getImportToken();
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost("https://api.iamport.kr/payments/cancel");
+        Map<String, String> map = new HashMap<String, String>();
+        post.setHeader("Authorization", token);
+        map.put("merchant_uid", mid);
+        String resp = "";
+        try {
+            post.setEntity(new UrlEncodedFormEntity(convertParameter(map)));
+            HttpResponse res = client.execute(post);
+            ObjectMapper mapper = new ObjectMapper();
+            String enty = EntityUtils.toString(res.getEntity());
+            JsonNode rootNode = mapper.readTree(enty);
+            resp = rootNode.get("response").asText();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (resp.equals("null")) {
+            // System.err.println("환불실패");
+            return -1;
+        } else {
+            // System.err.println("환불성공");
+            return 1;
+
+            // 출처:https://zarawebstudy.tistory.com/11 [자라월드:티스토리]
+        }
+    }
+
+    private List<NameValuePair> convertParameter(Map<String,String> paramMap){
+        List<NameValuePair> paramList = new ArrayList<NameValuePair>();
+
+        Set<Map.Entry<String,String>> entries = paramMap.entrySet();
+
+        for(Map.Entry<String,String> entry : entries) {
+            paramList.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+        }
+        return paramList;
+    }
+    // 출처: https://zarawebstudy.tistory.com/11 [자라월드:티스토리]
 
     @PostMapping(value = "/delete")
     public String deleteOrder(@AuthenticationPrincipal LoginUserDetails member,
@@ -77,6 +157,7 @@ public class OrderController {
         model.addAttribute("totalPrice", totalItemPrice+shippingFee);
         model.addAttribute("orderForm", new OrderForm());
 
+        model.addAttribute("paymentForm", new PaymentForm(memberService.findUser(member.getUsername())));
         return "/user/order/orderForm";
     }
 
@@ -99,10 +180,11 @@ public class OrderController {
             return "redirect:/order/new/select";
         }
 
-        Long orderId = orderForm.getPayment().equals("pay")? orderService.createOrder(member.getUsername(), orderForm, OrderStatus.PAY)
-                :orderService.createOrder(member.getUsername(), orderForm, OrderStatus.ORDER);
+        Long orderId = orderForm.getPayment().equals("kakao")? orderService.createOrder(member.getUsername(), orderForm, OrderStatus.PAY, orderForm.getMerchantUid(), orderForm.getImpUid())
+                :orderService.createOrder(member.getUsername(), orderForm, OrderStatus.ORDER, null, null);
 
         return "redirect:/order/success/"+orderId;
+        //return "redirect:/order/payment";
     }
 
     @GetMapping(value = "/success/{orderId}")
