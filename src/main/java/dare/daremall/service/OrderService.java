@@ -136,7 +136,7 @@ public class OrderService {
             statisticsService.updateItemStatistics(findOrder);
         }
         else if (!findOrder.getStatus().equals(OrderStatus.valueOf(updateOrderDto.getOrderStatus()))
-                && OrderStatus.valueOf(updateOrderDto.getOrderStatus()).equals(OrderStatus.PAY)){
+                && OrderStatus.valueOf(updateOrderDto.getOrderStatus()).equals(OrderStatus.PAY) && !findOrder.getStatus().equals(OrderStatus.ORDER)){
             findOrder.setStatus(OrderStatus.valueOf(updateOrderDto.getOrderStatus()));
             statisticsService.updateOrderStatistics(findOrder);
             statisticsService.updateItemStatistics(findOrder);
