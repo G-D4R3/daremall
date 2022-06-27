@@ -66,7 +66,7 @@
                         <div class="update-image">
                             <img id="addImage" style="height: 260px; width: 200px">
                             <div class="flex-row">
-                                <input type="file" class="form-control-file" name="imgFile" id="addFile" onchange="setAddImg(event);">
+                                <input type="file" class="form-control-file" name="imgFile" id="addFile" onchange="setAddImg(event, this);" accept='image/jpeg,image/gif,image/png'>
                             </div>
                         </div>
                         <div class="flex-row">
@@ -145,7 +145,7 @@
                         <div class="update-image">
                             <img id="updateImage" style="height: 260px; width: 200px">
                             <div class="flex-row">
-                                <input type="file" class="form-control-file" name="imgFile" id="updateFile" onchange="setUpdatedImg(event);">
+                                <input type="file" class="form-control-file" name="imgFile" id="updateFile" onchange="setUpdatedImg(event, this);" accept='image/jpeg,image/gif,image/png'>
                             </div>
                         </div>
                         <div class="flex-row">
@@ -349,7 +349,27 @@
     });
 
     /** 이미지 업데이트 시 미리보기 **/
-    function setAddImg(event) {
+    function setAddImg(event, obj) {
+
+        var file_kind = obj.value.lastIndexOf('.');
+        var file_name = obj.value.substring(file_kind+1,obj.length);
+        var file_type = file_name.toLowerCase();
+
+        var check_file_type = new Array();
+        check_file_type=['jpg','gif','png','jpeg','bmp'];
+
+
+        if(check_file_type.indexOf(file_type)==-1){
+            alert('이미지 파일만 선택할 수 있습니다.');
+            var parent_Obj = obj.parentNode;
+            var node = parent_Obj.replaceChild(obj.cloneNode(true),obj);
+
+            document.getElementById("addFile").value = "";
+            document.getElementById("addFile").select();
+            document.selection.clear();
+            return false;
+        }
+
         var fr = new FileReader();
 
         fr.onload = function(event) {
@@ -360,8 +380,27 @@
         //출처: https://sinna94.tistory.com/entry/JavaScript-이미지-업로드-미리보기-만들기 [Chungs:티스토리]
     }
 
-    function setUpdatedImg(event) {
+    function setUpdatedImg(event, obj) {
         var fr = new FileReader();
+
+        var file_kind = obj.value.lastIndexOf('.');
+        var file_name = obj.value.substring(file_kind+1,obj.length);
+        var file_type = file_name.toLowerCase();
+
+        var check_file_type = new Array();
+        check_file_type=['jpg','gif','png','jpeg','bmp'];
+
+
+        if(check_file_type.indexOf(file_type)==-1){
+            alert('이미지 파일만 선택할 수 있습니다.');
+            var parent_Obj = obj.parentNode;
+            var node = parent_Obj.replaceChild(obj.cloneNode(true),obj);
+
+            document.getElementById("updateFile").value = "";
+            document.getElementById("updateFile").select();
+            document.selection.clear();
+            return false;
+        }
 
         fr.onload = function(event) {
             document.getElementById("updateImage").setAttribute("src", event.target.result);
