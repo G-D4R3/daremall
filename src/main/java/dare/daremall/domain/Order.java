@@ -42,6 +42,9 @@ public class Order {
     private String merchantUid;
     private String impUid;
 
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
+
     public void addOrderItem(OrderItem orderItem) {
         orderItems.add(orderItem);
         orderItem.setOrder(this);
@@ -52,7 +55,7 @@ public class Order {
         delivery.setOrder(this);
     }
 
-    public static Order createOrder(Member member, Delivery delivery, List<OrderItem> orderItems, OrderStatus orderStatus, String merchantUid, String impUid) {
+    public static Order createOrder(Member member, Delivery delivery, List<OrderItem> orderItems, OrderStatus orderStatus, String merchantUid, String impUid, String payment) {
         Order order = new Order();
         order.setMember(member);
         order.setDelivery(delivery);
@@ -67,6 +70,7 @@ public class Order {
         else order.setShippingFee(true);
         order.setMerchantUid(merchantUid);
         order.setImpUid(impUid);
+        order.setPaymentType(PaymentType.valueOf(payment));
         return order;
     }
 

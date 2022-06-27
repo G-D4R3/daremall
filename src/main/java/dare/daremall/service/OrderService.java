@@ -1,5 +1,9 @@
 package dare.daremall.service;
 
+import com.siot.IamportRestClient.IamportClient;
+import com.siot.IamportRestClient.exception.IamportResponseException;
+import com.siot.IamportRestClient.response.IamportResponse;
+import com.siot.IamportRestClient.response.Payment;
 import dare.daremall.controller.admin.OrderDto;
 import dare.daremall.controller.order.OrderForm;
 import dare.daremall.controller.order.UpdateOrderDto;
@@ -10,11 +14,13 @@ import dare.daremall.repository.ItemRepository;
 import dare.daremall.repository.MemberRepository;
 import dare.daremall.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.hibernate.mapping.Bag;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,8 +43,34 @@ public class OrderService {
 
 
     /** 사용자 주문 **/
-    public List<Order> findOrders(String loginId) {
+    @Transactional
+    public List<Order> findOrders(String loginId){
+        verifyOrders(loginId);
         return orderRepository.findByLoginId(loginId);
+    }
+
+    @Transactional
+    public void verifyOrders(String loginId){
+        List<Order> orders = orderRepository.findByLoginId(loginId);
+        IamportClient iamportClient = new IamportClient("7850918775710695", "4c02feb6adbf7e576849ea0abb51c0c5a4ba50d730aa99ef219d0b459a44a5fff88d3b433a45efc0");
+        for(Order order : orders) {
+            if(order.getPaymentType().equals(PaymentType.KAKAO)) {
+                try{
+                    Payment resp = iamportClient.paymentByImpUid(order.getImpUid()).getResponse();
+                    if(resp.getStatus().equals("cancelled") && !order.getStatus().equals(OrderStatus.CANCEL)) {
+                        order.setStatus(OrderStatus.CANCEL);
+                        orderRepository.save(order);
+                    }
+                    else if(resp.getStatus().equals("paid") && !(order.getStatus().equals(OrderStatus.PAY))) {
+                        order.setStatus(OrderStatus.PAY);
+                        orderRepository.save(order);
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Transactional
@@ -71,7 +103,7 @@ public class OrderService {
             throw new IllegalStateException("결제가 완료되지 않았습니다.");
         }
 
-        Order order = Order.createOrder(member, delivery, orderItems, orderStatus, merchantUid, impUid);
+        Order order = Order.createOrder(member, delivery, orderItems, orderStatus, merchantUid, impUid, orderForm.getPayment());
 
         for(BaggedItem item:baggedItems) member.removeBaggedItem(item);
 

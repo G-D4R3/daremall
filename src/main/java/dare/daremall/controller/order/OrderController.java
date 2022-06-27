@@ -46,6 +46,115 @@ public class OrderController {
     private final BaggedItemRepository baggedItemRepository;
     private final DiscountPolicy discountPolicy;
 
+    /** 사용자 기능 **/
+
+    @GetMapping(value = "/new/{orderOption}")
+    public String orderForm(@AuthenticationPrincipal LoginUserDetails member,
+                            @PathVariable("orderOption") String option,
+                            Model model) {
+
+        if(member==null) return "redirect:/members/login";
+
+        if(option.equals("all")) {
+            memberService.selectAllBagItem(member.getUsername());
+        }
+
+        List<BaggedItemOrderDto> baggedItem = baggedItemRepository.findSelected(member.getUsername())
+                .stream().map(bi -> new BaggedItemOrderDto(bi))
+                .collect(Collectors.toList());
+
+        if(baggedItem.size()==0) {
+            return "redirect:/shop";
+        }
+
+        model.addAttribute("items", baggedItem);
+        int totalItemPrice = baggedItem.stream().mapToInt(bi->bi.getTotalPrice()).sum();
+        int shippingFee = discountPolicy.isDiscountShip(totalItemPrice)==true? 0:2500;
+        model.addAttribute("shippingFee", shippingFee);
+        model.addAttribute("myDeliveries", memberService.findUser(member.getUsername()).getDeliveryInfos().stream().map(di -> new DeliveryInfoDto(di)).collect(Collectors.toList()));
+
+        model.addAttribute("totalItemPrice", totalItemPrice);
+        model.addAttribute("totalPrice", totalItemPrice+shippingFee);
+        model.addAttribute("orderForm", new OrderForm());
+
+        model.addAttribute("paymentForm", new PaymentForm(memberService.findUser(member.getUsername())));
+        return "/user/order/orderForm";
+    }
+
+    @PostMapping(value = "/new/addItem")
+    public String orderFormWithItem(@AuthenticationPrincipal LoginUserDetails member,
+                                    @RequestParam(value = "itemId", required = false) Long itemId,
+                                    @RequestParam(value = "count", required = false, defaultValue = "0") int count) {
+        if(member==null) return "redirect:/members/login";
+
+        memberService.addShoppingBag(itemId, member.getUsername(), count);
+        return "redirect:/order/new/all";
+    }
+
+    @PostMapping(value = "/createOrder")
+    public String createOrder(@AuthenticationPrincipal LoginUserDetails member,
+                              @Validated OrderForm orderForm, BindingResult result) {
+
+        if(member==null) return "redirect:/members/login";
+        if(result.hasErrors()){
+            return "redirect:/order/new/select";
+        }
+
+        Long orderId = orderForm.getPayment().equals("KAKAO")? orderService.createOrder(member.getUsername(), orderForm, OrderStatus.PAY, orderForm.getMerchantUid(), orderForm.getImpUid())
+                :orderService.createOrder(member.getUsername(), orderForm, OrderStatus.ORDER, null, null);
+
+        return "redirect:/order/success/"+orderId;
+        //return "redirect:/order/payment";
+    }
+
+    @GetMapping(value = "/success/{orderId}")
+    public String orderSuccess(@AuthenticationPrincipal LoginUserDetails member,
+                               @PathVariable("orderId") Long orderId, Model model) {
+
+        if(member==null) return "redirect:/members/login";
+
+        OrderDto orderDto = new OrderDto(orderService.findOne(orderId));
+        model.addAttribute("order", orderDto);
+
+        return "/user/order/orderSuccess";
+    }
+
+    @GetMapping(value = "/detail")
+    public String orderDetail(@AuthenticationPrincipal LoginUserDetails member,
+                              @RequestParam("orderId") Long orderId, Model model) {
+
+        if(member==null) return "redirect:/members/login";
+
+        OrderDetailDto orderDetailDto = new OrderDetailDto(orderService.findOne(orderId));
+        model.addAttribute("order", orderDetailDto);
+
+        return "/user/order/orderDetail";
+    }
+
+    @PostMapping(value = "/cancel")
+    public String cancelOrder(@AuthenticationPrincipal LoginUserDetails member,
+                              Long orderId) {
+        if(member==null) return "redirect:/members/login";
+        Order findOrder = orderService.findOne(orderId);
+        if(cancelPayment(findOrder.getMerchantUid()) == 1) {
+            orderService.cancelOrder(orderId);
+        }
+        else {
+            throw new IllegalStateException("환불에 실패했습니다.");
+        }
+        return "redirect:/userinfo/orderList";
+    }
+
+    @PostMapping(value = "/delete")
+    public String deleteOrder(@AuthenticationPrincipal LoginUserDetails member,
+                              Long orderId) {
+        if(member==null) return "redirect:/members/login";
+        orderService.deleteOrder(orderId);
+        return "redirect:/userinfo/orderList";
+    }
+
+
+    /** for iamport **/
 
     public String getImportToken() {
         String result = "";
@@ -69,19 +178,6 @@ public class OrderController {
     }
     // 출처: https://zarawebstudy.tistory.com/11 [자라월드:티스토리]
 
-    @PostMapping(value = "/cancel")
-    public String cancelOrder(@AuthenticationPrincipal LoginUserDetails member,
-                              Long orderId) {
-        if(member==null) return "redirect:/members/login";
-        Order findOrder = orderService.findOne(orderId);
-        if(cancelPayment(findOrder.getMerchantUid()) == 1) {
-            orderService.cancelOrder(orderId);
-        }
-        else {
-            throw new IllegalStateException("환불에 실패했습니다.");
-        }
-        return "redirect:/userinfo/orderList";
-    }
 
     public int cancelPayment(String mid) {
         String token = getImportToken();
@@ -124,74 +220,6 @@ public class OrderController {
     }
     // 출처: https://zarawebstudy.tistory.com/11 [자라월드:티스토리]
 
-    @PostMapping(value = "/delete")
-    public String deleteOrder(@AuthenticationPrincipal LoginUserDetails member,
-                              Long orderId) {
-        if(member==null) return "redirect:/members/login";
-        orderService.deleteOrder(orderId);
-        return "redirect:/userinfo/orderList";
-    }
-
-    @GetMapping(value = "/new/{orderOption}")
-    public String orderForm(@AuthenticationPrincipal LoginUserDetails member,
-                            @PathVariable("orderOption") String option,
-                            Model model) {
-
-        if(member==null) return "redirect:/members/login";
-
-        if(option.equals("all")) {
-            memberService.selectAllBagItem(member.getUsername());
-        }
-
-        List<BaggedItemOrderDto> baggedItem = baggedItemRepository.findSelected(member.getUsername())
-                .stream().map(bi -> new BaggedItemOrderDto(bi))
-                .collect(Collectors.toList());
-
-        if(baggedItem.size()==0) {
-            return "redirect:/shop";
-        }
-
-        model.addAttribute("items", baggedItem);
-        int totalItemPrice = baggedItem.stream().mapToInt(bi->bi.getTotalPrice()).sum();
-        int shippingFee = discountPolicy.isDiscountShip(totalItemPrice)==true? 0:2500;
-        model.addAttribute("shippingFee", shippingFee);
-        model.addAttribute("myDeliveries", memberService.findUser(member.getUsername()).getDeliveryInfos().stream().map(di -> new DeliveryInfoDto(di)).collect(Collectors.toList()));
-
-        model.addAttribute("totalItemPrice", totalItemPrice);
-        model.addAttribute("totalPrice", totalItemPrice+shippingFee);
-        model.addAttribute("orderForm", new OrderForm());
-
-        model.addAttribute("paymentForm", new PaymentForm(memberService.findUser(member.getUsername())));
-        return "/user/order/orderForm";
-    }
-
-    @PostMapping(value = "/new/addItem")
-    public String orderFormWithItem(@AuthenticationPrincipal LoginUserDetails member,
-                            @RequestParam(value = "itemId", required = false) Long itemId,
-                            @RequestParam(value = "count", required = false, defaultValue = "0") int count) {
-        if(member==null) return "redirect:/members/login";
-
-        memberService.addShoppingBag(itemId, member.getUsername(), count);
-        return "redirect:/order/new/all";
-    }
-
-    @PostMapping(value = "/createOrder")
-    public String createOrder(@AuthenticationPrincipal LoginUserDetails member,
-                              @Validated OrderForm orderForm, BindingResult result) {
-
-        if(member==null) return "redirect:/members/login";
-        if(result.hasErrors()){
-            return "redirect:/order/new/select";
-        }
-
-        Long orderId = orderForm.getPayment().equals("kakao")? orderService.createOrder(member.getUsername(), orderForm, OrderStatus.PAY, orderForm.getMerchantUid(), orderForm.getImpUid())
-                :orderService.createOrder(member.getUsername(), orderForm, OrderStatus.ORDER, null, null);
-
-        return "redirect:/order/success/"+orderId;
-        //return "redirect:/order/payment";
-    }
-
-
     @ResponseBody
     @PostMapping(value="/verifyIamport/{imp_uid}")
     public IamportResponse<Payment> paymentByImpUid(@AuthenticationPrincipal LoginUserDetails member, @PathVariable(value= "imp_uid") String imp_uid) throws Exception {
@@ -217,30 +245,8 @@ public class OrderController {
         }
     }
 
-    @GetMapping(value = "/success/{orderId}")
-    public String orderSuccess(@AuthenticationPrincipal LoginUserDetails member,
-                               @PathVariable("orderId") Long orderId, Model model) {
 
-        if(member==null) return "redirect:/members/login";
-
-        OrderDto orderDto = new OrderDto(orderService.findOne(orderId));
-        model.addAttribute("order", orderDto);
-
-        return "/user/order/orderSuccess";
-    }
-
-    @GetMapping(value = "/detail")
-    public String orderDetail(@AuthenticationPrincipal LoginUserDetails member,
-                              @RequestParam("orderId") Long orderId, Model model) {
-
-        if(member==null) return "redirect:/members/login";
-
-        OrderDetailDto orderDetailDto = new OrderDetailDto(orderService.findOne(orderId));
-        model.addAttribute("order", orderDetailDto);
-
-        return "/user/order/orderDetail";
-    }
-
+    /** 관리자 페이지 **/
 
     @PostMapping(value = "/findOrder")
     @PreAuthorize("hasRole('ADMIN')")

@@ -119,7 +119,7 @@
                                    th:class="${#fields.hasErrors('detail')}? 'form-control fieldError' : 'form-control'">
                         </div>
                         <input id="payment" type="text" th:field="*{payment}" hidden>
-                        <input id="marchantUid" type="text" th:field="*{merchantUid}" hidden>
+                        <input id="merchantUid" type="text" th:field="*{merchantUid}" hidden>
                         <input id="impUid" type="text" th:field="*{impUid}" hidden>
                     </form>
                 </div>
@@ -132,8 +132,8 @@
             <div class="payment-option">
                 <h4>결제 방법</h4>
                 <div class="form-check form-check-inline">
-                    <label class="form-check-label"><input name="pay_type" type="radio" value="deposit" class="form-check-input">무통장 입금</label>
-                    <label class="form-check-label"><input name="pay_type" type="radio" value="kakao" class="form-check-input">카카오페이</label>
+                    <label class="form-check-label"><input name="pay_type" type="radio" value="DEPOSIT" class="form-check-input">무통장 입금</label>
+                    <label class="form-check-label"><input name="pay_type" type="radio" value="KAKAO" class="form-check-input">카카오페이</label>
                 </div>
             </div>
         </div>
@@ -322,7 +322,7 @@
                      * '결제 금액 : ' + rsp.paid_amount;
                      * '카드 승인번호 : ' + rsp.apply_num;
                      */
-                    document.getElementById("marchantUid").value = rsp.merchant_uid;
+                    document.getElementById("merchantUid").value = rsp.merchant_uid;
                     document.getElementById("impUid").value = rsp.imp_uid;
                     $('#orderForm').submit();
                 } else {
@@ -351,12 +351,12 @@
         if(typeof radio == "undefined") {
             alert("결제 방식을 선택해주세요");
         }
-        else if(radio == "kakao") {
-            document.getElementById("payment").value = "kakao";
+        else if(radio == "KAKAO") {
+            document.getElementById("payment").value = "KAKAO";
             kakao();
         }
-        else if(radio == "deposit"){
-            document.getElementById("payment").value = "deposit";
+        else if(radio == "DEPOSIT"){
+            document.getElementById("payment").value = "DEPOSIT";
         }
     });
 
