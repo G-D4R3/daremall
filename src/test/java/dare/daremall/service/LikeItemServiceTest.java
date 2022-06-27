@@ -23,7 +23,7 @@ class LikeItemServiceTest {
     @Autowired ItemService itemService;
     @Autowired MemberService memberService;
 
-    @Test
+    /*@Test
     void 좋아요() {
         MemberSignupRequestDto memberDto = new MemberSignupRequestDto();
         memberDto.setName("지창민");
@@ -90,5 +90,5 @@ class LikeItemServiceTest {
         // then
         assertThat(findMember.getLikes().size()).isEqualTo(0);
 
-    }
+    }*/
 }

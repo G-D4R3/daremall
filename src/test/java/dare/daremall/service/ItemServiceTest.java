@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class ItemServiceTest {
 
-    @Autowired ItemService itemService;
+   /* @Autowired ItemService itemService;
 
     @Test
     void 상품_추가() {
@@ -107,5 +107,5 @@ class ItemServiceTest {
 
         // then
         assertThat(itemService.findByName("book").get(0).getName()).isEqualTo("book1");
-    }
+    }*/
 }

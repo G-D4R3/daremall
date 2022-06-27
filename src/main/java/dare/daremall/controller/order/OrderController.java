@@ -2,6 +2,9 @@ package dare.daremall.controller.order;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.siot.IamportRestClient.IamportClient;
+import com.siot.IamportRestClient.response.IamportResponse;
+import com.siot.IamportRestClient.response.Payment;
 import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.domain.*;
 import dare.daremall.domain.discountPolicy.DiscountPolicy;
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -185,6 +189,32 @@ public class OrderController {
 
         return "redirect:/order/success/"+orderId;
         //return "redirect:/order/payment";
+    }
+
+
+    @ResponseBody
+    @PostMapping(value="/verifyIamport/{imp_uid}")
+    public IamportResponse<Payment> paymentByImpUid(@AuthenticationPrincipal LoginUserDetails member, @PathVariable(value= "imp_uid") String imp_uid) throws Exception {
+        return new IamportClient("7850918775710695", "4c02feb6adbf7e576849ea0abb51c0c5a4ba50d730aa99ef219d0b459a44a5fff88d3b433a45efc0").paymentByImpUid(imp_uid);
+    }
+
+    public void setHackCheck(String amount, String mId) {
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost("https://api.iamport.kr/payments/prepare");
+        Map<String,String> m  =new HashMap<String,String>();
+        post.setHeader("Authorization", getImportToken());
+        m.put("amount", amount);
+        m.put("merchant_uid", mId);
+        try {
+            post.setEntity(new UrlEncodedFormEntity(convertParameter(m)));
+            HttpResponse res = client.execute(post);
+            ObjectMapper mapper = new ObjectMapper();
+            String body = EntityUtils.toString(res.getEntity());
+            JsonNode rootNode = mapper.readTree(body);
+            // System.out.println(rootNode);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @GetMapping(value = "/success/{orderId}")

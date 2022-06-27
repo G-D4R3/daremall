@@ -308,14 +308,30 @@
             buyer_postcode: $('#orderZipcode').val()
         }, function (rsp) {
             // console.log(rsp);
-            if (rsp.success) {
+
+            $.ajax({
+                type : "POST",
+                url : "/order/verifyIamport/" + rsp.imp_uid})
+            .done(function (data) {
+                if(rsp.paid_amount == data.response.amount){
+                    alert("결제가 완료되었습니다.");
+
+                    /**
+                     * '고유ID : ' + rsp.imp_uid;
+                     * '상점 거래ID : ' + rsp.merchant_uid;
+                     * '결제 금액 : ' + rsp.paid_amount;
+                     * '카드 승인번호 : ' + rsp.apply_num;
+                     */
+                    document.getElementById("marchantUid").value = rsp.merchant_uid;
+                    document.getElementById("impUid").value = rsp.imp_uid;
+                    $('#orderForm').submit();
+                } else {
+                    alert("결제에 실패하였습니다.");
+                }
+            });
+                /*if (rsp.success) {
                 var msg = '결제가 완료되었습니다.';
-                /**
-                 * '고유ID : ' + rsp.imp_uid;
-                 * '상점 거래ID : ' + rsp.merchant_uid;
-                 * '결제 금액 : ' + rsp.paid_amount;
-                 * '카드 승인번호 : ' + rsp.apply_num;
-                 */
+
 
                 alert(msg);
                 document.getElementById("marchantUid").value = rsp.merchant_uid;
@@ -325,7 +341,7 @@
                 var msg = '결제에 실패하였습니다.';
                 msg += '에러내용 : ' + rsp.error_msg;
                 alert(msg);
-            }
+            }*/
         });
     }
     // https://velog.io/@kyu9610/Spring-Boot-%EC%87%BC%ED%95%91%EB%AA%B0-User-%EA%B8%88%EC%95%A1-%EC%B6%A9%EC%A0%84%EA%B8%B0%EB%8A%A5
