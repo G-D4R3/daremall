@@ -125,8 +125,8 @@ public class OrderService {
     }
 
     @Transactional
-    public void deleteOrder(Long orderId) {
-        Order order = orderRepository.findOne(orderId);
+    public void deleteOrder(Long orderId, String loginId) {
+        Order order = orderRepository.findOrder(orderId, loginId).orElseThrow(() -> new NoSuchElementException("일치하는 주문 정보를 찾을 수 없습니다."));
         if(order.getStatus()==OrderStatus.CANCEL) {
             order.delete();
             orderRepository.remove(order);
@@ -184,6 +184,10 @@ public class OrderService {
         }
         findOrder.getDelivery().setStatus(DeliveryStatus.valueOf(updateOrderDto.getDeliveryStatus()));
         orderRepository.save(findOrder);
+    }
+
+    public Order findOne(Long orderId, String loginId) {
+        return orderRepository.findOrder(orderId, loginId).orElseThrow(() -> new NoSuchElementException("일치하는 주문 정보가 없습니다."));// controller에서 exception 처리
     }
 
     /** **/

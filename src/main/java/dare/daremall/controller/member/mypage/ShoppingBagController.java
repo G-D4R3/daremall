@@ -8,6 +8,7 @@ import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.service.ItemService;
 import dare.daremall.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +26,7 @@ public class ShoppingBagController {
     private final ItemService itemService;
     private final BaggedItemRepository baggedItemRepository;
 
-    @PostMapping(value = "/add")
+    @PostMapping(value = "/add") @Secured({"ROLE_USER"})
     public String addBag(@AuthenticationPrincipal LoginUserDetails member,
                          @RequestParam(value = "itemId") Long itemId,
                          @RequestParam(value = "count", defaultValue = "1") int count) {
@@ -37,7 +38,7 @@ public class ShoppingBagController {
     }
 
 
-    @PostMapping(value = "/{bagItemId}/delete")
+    @PostMapping(value = "/{bagItemId}/delete") @Secured({"ROLE_USER"})
     public String cancel(@AuthenticationPrincipal LoginUserDetails member,
                              @PathVariable("bagItemId") Long bagItemId) {
 
@@ -49,7 +50,7 @@ public class ShoppingBagController {
     }
 
 
-    @PostMapping(value = {"/update"})
+    @PostMapping(value = {"/update"}) @Secured({"ROLE_USER"})
     public String update(@AuthenticationPrincipal LoginUserDetails member,
                          @RequestParam("id") Long id,
                          @RequestParam("count") int count) {
@@ -61,7 +62,7 @@ public class ShoppingBagController {
         return "redirect:/shop";
     }
 
-    @GetMapping("")
+    @GetMapping("") @Secured({"ROLE_USER"})
     public String shoppingBag(@AuthenticationPrincipal LoginUserDetails member, Model model) {
 
         if(member==null) return "redirect:/members/login";
@@ -81,7 +82,7 @@ public class ShoppingBagController {
         return "/user/shoppingBag";
     }
 
-    @PostMapping(value = "/check")
+    @PostMapping(value = "/check") @Secured({"ROLE_USER"})
     public String check(@AuthenticationPrincipal LoginUserDetails member,
                         @RequestParam("id") Long id) {
 

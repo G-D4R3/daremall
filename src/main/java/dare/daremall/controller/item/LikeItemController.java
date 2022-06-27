@@ -4,6 +4,7 @@ import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.domain.Member;
 import dare.daremall.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ public class LikeItemController {
     private final MemberService memberService;
 
     @GetMapping(value = "")
+    @Secured({"ROLE_USER"})
     public String likes(@AuthenticationPrincipal LoginUserDetails member, Model model) {
 
         if(member==null) return "redirect:/members/login";
@@ -32,6 +34,7 @@ public class LikeItemController {
     }
 
     @PostMapping(value = "/add")
+    @Secured({"ROLE_USER"})
     public String addLike(@AuthenticationPrincipal LoginUserDetails member,
                           @RequestParam("itemId") Long itemId){
 
@@ -43,6 +46,7 @@ public class LikeItemController {
     }
 
     @PostMapping(value = "/cancel")
+    @Secured({"ROLE_USER"})
     public String cancelLike(@AuthenticationPrincipal LoginUserDetails member,
                               @RequestParam("itemId") Long itemId) {
 

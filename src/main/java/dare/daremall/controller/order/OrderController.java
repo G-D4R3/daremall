@@ -22,6 +22,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -48,7 +49,7 @@ public class OrderController {
 
     /** 사용자 기능 **/
 
-    @GetMapping(value = "/new/{orderOption}")
+    @GetMapping(value = "/new/{orderOption}") @Secured({"ROLE_USER"})
     public String orderForm(@AuthenticationPrincipal LoginUserDetails member,
                             @PathVariable("orderOption") String option,
                             Model model) {
@@ -81,7 +82,7 @@ public class OrderController {
         return "/user/order/orderForm";
     }
 
-    @PostMapping(value = "/new/addItem")
+    @PostMapping(value = "/new/addItem") @Secured({"ROLE_USER"})
     public String orderFormWithItem(@AuthenticationPrincipal LoginUserDetails member,
                                     @RequestParam(value = "itemId", required = false) Long itemId,
                                     @RequestParam(value = "count", required = false, defaultValue = "0") int count) {
@@ -91,7 +92,7 @@ public class OrderController {
         return "redirect:/order/new/all";
     }
 
-    @PostMapping(value = "/createOrder")
+    @PostMapping(value = "/createOrder") @Secured({"ROLE_USER"})
     public String createOrder(@AuthenticationPrincipal LoginUserDetails member,
                               @Validated OrderForm orderForm, BindingResult result) {
 
@@ -107,35 +108,35 @@ public class OrderController {
         //return "redirect:/order/payment";
     }
 
-    @GetMapping(value = "/success/{orderId}")
+    @GetMapping(value = "/success/{orderId}") @Secured({"ROLE_USER"})
     public String orderSuccess(@AuthenticationPrincipal LoginUserDetails member,
                                @PathVariable("orderId") Long orderId, Model model) {
 
         if(member==null) return "redirect:/members/login";
 
-        OrderDto orderDto = new OrderDto(orderService.findOne(orderId));
+        OrderDto orderDto = new OrderDto(orderService.findOne(orderId, member.getUsername()));
         model.addAttribute("order", orderDto);
 
         return "/user/order/orderSuccess";
     }
 
-    @GetMapping(value = "/detail")
+    @GetMapping(value = "/detail") @Secured({"ROLE_USER"})
     public String orderDetail(@AuthenticationPrincipal LoginUserDetails member,
                               @RequestParam("orderId") Long orderId, Model model) {
 
         if(member==null) return "redirect:/members/login";
 
-        OrderDetailDto orderDetailDto = new OrderDetailDto(orderService.findOne(orderId));
+        OrderDetailDto orderDetailDto = new OrderDetailDto(orderService.findOne(orderId, member.getUsername()));
         model.addAttribute("order", orderDetailDto);
 
         return "/user/order/orderDetail";
     }
 
-    @PostMapping(value = "/cancel")
+    @PostMapping(value = "/cancel") @Secured({"ROLE_USER"})
     public String cancelOrder(@AuthenticationPrincipal LoginUserDetails member,
                               Long orderId) {
         if(member==null) return "redirect:/members/login";
-        Order findOrder = orderService.findOne(orderId);
+        Order findOrder = orderService.findOne(orderId, member.getUsername());
         if(cancelPayment(findOrder.getMerchantUid()) == 1) {
             orderService.cancelOrder(orderId);
         }
@@ -145,11 +146,11 @@ public class OrderController {
         return "redirect:/userinfo/orderList";
     }
 
-    @PostMapping(value = "/delete")
+    @PostMapping(value = "/delete") @Secured({"ROLE_USER"})
     public String deleteOrder(@AuthenticationPrincipal LoginUserDetails member,
                               Long orderId) {
         if(member==null) return "redirect:/members/login";
-        orderService.deleteOrder(orderId);
+        orderService.deleteOrder(orderId, member.getUsername());
         return "redirect:/userinfo/orderList";
     }
 
@@ -221,7 +222,7 @@ public class OrderController {
     // 출처: https://zarawebstudy.tistory.com/11 [자라월드:티스토리]
 
     @ResponseBody
-    @PostMapping(value="/verifyIamport/{imp_uid}")
+    @PostMapping(value="/verifyIamport/{imp_uid}") @Secured({"ROLE_USER"})
     public IamportResponse<Payment> paymentByImpUid(@AuthenticationPrincipal LoginUserDetails member, @PathVariable(value= "imp_uid") String imp_uid) throws Exception {
         return new IamportClient("7850918775710695", "4c02feb6adbf7e576849ea0abb51c0c5a4ba50d730aa99ef219d0b459a44a5fff88d3b433a45efc0").paymentByImpUid(imp_uid);
     }

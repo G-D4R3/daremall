@@ -9,6 +9,7 @@ import dare.daremall.service.MemberService;
 import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,7 +38,7 @@ public class MyPageController {
      * 마이페이지
      */
 
-    @GetMapping(value = "")
+    @GetMapping(value = "") @Secured({"ROLE_USER"})
     public String userInfo(@AuthenticationPrincipal LoginUserDetails member, Model model) {
 
         if(member==null) return "redirect:/members/login";
@@ -49,7 +50,7 @@ public class MyPageController {
         return "/user/userinfo/userinfo";
     }
 
-    @GetMapping(value = "/myInfo")
+    @GetMapping(value = "/myInfo") @Secured({"ROLE_USER"})
     public String myInfo(@AuthenticationPrincipal LoginUserDetails member, Model model) {
         if(member==null) return "redirect:/members/login";
 
@@ -64,7 +65,7 @@ public class MyPageController {
         return "/user/userinfo/myInfo";
     }
 
-    @GetMapping(value = "/orderList")
+    @GetMapping(value = "/orderList") @Secured({"ROLE_USER"})
     public String orderList(@AuthenticationPrincipal LoginUserDetails member, Model model) {
         if(member==null) return "redirect:/members/login";
 
@@ -75,7 +76,7 @@ public class MyPageController {
         return "/user/userinfo/orderList";
     }
 
-    @GetMapping(value = "/myAddress")
+    @GetMapping(value = "/myAddress") @Secured({"ROLE_USER"})
     public String myAddress(@AuthenticationPrincipal LoginUserDetails member, Model model) {
         if(member==null) return "redirect:/members/login";
 
@@ -87,7 +88,7 @@ public class MyPageController {
         return "/user/userinfo/myAddress";
     }
 
-    @PostMapping(value = "/myAddress/add")
+    @PostMapping(value = "/myAddress/add") @Secured({"ROLE_USER"})
     public String addDelivery(@AuthenticationPrincipal LoginUserDetails member, @Valid DeliveryInfoForm deliveryInfoForm) {
 
         if(member==null) return "redirect:/members/login";
@@ -97,7 +98,7 @@ public class MyPageController {
         return "redirect:/userinfo/myAddress";
     }
 
-    @PostMapping(value = "/myAddress/delete")
+    @PostMapping(value = "/myAddress/delete") @Secured({"ROLE_USER"})
     public String deleteDelivery(@AuthenticationPrincipal LoginUserDetails member,
                                  Long deliveryId) {
         if(member==null) return "redirect:/members/login";
@@ -107,13 +108,13 @@ public class MyPageController {
         return "redirect:/userinfo/myAddress";
     }
 
-    @PostMapping (value = "/myAddress/getDeliveryInfo")
+    @PostMapping (value = "/myAddress/getDeliveryInfo") @Secured({"ROLE_USER"})
     public @ResponseBody DeliveryInfoDto getDeliveryInfo(@AuthenticationPrincipal LoginUserDetails member,
                                   @RequestParam("deliveryId") Long deliveryId) {
         return new DeliveryInfoDto(memberRepository.findDeliveryinfo(member.getUsername(), deliveryId).orElse(null));
     }
 
-    @PostMapping(value = "/myAddress/update")
+    @PostMapping(value = "/myAddress/update") @Secured({"ROLE_USER"})
     public String updateDelivery(@AuthenticationPrincipal LoginUserDetails member,
                                  UpdateDeliveryInfoForm updateDeliveryInfoForm) {
         if(member==null) return "redirect:/members/login";
@@ -129,7 +130,7 @@ public class MyPageController {
     }
 
 
-    @PostMapping(value = "/myInfo/update")
+    @PostMapping(value = "/myInfo/update") @Secured({"ROLE_USER"})
     public String updateUserInfo(@AuthenticationPrincipal LoginUserDetails member,
                                  @Validated UpdateMyInfoForm updateForm, BindingResult result) {
 
@@ -142,7 +143,7 @@ public class MyPageController {
         return "redirect:/userinfo/myInfo";
     }
 
-    @PostMapping(value = "/myInfo/getCertificate")
+    @PostMapping(value = "/myInfo/getCertificate") @Secured({"ROLE_USER"})
     public @ResponseBody String getCertificateNumberByName(@AuthenticationPrincipal LoginUserDetails member,
                                                            String phone, String newPhone) throws CoolsmsException {
 
@@ -152,7 +153,7 @@ public class MyPageController {
         return "1234";
     }
 
-    @PostMapping(value = "/myInfo/varifyPw")
+    @PostMapping(value = "/myInfo/varifyPw") @Secured({"ROLE_USER"})
     public @ResponseBody Boolean varifyPassword(@AuthenticationPrincipal LoginUserDetails member,
                                                @ModelAttribute @Validated ChangePasswordForm changePasswordForm) {
 
@@ -165,7 +166,7 @@ public class MyPageController {
         return false;
     }
 
-    @PostMapping(value = "/myInfo/changePassword")
+    @PostMapping(value = "/myInfo/changePassword") @Secured({"ROLE_USER"})
     public @ResponseBody Boolean changePassword(@AuthenticationPrincipal LoginUserDetails member,
                                  @ModelAttribute @Validated ChangePasswordForm changePasswordForm,
                                  BindingResult result) {

@@ -36,6 +36,15 @@ public class OrderRepository {
                 .getResultList();
     }
 
+    public Optional<Order> findOrder(Long orderId, String loginId) {
+        return em.createQuery("select o from Order o" +
+                " where o.member.loginId = :loginId" +
+                " and o.id = :orderId", Order.class)
+                .setParameter("loginId", loginId)
+                .setParameter("orderId", orderId)
+                .getResultList().stream().findAny();
+    }
+
     public List<Order> findAll() {
         return em.createQuery("select o from Order o order by o.id desc", Order.class).getResultList();
     }
@@ -122,6 +131,8 @@ public class OrderRepository {
                 .setParameter("orderId", orderId)
                 .getResultList().stream().findAny();
     }
+
+
 
     /** **/
 

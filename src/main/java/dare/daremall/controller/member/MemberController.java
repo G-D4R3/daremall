@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Controller
 @RequiredArgsConstructor
@@ -162,10 +164,11 @@ public class MemberController {
     }
 
 
-    @PostMapping(value = "/findDeliveryInfo")
+
+    @PostMapping(value = "/findDeliveryInfo") @Secured({"ROLE_USER"})
     public @ResponseBody DeliveryInfoDto findDeliveryInfo(@AuthenticationPrincipal LoginUserDetails member,
                                                           @RequestParam(name="delivery_id") Long deliveryId) {
-        return new DeliveryInfoDto(memberRepository.findDeliveryinfo(member.getUsername(), deliveryId).orElse(null));
+        return new DeliveryInfoDto(memberRepository.findDeliveryinfo(member.getUsername(), deliveryId).orElseThrow(()-> new NoSuchElementException("존재하지 않는 정보입니다.")));
     }
 
     @PostMapping(value = "/updateRole")
