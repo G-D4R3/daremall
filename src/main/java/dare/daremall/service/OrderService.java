@@ -67,6 +67,10 @@ public class OrderService {
             return OrderItem.createOrderItem(bi.getItem(), bi.getPrice(), bi.getCount());
         }).collect(Collectors.toList());
 
+        if(orderForm.getPayment().equals("kakao") && merchantUid == null) {
+            throw new IllegalStateException("결제가 완료되지 않았습니다.");
+        }
+
         Order order = Order.createOrder(member, delivery, orderItems, orderStatus, merchantUid, impUid);
 
         for(BaggedItem item:baggedItems) member.removeBaggedItem(item);
