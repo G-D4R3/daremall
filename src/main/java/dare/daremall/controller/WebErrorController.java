@@ -13,11 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 public class WebErrorController implements ErrorController {
 
     @GetMapping("/error")
-    public String handleError(HttpServletRequest request, Model model, Exception e) {
+    public String handleError(HttpServletRequest request, Model model) {
 
         model.addAttribute("status", request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE));
         model.addAttribute("message", request.getAttribute(RequestDispatcher.ERROR_MESSAGE));
-
-        return "error/404error";
+        return "error/error";
     }
 }

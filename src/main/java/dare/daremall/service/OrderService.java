@@ -9,6 +9,7 @@ import dare.daremall.controller.order.OrderForm;
 import dare.daremall.controller.order.UpdateOrderDto;
 import dare.daremall.domain.*;
 import dare.daremall.domain.item.ItemStatus;
+import dare.daremall.exception.NotEnoughStockException;
 import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.repository.ItemRepository;
 import dare.daremall.repository.MemberRepository;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,7 +77,7 @@ public class OrderService {
 
     @Transactional
     public Long createOrder(String loginId, OrderForm orderForm, OrderStatus orderStatus, String merchantUid, String impUid) {
-        Member member = memberRepository.findByLoginId(loginId).get();
+        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
 
         Delivery delivery = new Delivery();
         delivery.setName(orderForm.getName());
@@ -87,7 +89,7 @@ public class OrderService {
 
         for(BaggedItem baggedItem : baggedItems) {
             if(baggedItem.getCount() > baggedItem.getItem().getStockQuantity()) {
-                throw new IllegalStateException("주문 수량을 초과하였습니다.");
+                throw new NotEnoughStockException("주문 수량을 초과하였습니다.");
             }
             if(baggedItem.getItem().getItemStatus() != ItemStatus.FOR_SALE) {
                 baggedItemRepository.remove(baggedItem.getId());

@@ -2,6 +2,7 @@ package dare.daremall.service;
 
 import dare.daremall.controller.item.ItemDto;
 import dare.daremall.domain.item.*;
+import dare.daremall.exception.CannotAddNewItem;
 import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,12 +44,12 @@ public class ItemService {
             itemRepository.save(album);
         }
         else {
-            throw new IllegalStateException("상품을 추가할 수 없습니다.");
+            throw new CannotAddNewItem("상품을 추가할 수 없습니다.");
         }
     }
 
     public Item findOne(Long id) {
-        return itemRepository.findById(id).orElse(null);
+        return itemRepository.findById(id).get();
     }
 
     @Transactional
@@ -56,7 +57,7 @@ public class ItemService {
 
         // Long itemId, String name, int price, int stockQuantity
         // 영속성 엔티티의 변경감지 사용
-        Item findItem = itemRepository.findById(itemDto.getId()).orElse(null);
+        Item findItem = itemRepository.findById(itemDto.getId()).get();
 
         if(findItem!=null) {
             // findItem.change(price, stockQuantity, name); 등 의미있는 메소드로 작성하는 편이 좋다.
