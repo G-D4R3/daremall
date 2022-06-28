@@ -259,8 +259,8 @@ public class OrderController {
 
     @PostMapping(value = "/update")
     @PreAuthorize("hasRole('ADMIN')")
-    public String updateOrder(UpdateOrderDto updateOrderDto) {
+    public @ResponseBody ResponseEntity<String> updateOrder(UpdateOrderDto updateOrderDto) {
         orderService.update(updateOrderDto);
-        return "redirect:/admin/order";
+        return new ResponseEntity<>("주문 정보를 성공적으로 수정했습니다.", HttpStatus.OK);
     }
 }

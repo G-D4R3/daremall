@@ -61,7 +61,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form enctype="multipart/form-data" id="updateForm" th:object="${updateOrderForm}" method="post" action="/order/update" onsubmit="return checkForm();">
+                    <form enctype="multipart/form-data" id="updateForm" th:object="${updateOrderForm}">
                         <div class="flex-row">
                             <label>주문 번호</label>
                             <input class="form-control" type="text" id="id" th:field="*{id}" readonly>
@@ -220,7 +220,20 @@
             document.getElementById("deliveryStatus").disabled = false;
             document.getElementById("deliveryStatus").value = "NONE";
         }
-        $('#updateForm').submit();
+        if(checkForm()==true) {
+            $.ajax({
+                url: '/order/update',
+                type: 'POST',
+                data: $('#updateForm').serialize(),
+                success: function(data) {
+                    alert(data);
+                    window.location.href = '/admin/order';
+                },
+                error: function(data) {
+                    alert(data);
+                }
+            })
+        }
     });
 
     function orderStatusChange() {
