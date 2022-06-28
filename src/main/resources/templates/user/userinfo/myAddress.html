@@ -187,11 +187,33 @@
     });
 
     $('#addDelivery').click( function() {
-        $('#addDeliveryForm').submit();
+        $.ajax({
+            url: '/userinfo/myAddress/add',
+            type: 'POST',
+            data: $('#addDeliveryForm').serialize(),
+            success: function(data) {
+                alert(data);
+                window.location.href = '/userinfo/myAddress';
+            },
+            error: function(data) {
+                alert(data);
+            }
+        });
     });
 
     $('#updateDelivery').click( function() {
-        $('#updateDeliveryForm').submit();
+        $.ajax({
+            url: '/userinfo/myAddress/update',
+            type: 'POST',
+            data: $('#updateDeliveryForm').serialize(),
+            success: function(data) {
+                alert(data);
+                window.location.href = '/userinfo/myAddress';
+            },
+            error: function(data) {
+                alert(data);
+            }
+        });
     });
 
     var autoHypenPhone = function(str){
@@ -255,19 +277,20 @@
     }
 
     function deleteDelivery(id) {
-        var form = document.createElement("form");
-        form.setAttribute("method", "post");
-        form.setAttribute("action", "/userinfo/myAddress/delete");
-
-        var deliveryId = document.createElement("input");
-        deliveryId.setAttribute("type","hidden");
-        deliveryId.setAttribute("name","deliveryId");
-        deliveryId.setAttribute("value",id);
-
-        form.appendChild(deliveryId);
-
-        document.body.appendChild(form);
-        form.submit();
+        $.ajax({
+            url: '/userinfo/myAddress/delete',
+            type: 'POST',
+            data: {
+                "deliveryId": id
+            },
+            success: function(data) {
+                alert(data);
+                window.location.href = '/userinfo/myAddress';
+            },
+            error: function(data) {
+                alert(data);
+            }
+        });
     }
 
     function checkAddForm() {

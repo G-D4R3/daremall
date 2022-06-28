@@ -9,6 +9,9 @@ import dare.daremall.service.MemberService;
 import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,12 +19,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -89,23 +95,23 @@ public class MyPageController {
     }
 
     @PostMapping(value = "/myAddress/add") @Secured({"ROLE_USER"})
-    public String addDelivery(@AuthenticationPrincipal LoginUserDetails member, @Valid DeliveryInfoForm deliveryInfoForm) {
+    public @ResponseBody ResponseEntity<String> addDelivery(@AuthenticationPrincipal LoginUserDetails member, @Valid DeliveryInfoForm deliveryInfoForm) {
 
-        if(member==null) return "redirect:/members/login";
+        if(member==null) throw new AccessDeniedException("로그인이 필요한 서비스입니다.");
 
         memberService.addDeliveryInfo(member.getUsername(), deliveryInfoForm);
 
-        return "redirect:/userinfo/myAddress";
+        return new ResponseEntity<>("배송지를 성공적으로 추가했습니다.", HttpStatus.OK);
     }
 
     @PostMapping(value = "/myAddress/delete") @Secured({"ROLE_USER"})
-    public String deleteDelivery(@AuthenticationPrincipal LoginUserDetails member,
+    public @ResponseBody ResponseEntity<String> deleteDelivery(@AuthenticationPrincipal LoginUserDetails member,
                                  Long deliveryId) {
-        if(member==null) return "redirect:/members/login";
+        if(member==null) throw new AccessDeniedException("로그인이 필요한 서비스입니다.");
 
         memberService.deleteDeliveryInfo(member.getUsername(), deliveryId);
 
-        return "redirect:/userinfo/myAddress";
+        return new ResponseEntity<>("배송지를 성공적으로 삭제했습니다.", HttpStatus.OK);
     }
 
     @PostMapping (value = "/myAddress/getDeliveryInfo") @Secured({"ROLE_USER"})
@@ -115,32 +121,34 @@ public class MyPageController {
     }
 
     @PostMapping(value = "/myAddress/update") @Secured({"ROLE_USER"})
-    public String updateDelivery(@AuthenticationPrincipal LoginUserDetails member,
+    public @ResponseBody ResponseEntity<String> updateDelivery(@AuthenticationPrincipal LoginUserDetails member,
                                  UpdateDeliveryInfoForm updateDeliveryInfoForm) {
-        if(member==null) return "redirect:/members/login";
-
-        System.out.println(updateDeliveryInfoForm.getIsDefault());
-        if(updateDeliveryInfoForm.getIsDefault()==true) {
-            System.out.println("is true");
-        }
+        if(member==null) throw new AccessDeniedException("로그인이 필요한 서비스입니다.");
 
         memberService.updateDeliveryInfo(member.getUsername(), updateDeliveryInfoForm);
 
-        return "redirect:/userinfo/myAddress";
+        return new ResponseEntity<>("배송지를 성공적으로 수정했습니다.", HttpStatus.OK);
     }
 
 
     @PostMapping(value = "/myInfo/update") @Secured({"ROLE_USER"})
-    public String updateUserInfo(@AuthenticationPrincipal LoginUserDetails member,
+    public @ResponseBody ResponseEntity<?> updateUserInfo(@AuthenticationPrincipal LoginUserDetails member,
                                  @Validated UpdateMyInfoForm updateForm, BindingResult result) {
 
-        if(member==null) return "redirect:/members/login";
-        if(result.hasErrors()) return "/user/userinfo/myInfo";
+        if(member==null) throw new AccessDeniedException("로그인이 필요한 서비스입니다.");
+        if(result.hasErrors()) {
+            Map<String, String> errorMap = new HashMap<>();
 
-        System.out.println(updateForm.getPhone());
+            for(FieldError error : result.getFieldErrors()) {
+                errorMap.put(error.getField(), error.getDefaultMessage());
+            }
+
+            return new ResponseEntity<Map<String, String>>(errorMap, HttpStatus.BAD_REQUEST);
+            //[출처] springboot 21강 - ResponseEntity와 @Valid와 @BindResult 사용하기|작성자 metacoding
+        }
 
         memberService.updateUserInfo(member.getUsername(), updateForm.getPhone(), updateForm.getZipcode(), updateForm.getStreet(), updateForm.getDetail());
-        return "redirect:/userinfo/myInfo";
+        return new ResponseEntity<String>("회원 정보를 성공적으로 수정했습니다.", HttpStatus.OK);
     }
 
     @PostMapping(value = "/myInfo/getCertificate") @Secured({"ROLE_USER"})

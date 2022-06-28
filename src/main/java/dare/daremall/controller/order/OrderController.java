@@ -22,6 +22,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -133,9 +134,9 @@ public class OrderController {
     }
 
     @PostMapping(value = "/cancel") @Secured({"ROLE_USER"})
-    public String cancelOrder(@AuthenticationPrincipal LoginUserDetails member,
+    public @ResponseBody ResponseEntity<String> cancelOrder(@AuthenticationPrincipal LoginUserDetails member,
                               Long orderId) {
-        if(member==null) return "redirect:/members/login";
+        if(member==null) throw new AccessDeniedException("로그인이 필요한 서비스입니다.");
         Order findOrder = orderService.findOne(orderId, member.getUsername());
         if(cancelPayment(findOrder.getMerchantUid()) == 1) {
             orderService.cancelOrder(orderId);
@@ -143,7 +144,7 @@ public class OrderController {
         else {
             throw new IllegalStateException("환불에 실패했습니다.");
         }
-        return "redirect:/userinfo/orderList";
+        return new ResponseEntity<>("주문을 취소했습니다.", HttpStatus.OK);
     }
 
     @PostMapping(value = "/delete") @Secured({"ROLE_USER"})
