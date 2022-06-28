@@ -8,6 +8,8 @@ import dare.daremall.repository.MemberRepository;
 import dare.daremall.service.ItemService;
 import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -22,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,31 +37,63 @@ public class ItemController {
     private final MemberRepository memberRepository;
     private final OrderService orderService;
 
-    @GetMapping(value = "")
+    /*@GetMapping(value = "")
     public String items(Model model) {
         List<ItemListDto> items = itemService.findItemsExceptHide().stream().map(i -> new ItemListDto(i)).collect(Collectors.toList());
         model.addAttribute("items", items);
         return "item/itemList";
+    }*/
+
+    @GetMapping(value = "")
+    public String itemList(@RequestParam(value = "page") Optional<Integer> page, Model model) {
+        int mPage =  page.filter(p -> p >= 1)
+                .map(p -> p - 1)
+                .orElse(0);
+
+        Page<Item> items = itemService.findAllPageable(PageRequest.of(mPage, 10));
+        Page<ItemListDto> dtoPage = items.map(item -> new ItemListDto(item));
+        Pager pager = new Pager(items.getTotalPages(), items.getNumber(), 5);
+
+        model.addAttribute("albums", dtoPage);
+        model.addAttribute("selectedPageSize", 5);
+        model.addAttribute("pager", pager);
+
+        return "/item/albumList";
     }
 
     @GetMapping(value = "/albums")
-    public String albums(Model model) {
-        List<ItemListDto> albums = itemService.findAlbums().stream().map(i -> {
-            return new ItemListDto(i);
-        }).collect(Collectors.toList());
-        model.addAttribute("albums", albums);
-        return "item/albumList";
+    public String albumList(@RequestParam(value = "page") Optional<Integer> page, Model model) {
+        int mPage =  page.filter(p -> p >= 1)
+                .map(p -> p - 1)
+                .orElse(0);
+
+        Page<Album> items = itemService.findAlbumPageable(PageRequest.of(mPage, 10));
+        Page<ItemListDto> dtoPage = items.map(item -> new ItemListDto(item));
+        Pager pager = new Pager(items.getTotalPages(), items.getNumber(), 5);
+
+        model.addAttribute("items", dtoPage);
+        model.addAttribute("selectedPageSize", 5);
+        model.addAttribute("pager", pager);
+
+        return "/item/itemList";
     }
 
     @GetMapping(value = "/books")
-    public String books(Model model) {
-        List<ItemListDto> books = itemService.findBooks().stream().map(i -> {
-            return new ItemListDto(i);
-        }).collect(Collectors.toList());
-        model.addAttribute("books", books);
-        return "item/bookList";
-    }
+    public String bookList(@RequestParam(value = "page") Optional<Integer> page, Model model) {
+        int mPage =  page.filter(p -> p >= 1)
+                .map(p -> p - 1)
+                .orElse(0);
 
+        Page<Book> items = itemService.findBookPageable(PageRequest.of(mPage, 10));
+        Page<ItemListDto> dtoPage = items.map(item -> new ItemListDto(item));
+        Pager pager = new Pager(items.getTotalPages(), items.getNumber(), 5);
+
+        model.addAttribute("books", dtoPage);
+        model.addAttribute("selectedPageSize", 5);
+        model.addAttribute("pager", pager);
+
+        return "/item/bookList";
+    }
     @GetMapping(value = "/detail")
     public String itemDetailsWithMember(@AuthenticationPrincipal LoginUserDetails member, @RequestParam("itemId") Long itemId, Model model) {
         Item findItem = itemService.findOne(itemId);

@@ -7,6 +7,10 @@
     <div>
 
         <table class="table table-striped">
+            <colgroup>
+                <col width="10%">
+                <col width="80%">
+            </colgroup>
             <thead> <tr>
                 <th></th> <th>상품</th>
             </tr>
@@ -44,35 +48,29 @@
             </tr>
             </tbody>
         </table>
-        <nav style="text-align: center;">
-            <ul class="pagination">
-                <li class="disabled">
-                    <a href="#" aria-label="First">
-                        <span aria-hidden="true">First</span>
-                    </a>
+    </div>
+    <div class="paging">
+        <div th:if="${albums.totalPages != 1}" class="block-27">
+            <ul>
+                <li th:class="${albums.number == 0} ? disabled">
+                    <a th:href="@{/items/albums(page=1)}">&laquo;</a>
                 </li>
-                <li class="disabled">
-                    <a href="#" aria-label="Previous">
-                        <span aria-hidden="true">&lt;</span>
-                    </a>
+                <li th:class="${albums.number == 0} ? disabled">
+                    <a th:href="@{/items/albums(page=${albums.number})}">&larr;</a>
                 </li>
-                <li class="active"><a href="#">1</a></li>
-                <li><a href="#" class="btn btn-outline-primary">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-                <li>
-                    <a href="#" aria-label="Next">
-                        <span aria-hidden="true">&gt;</span>
-                    </a>
+                <li th:class="${albums.number == (page - 1)} ? 'active pointer-disabled'"
+                    th:each="page : ${#numbers.sequence(pager.startPage, pager.endPage)}">
+                    <a th:href="@{/items/albums(page=${page})}"
+                       th:text="${page}" th:classappend="${albums.number + 1}==${page}? 'active'"></a>
                 </li>
-                <li>
-                    <a href="#" aria-label="Last">
-                        <span aria-hidden="true">Last</span>
-                    </a>
+                <li th:class="${albums.number + 1 == albums.totalPages} ? disabled">
+                    <a th:href="@{/items/albums(page=${albums.number + 2})}">&rarr;</a>
+                </li>
+                <li th:class="${albums.number + 1 == albums.totalPages} ? disabled">
+                    <a th:href="@{/items/albums(page=${albums.totalPages})}">&raquo;</a>
                 </li>
             </ul>
-        </nav>
+        </div>
     </div>
     <div th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->

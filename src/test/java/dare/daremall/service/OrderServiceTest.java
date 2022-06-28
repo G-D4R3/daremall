@@ -28,7 +28,7 @@ class OrderServiceTest {
     @Autowired ItemService itemService;
     @Autowired OrderService orderService;
 
-    @Test
+    /*@Test
     public void 주문_성공() {
         // given
         MemberSignupRequestDto memberDto = new MemberSignupRequestDto();
@@ -274,5 +274,5 @@ class OrderServiceTest {
         // then
         assertThat(e.getMessage()).isEqualTo("취소하지 않은 주문은 삭제할 수 없습니다.");
 
-    }
+    }*/
 }

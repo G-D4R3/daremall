@@ -4,8 +4,11 @@ import dare.daremall.controller.item.ItemDto;
 import dare.daremall.domain.item.*;
 import dare.daremall.exception.CannotAddNewItem;
 import dare.daremall.repository.BaggedItemRepository;
+import dare.daremall.repository.ItemJpaRepository;
 import dare.daremall.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,7 @@ import java.util.List;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final ItemJpaRepository itemJpaRepository;
     private final BaggedItemRepository baggedItemRepository;
 
     @Transactional
@@ -132,4 +136,17 @@ public class ItemService {
     }
 
     /** **/
+
+
+    public Page<Item> findAllPageable(Pageable pageable) {
+        return itemJpaRepository.findByItemStatus(ItemStatus.HIDE, pageable);
+    }
+
+    public Page<Album> findAlbumPageable(Pageable pageable) {
+        return itemJpaRepository.findAlbumByItemStatus(ItemStatus.HIDE, pageable);
+    }
+
+    public Page<Book> findBookPageable(Pageable pageable) {
+        return itemJpaRepository.findBookByItemStatus(ItemStatus.HIDE, pageable);
+    }
 }

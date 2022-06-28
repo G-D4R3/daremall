@@ -6,6 +6,10 @@
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
     <div>
         <table class="table table-striped">
+            <colgroup>
+                <col width="10%">
+                <col width="80%">
+            </colgroup>
             <thead> <tr>
                 <th></th> <th>상품</th>
             </tr>
@@ -43,6 +47,29 @@
             </tr>
             </tbody>
         </table>
+    </div>
+    <div class="paging">
+        <div th:if="${books.totalPages != 1}" class="block-27">
+            <ul>
+                <li th:class="${books.number == 0} ? disabled">
+                    <a th:href="@{/items/books(page=1)}">&laquo;</a>
+                </li>
+                <li th:class="${books.number == 0} ? disabled">
+                    <a th:href="@{/items/books(page=${books.number})}">&larr;</a>
+                </li>
+                <li th:class="${books.number == (page - 1)} ? 'active pointer-disabled'"
+                    th:each="page : ${#numbers.sequence(pager.startPage, pager.endPage)}">
+                    <a th:href="@{/items/books(page=${page})}"
+                       th:text="${page}" th:classappend="${books.number + 1}==${page}? 'active'"></a>
+                </li>
+                <li th:class="${books.number + 1 == books.totalPages} ? disabled">
+                    <a th:href="@{/items/books(page=${books.number + 2})}">&rarr;</a>
+                </li>
+                <li th:class="${books.number + 1 == books.totalPages} ? disabled">
+                    <a th:href="@{/items/books(page=${books.totalPages})}">&raquo;</a>
+                </li>
+            </ul>
+        </div>
     </div>
     <div th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->
