@@ -129,7 +129,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form enctype="multipart/form-data" id="addAdForm" th:object="${addAdForm}" method="post" action="/ad/new" onsubmit="return checkAddForm();">
+                    <form enctype="multipart/form-data" id="addAdForm" th:object="${addAdForm}" >
                         <div class="update-image">
                             <img id="addImage" style="height: 200px; width: 400px">
                             <div class="flex-row">
@@ -313,7 +313,26 @@
     }
 
     $('#addBtn').click(function (){
-        $('#addAdForm').submit();
+        if(checkAddForm()) {
+            var form = $('#addAdForm')[0];
+            var formData = new FormData(form);
+            $.ajax({
+                url: '/ad/new',
+                type: 'POST',
+                enctype: 'multipart/form-data',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function(data) {
+                    alert(data);
+                    window.location.reload();
+                },
+                error: function(data) {
+                    alert(data);
+                }
+            })
+
+        }
     })
 
     function checkAddForm() {
@@ -367,7 +386,26 @@
     }
 
     $('#updateBtn').click(function () {
-        $('#updateAdForm').submit();
+        if(checkUpdateForm()) {
+            var form = $('#updateAdForm')[0];
+            var formData = new FormData(form);
+            $.ajax({
+                url: '/ad/update',
+                type: 'POST',
+                enctype: 'multipart/form-data',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function(data) {
+                    alert(data);
+                    window.location.reload();
+                },
+                error: function(data) {
+                    alert(data);
+                }
+            })
+
+        }
     });
 
     function checkUpdateForm() {

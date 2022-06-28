@@ -29,7 +29,7 @@ public class AdController {
 
     @PostMapping(value = "/new")
     @PreAuthorize("hasRole('ADMIN')")
-    public String newAd(AdForm adForm, MultipartFile imgFile) throws IOException {
+    public @ResponseBody ResponseEntity<String> newAd(AdForm adForm, MultipartFile imgFile) throws IOException {
         if(!imgFile.isEmpty()) {
             String oriImgName = imgFile.getOriginalFilename();
             String imgName = "";
@@ -43,10 +43,10 @@ public class AdController {
             adForm.setImagePath("/images/ad/main/" + imgName);
         }
         else {
-            throw new IllegalStateException("광고 이미지를 추가해주세요");
+            return new ResponseEntity<>("광고 이미지를 추가해주세요", HttpStatus.BAD_REQUEST);
         }
         adService.save(adForm);
-        return "redirect:/admin/ad";
+        return new ResponseEntity<>("광고를 성공적으로 등록했습니다.", HttpStatus.OK);
     }
 
     @PostMapping(value = "/delete")
@@ -78,7 +78,7 @@ public class AdController {
 
     @PostMapping(value = "/update")
     @PreAuthorize("hasRole('ADMIN')")
-    public String updateAd(AdForm adForm, MultipartFile imgFile) throws IOException {
+    public @ResponseBody ResponseEntity<String> updateAd(AdForm adForm, MultipartFile imgFile) throws IOException {
         if(!imgFile.isEmpty()) {
             String oriImgName = imgFile.getOriginalFilename();
             String imgName = "";
@@ -95,6 +95,6 @@ public class AdController {
             adForm.setImagePath(null);
         }
         adService.update(adForm);
-        return "redirect:/admin/ad";
+        return new ResponseEntity<>("광고를 성공적으로 수정했습니다.", HttpStatus.OK);
     }
 }
