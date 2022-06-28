@@ -265,6 +265,9 @@
                 document.getElementById("updateStatus").disabled = true;
             }
             else {
+                if($('#updateStatus').val() == "END"){
+                    document.getElementById("updateStatus").value = "option";
+                }
                 document.getElementById("updateStatus").disabled = false;
             }
         }
