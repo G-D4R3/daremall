@@ -8,6 +8,8 @@ import dare.daremall.repository.MemberRepository;
 import dare.daremall.service.ItemService;
 import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -117,7 +119,7 @@ public class ItemController {
     // 관리자 추가용
     @PostMapping(value = "/add")
     @PreAuthorize("hasRole('ADMIN')")
-    public String addItem(@Validated ItemDto itemDto, MultipartFile imgFile) throws Exception{
+    public @ResponseBody ResponseEntity<String> addItem(@Validated ItemDto itemDto, MultipartFile imgFile) throws Exception{
 
         if(!imgFile.isEmpty()) {
             String oriImgName = imgFile.getOriginalFilename();
@@ -137,7 +139,7 @@ public class ItemController {
 
         itemService.saveItem(itemDto);
 
-        return "redirect:/admin/item";
+        return new ResponseEntity<>("상품을 성공적으로 추가했습니다.", HttpStatus.OK);
     }
 
     @PostMapping(value = "/findItem")
@@ -168,7 +170,7 @@ public class ItemController {
 
     @PostMapping(value = "/update")
     @PreAuthorize("hasRole('ADMIN')")
-    public String updateItem (@Validated ItemDto itemDto, MultipartFile imgFile) throws Exception{
+    public @ResponseBody ResponseEntity<String> updateItem (@Validated ItemDto itemDto, MultipartFile imgFile) throws Exception{
 
         if(!imgFile.isEmpty()) {
             String oriImgName = imgFile.getOriginalFilename();
@@ -194,14 +196,14 @@ public class ItemController {
             orderService.deleteOrderItem(itemDto.getId(), itemDto.getName());
         }
 
-        return "redirect:/admin/item";
+        return new ResponseEntity<>("상품을 성공적으로 수정했습니다.", HttpStatus.OK);
     }
 
     @PostMapping(value = "/delete")
     @PreAuthorize("hasRole('ADMIN')")
-    public String deleteItem(Long itemId) {
+    public @ResponseBody ResponseEntity<String> deleteItem(Long itemId) {
         itemService.delete(itemId);
-        return "redirect:/admin/item";
+        return new ResponseEntity<>("상품을 성공적으로 삭제했습니다.", HttpStatus.OK);
     }
 
 

@@ -322,30 +322,74 @@
     function deleteItemBtn(id, name) {
 
         if(confirm(name+"을 정말로 삭제하시겠습니까?")==true) {
-            var form = document.createElement("form");
-            form.setAttribute("method", "post");
-            form.setAttribute("action", "/items/delete");
-
-            var itemId = document.createElement("input");
-            itemId.setAttribute("type","hidden");
-            itemId.setAttribute("name","itemId");
-            itemId.setAttribute("value",id);
-
-            form.appendChild(itemId);
-
-            document.body.appendChild(form);
-            form.submit();
+            $.ajax({
+                url: '/items/delete',
+                type: 'POST',
+                data: {
+                    "itemId" : id
+                },
+                success: function(data) {
+                    alert(data);
+                    window.location.href = '/admin/item';
+                },
+                error: function(data) {
+                    alert(data);
+                }
+            });
         }
     }
 
     /** form submit button **/
     $('#addItem').click(function (){
-        $('#addItemForm').submit();
+        var form = $('#addItemForm')[0];
+        var formData = new FormData(form);
+
+        if($('#addFile').val().length == 0) {
+            document.getElementById("addFile").value = "";
+        }
+
+        $.ajax({
+            url: '/items/add',
+            type: 'POST',
+            data: formData,
+            enctype: 'multipart/form-data',
+            contentType: false,
+            processData: false,
+            success: function(data) {
+                alert(data);
+                window.location.href = '/admin/item';
+            },
+            error: function(data) {
+                alert(data);
+            }
+        });
+
     });
 
 
     $('#updateItem').click(function (){
-        $('#updateItemForm').submit();
+        var form = $('#updateItemForm')[0];
+        var formData = new FormData(form);
+
+        if($('#addFile').val().length == 0) {
+            document.getElementById("updateFile").value = "";
+        }
+
+        $.ajax({
+            url: '/items/update',
+            type: 'POST',
+            data: formData,
+            enctype: 'multipart/form-data',
+            contentType: false,
+            processData: false,
+            success: function(data) {
+                alert(data);
+                window.location.href = '/admin/item';
+            },
+            error: function(data) {
+                alert(data);
+            }
+        });
     });
 
     /** 이미지 업데이트 시 미리보기 **/

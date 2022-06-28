@@ -1,11 +1,15 @@
 package dare.daremall;
 
+import dare.daremall.exception.CannotAddNewItem;
 import dare.daremall.exception.NotEnoughStockException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.nio.file.AccessDeniedException;
 import java.util.NoSuchElementException;
@@ -20,6 +24,12 @@ public class GlobalExceptionHandler {
         model.addAttribute("status", HttpStatus.BAD_REQUEST);
         model.addAttribute("message", e.getMessage());
         return "error/error";
+    }
+
+    @ExceptionHandler(CannotAddNewItem.class)
+    @ResponseBody
+    public ResponseEntity<String> cannotAddNewItemException(CannotAddNewItem e) {
+        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
