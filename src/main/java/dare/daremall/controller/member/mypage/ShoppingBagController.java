@@ -8,6 +8,9 @@ import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.service.ItemService;
 import dare.daremall.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -27,14 +30,14 @@ public class ShoppingBagController {
     private final BaggedItemRepository baggedItemRepository;
 
     @PostMapping(value = "/add") @Secured({"ROLE_USER"})
-    public String addBag(@AuthenticationPrincipal LoginUserDetails member,
-                         @RequestParam(value = "itemId") Long itemId,
-                         @RequestParam(value = "count", defaultValue = "1") int count) {
+    public @ResponseBody ResponseEntity<String> addBag(@AuthenticationPrincipal LoginUserDetails member,
+                                  @RequestParam(value = "itemId") Long itemId,
+                                  @RequestParam(value = "count", defaultValue = "1") int count) {
 
-        if(member==null) return "redirect:/members/login";
+        if(member==null) throw new AccessDeniedException("로그인이 필요한 서비스입니다.");
 
         memberService.addShoppingBag(itemId, member.getUsername(), count);
-        return "redirect:/items/detail?itemId="+itemId;
+        return new ResponseEntity<>("장바구니에 상품을 추가했습니다.", HttpStatus.OK);
     }
 
 

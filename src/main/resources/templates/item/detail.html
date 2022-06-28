@@ -15,6 +15,7 @@
                 </p>
                 <p th:if="${item.itemStatus=='FOR_SALE'}" th:text="'재고 수량 : '+${item.stockQuantity}+'개'"></p>
             <form role="form" method="post" th:action="@{/order/new/addItem}">
+                <input id="itemId" hidden th:value="${item.id}">
                 <div class="form-group">
                     <label for="item">옵션 선택</label>
                     <select name="itemId" id="item" class="form-control">
@@ -27,12 +28,12 @@
                 </div>
                 <div class="form-group">
                     <label th:for="count">주문 수량</label>
-                    <input name="count" th:data-suffix="개" th:value="1" th:min="1" th:max="${item.stockQuantity}"
+                    <input id="count" name="count" th:data-suffix="개" th:value="1" th:min="1" th:max="${item.stockQuantity}"
                            type="number" class="form-control" th:disabled="${item.itemStatus=='NOT_FOR_SALE'}"/>
                 </div>
                 <th:block th:if="${item.itemStatus=='FOR_SALE'}">
                     <button type="submit" class="btn btn-primary">주문하기</button>
-                    <button type="submit" class="btn btn-outline-primary" th:formaction="@{/shop/add}">장바구니</button>
+                    <button type="button" class="btn btn-outline-primary" id="shoppingBagBtn">장바구니</button>
                     <button type="submit" class="btn" th:classappend="${isLikeItem}" th:formaction="@{/like/add}">찜</button>
                 </th:block>
                 <th:block th:if="${item.itemStatus=='NOT_FOR_SALE'}">
@@ -73,4 +74,30 @@
     }
 
 </style>
+<script>
+
+    $('#shoppingBagBtn').click(function (){
+        $.ajax({
+            url: '/shop/add',
+            type: 'POST',
+            data: {
+                "itemId" : $('#itemId').val(),
+                "count" : $('#count').val()
+            },
+            success: function(data) {
+                if(confirm(data+"\n" +
+                    "장바구니로 이동하겠습니까?")) {
+                    window.location.href = '/shop';
+                }
+                else {
+                    window.location.reload();
+                }
+            },
+            error: function(data) {
+                alert(data);
+                window.location.reload();
+            }
+        })
+    })
+</script>
 </html>
