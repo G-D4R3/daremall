@@ -54,11 +54,11 @@ public class ItemController {
         Page<ItemListDto> dtoPage = items.map(item -> new ItemListDto(item));
         Pager pager = new Pager(items.getTotalPages(), items.getNumber(), 5);
 
-        model.addAttribute("albums", dtoPage);
+        model.addAttribute("items", dtoPage);
         model.addAttribute("selectedPageSize", 5);
         model.addAttribute("pager", pager);
 
-        return "/item/albumList";
+        return "/item/itemList";
     }
 
     @GetMapping(value = "/albums")
@@ -75,7 +75,7 @@ public class ItemController {
         model.addAttribute("selectedPageSize", 5);
         model.addAttribute("pager", pager);
 
-        return "/item/itemList";
+        return "/item/albumList";
     }
 
     @GetMapping(value = "/books")
