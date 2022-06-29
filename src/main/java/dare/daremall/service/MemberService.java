@@ -43,6 +43,10 @@ public class MemberService {
         return memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
     }
 
+    public Member findUserAtCreateMember(String loginId) {
+        return memberRepository.findByLoginId(loginId).orElse(null);
+    }
+
     public List<Member> findMembers() {
         return memberRepository.findAll();
     }

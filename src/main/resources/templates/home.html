@@ -7,10 +7,11 @@
 <body>
     <div class="container">
         <div th:replace="fragments/bodyHeader :: bodyHeader" />
-        <a th:each="ad : ${ads}" th:href="${ad.href}">
-            <img class="ad" th:src="${ad.imagePath}" style="width: 100%"/>
-        </a>
-
+        <th:block th:if="${ads.size() > 0}">
+            <a th:each="ad : ${ads}" th:href="${ad.href}">
+                <img class="ad" th:src="${ad.imagePath}" style="width: 100%"/>
+            </a>
+        </th:block>
         <div class="jumbotron">
             <h1>DARE MALL</h1>
             <h3> 도서 / 음반 판매 </h3>

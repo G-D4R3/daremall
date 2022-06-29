@@ -69,9 +69,9 @@ public class MemberController {
     }
 
     @PostMapping(value = "/new/loginIdValidation")
-    public @ResponseBody Boolean loginIdValidation(String loginId) {
-        if(memberService.findUser(loginId)==null) return true;
-        else return false;
+    public @ResponseBody ResponseEntity<Boolean> loginIdValidation(String loginId) {
+        if(memberService.findUserAtCreateMember(loginId)==null) return new ResponseEntity<>(true, HttpStatus.OK);
+        else return new ResponseEntity<>(false, HttpStatus.OK);
     }
 
     /**

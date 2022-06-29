@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -20,8 +21,8 @@ public class HomeController {
 
         // 메인 화면 광고 배너
         List<MainAd> ads = adService.findMainAdNow();
-        model.addAttribute("ads", ads);
-
+        if(ads.size()>0) model.addAttribute("ads", ads);
+        else model.addAttribute("ads", new ArrayList<>());
 
         return "home";
     }

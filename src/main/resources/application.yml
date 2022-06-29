@@ -5,8 +5,8 @@ spring:
   freemarker:
     cache: false
   datasource:
-    #
-    url: jdbc:h2:tcp://localhost/~/daremall
+    #url: jdbc:h2:tcp://localhost:1521/daremall
+    url: jdbc:h2:tcp://localhost:1521/test
     username: sa
     password:
     driver-class-name: org.h2.Driver

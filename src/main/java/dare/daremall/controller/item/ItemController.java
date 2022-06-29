@@ -71,7 +71,7 @@ public class ItemController {
         Page<ItemListDto> dtoPage = items.map(item -> new ItemListDto(item));
         Pager pager = new Pager(items.getTotalPages(), items.getNumber(), 5);
 
-        model.addAttribute("items", dtoPage);
+        model.addAttribute("albums", dtoPage);
         model.addAttribute("selectedPageSize", 5);
         model.addAttribute("pager", pager);
 
