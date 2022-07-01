@@ -58,7 +58,7 @@ public class ItemController {
         model.addAttribute("selectedPageSize", 5);
         model.addAttribute("pager", pager);
 
-        return "/item/itemList";
+        return "item/itemList";
     }
 
     @GetMapping(value = "/albums")
@@ -75,7 +75,7 @@ public class ItemController {
         model.addAttribute("selectedPageSize", 5);
         model.addAttribute("pager", pager);
 
-        return "/item/albumList";
+        return "item/albumList";
     }
 
     @GetMapping(value = "/books")
@@ -92,14 +92,14 @@ public class ItemController {
         model.addAttribute("selectedPageSize", 5);
         model.addAttribute("pager", pager);
 
-        return "/item/bookList";
+        return "item/bookList";
     }
     @GetMapping(value = "/detail")
     public String itemDetailsWithMember(@AuthenticationPrincipal LoginUserDetails member, @RequestParam("itemId") Long itemId, Model model) {
         Item findItem = itemService.findOne(itemId);
 
         if(findItem.getItemStatus()== ItemStatus.HIDE) {
-            return "/item/hide";
+            return "item/hide";
         }
 
         ItemDetailDto item = new ItemDetailDto();

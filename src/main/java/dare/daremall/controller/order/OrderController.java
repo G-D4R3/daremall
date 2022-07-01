@@ -80,7 +80,7 @@ public class OrderController {
         model.addAttribute("orderForm", new OrderForm());
 
         model.addAttribute("paymentForm", new PaymentForm(memberService.findUser(member.getUsername())));
-        return "/user/order/orderForm";
+        return "user/order/orderForm";
     }
 
     @PostMapping(value = "/new/addItem") @Secured({"ROLE_USER"})
@@ -118,7 +118,7 @@ public class OrderController {
         OrderDto orderDto = new OrderDto(orderService.findOne(orderId, member.getUsername()));
         model.addAttribute("order", orderDto);
 
-        return "/user/order/orderSuccess";
+        return "user/order/orderSuccess";
     }
 
     @GetMapping(value = "/detail") @Secured({"ROLE_USER"})
@@ -130,7 +130,7 @@ public class OrderController {
         OrderDetailDto orderDetailDto = new OrderDetailDto(orderService.findOne(orderId, member.getUsername()));
         model.addAttribute("order", orderDetailDto);
 
-        return "/user/order/orderDetail";
+        return "user/order/orderDetail";
     }
 
     @PostMapping(value = "/cancel") @Secured({"ROLE_USER"})

@@ -63,8 +63,8 @@ public class AdController {
         AdForm adForm = new AdForm();
         adForm.setId(ad.getId());
         adForm.setName(ad.getName());
-        adForm.setStart(ad.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        adForm.setEnd(ad.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        adForm.setStartDate(ad.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        adForm.setEndDate(ad.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         adForm.setImagePath(ad.getImagePath());
         adForm.setHref(ad.getHref());
         if(ad.getClass().equals(MainAd.class)) {

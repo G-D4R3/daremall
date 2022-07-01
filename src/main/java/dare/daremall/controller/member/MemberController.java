@@ -103,13 +103,13 @@ public class MemberController {
 
     @GetMapping(value = "/forgetId/success")
     public String findIdSuccess(Model model) {
-        return "/user/forget/findId";
+        return "user/forget/findId";
     }
 
 
     @GetMapping(value = "/forgetPassword")
     public String forgetPassword(Model model) {
-        return "/user/forget/forgetPassword";
+        return "user/forget/forgetPassword";
     }
 
     @PostMapping(value = "/forgetPassword/getCertificate")
@@ -139,7 +139,7 @@ public class MemberController {
 
         model.addAttribute("changePasswordForm", new ChangePasswordForm(loginId));
 
-        return "/user/forget/changePassword";
+        return "user/forget/changePassword";
     }
 
 
@@ -147,10 +147,10 @@ public class MemberController {
     public String changePassword(@Validated ChangePasswordForm form, BindingResult result, RedirectAttributes redirectAttributes) {
 
         if(result.hasErrors()) {
-            return "/user/forget/chagnePassword";
+            return "user/forget/chagnePassword";
         }
         if(!form.getNewPassword().equals(form.getPasswordConfirm())) {
-            return "/user/forget/chagnePassword";
+            return "user/forget/chagnePassword";
         }
 
         memberService.passwordChange(form.getLoginId(), form.getNewPassword());
@@ -159,7 +159,7 @@ public class MemberController {
 
     @GetMapping(value = "/forgetPassword/success")
     public String findPasswordSuccess(Model model) {
-        return "/user/forget/findPassword";
+        return "user/forget/findPassword";
     }
 
 

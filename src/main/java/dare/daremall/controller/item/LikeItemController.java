@@ -29,7 +29,7 @@ public class LikeItemController {
         Member findMember = memberService.findUser(member.getUsername());
         List<LikeItemDto> items = findMember.getLikes().stream().map(li -> new LikeItemDto(li)).collect(Collectors.toList());
         model.addAttribute("items", items);
-        return "/user/likeList";
+        return "user/likeList";
 
     }
 

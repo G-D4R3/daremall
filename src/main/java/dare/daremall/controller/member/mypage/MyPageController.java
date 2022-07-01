@@ -53,7 +53,7 @@ public class MyPageController {
         if(orders.size()>3) orders = orders.subList(0, 3); // 최근 주문 내역은 3개 까지만 표시
 
         model.addAttribute("orders", orders);
-        return "/user/userinfo/userinfo";
+        return "user/userinfo/userinfo";
     }
 
     @GetMapping(value = "/myInfo") @Secured({"ROLE_USER"})
@@ -68,7 +68,7 @@ public class MyPageController {
         model.addAttribute("name", findMember.getName());
         model.addAttribute("changePasswordForm", new ChangePasswordForm());
 
-        return "/user/userinfo/myInfo";
+        return "user/userinfo/myInfo";
     }
 
     @GetMapping(value = "/orderList") @Secured({"ROLE_USER"})
@@ -79,7 +79,7 @@ public class MyPageController {
 
         model.addAttribute("orders", orderDtos);
 
-        return "/user/userinfo/orderList";
+        return "user/userinfo/orderList";
     }
 
     @GetMapping(value = "/myAddress") @Secured({"ROLE_USER"})
@@ -91,7 +91,7 @@ public class MyPageController {
         model.addAttribute("deliveryInfoForm", new DeliveryInfoForm());
         model.addAttribute("updateDeliveryForm", new UpdateDeliveryInfoForm());
 
-        return "/user/userinfo/myAddress";
+        return "user/userinfo/myAddress";
     }
 
     @PostMapping(value = "/myAddress/add") @Secured({"ROLE_USER"})

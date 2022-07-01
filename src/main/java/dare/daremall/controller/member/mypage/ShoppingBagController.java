@@ -82,7 +82,7 @@ public class ShoppingBagController {
         }).sum());
         model.addAttribute("list", list);
 
-        return "/user/shoppingBag";
+        return "user/shoppingBag";
     }
 
     @PostMapping(value = "/check") @Secured({"ROLE_USER"})

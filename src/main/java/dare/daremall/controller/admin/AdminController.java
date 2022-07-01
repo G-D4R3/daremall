@@ -45,7 +45,7 @@ public class AdminController {
     @GetMapping(value = "")
     @Secured({"ROLE_ADMIN"})
     public String adminPage(Model model) {
-        return "/admin/admin";
+        return "admin/admin";
     }
 
     @GetMapping(value = "/item")
@@ -64,7 +64,7 @@ public class AdminController {
         model.addAttribute("updateItemForm", new ItemDto());
         model.addAttribute("item", new String());
 
-        return "/admin/item/itemManage";
+        return "admin/item/itemManage";
     }
 
     @GetMapping(value = "/item/search")
@@ -81,7 +81,7 @@ public class AdminController {
         model.addAttribute("addItemForm", new ItemDto());
         model.addAttribute("item", item);
 
-        return "/admin/item/itemManage";
+        return "admin/item/itemManage";
     }
 
     @GetMapping(value = "/member")
@@ -108,7 +108,7 @@ public class AdminController {
         List<MemberDto> members = memberService.findMembers(memberSearch).stream().map(m->new MemberDto(m)).collect(Collectors.toList());
         model.addAttribute("members", members);
         model.addAttribute("memberSearch", memberSearch);
-        return "/admin/member/memberManage";
+        return "admin/member/memberManage";
     }
 
     @GetMapping(value = "/ad")
@@ -119,7 +119,7 @@ public class AdminController {
         model.addAttribute("adSearch", new String());
         model.addAttribute("addAdForm", new AdForm());
         model.addAttribute("updateAdForm", new AdForm());
-        return "/admin/ad/adManage";
+        return "admin/ad/adManage";
     }
 
     @GetMapping(value = "/ad/search")
@@ -131,7 +131,7 @@ public class AdminController {
         model.addAttribute("adSearch", new String());
         model.addAttribute("addAdForm", new AdForm());
         model.addAttribute("updateAdForm", new AdForm());
-        return "/admin/ad/adManage";
+        return "admin/ad/adManage";
     }
 
     @GetMapping(value = "/order")
@@ -156,7 +156,7 @@ public class AdminController {
         }
         model.addAttribute("orderSearch", new String());
         model.addAttribute("updateOrderForm", new UpdateOrderDto());
-        return "/admin/order/orderManage";
+        return "admin/order/orderManage";
     }
 
     @GetMapping(value = "/order/search")
@@ -169,7 +169,7 @@ public class AdminController {
         model.addAttribute("orders", orders);
         model.addAttribute("orderSearch", search);
         model.addAttribute("updateOrderForm", new UpdateOrderDto());
-        return "/admin/order/orderManage";
+        return "admin/order/orderManage";
     }
 
     @GetMapping(value = "/analysis")
@@ -177,7 +177,7 @@ public class AdminController {
     public String analysis(Model model) {
         List<ItemSelectDto> items = itemService.findItems().stream().map(i->new ItemSelectDto(i)).collect(Collectors.toList());
         model.addAttribute("items", items);
-        return "/admin/analysis/analysis";
+        return "admin/analysis/analysis";
     }
 
     @Getter
