@@ -70,7 +70,10 @@ public class MemberService {
     }
 
     private void validateDuplicateMember(MemberSignupRequestDto member) {
-        Member dupicateMember = memberRepository.findByLoginId(member.getLoginId()).orElseThrow(() -> new CannotRegisterMember("이미 사용중인 아이디입니다."));
+        Member dupicateMember = memberRepository.findByLoginId(member.getLoginId()).orElse(null);
+        if(dupicateMember!=null) {
+            new CannotRegisterMember("이미 사용중인 아이디입니다.");
+        }
     }
 
     private void validateNoMoreThan3(MemberSignupRequestDto member) {
