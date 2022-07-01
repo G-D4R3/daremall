@@ -28,8 +28,8 @@ public class AdService {
             MainAd ad = new MainAd();
             ad.setName(adForm.getName());
             ad.setImagePath(adForm.getImagePath());
-            ad.setStartDate(LocalDate.parse(adForm.getStart(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            ad.setEndDate(LocalDate.parse(adForm.getEnd(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            ad.setStartDate(LocalDate.parse(adForm.getStartDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            ad.setEndDate(LocalDate.parse(adForm.getEndDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             if(ad.getEndDate().isBefore(LocalDate.now())) {
                 ad.setStatus(AdStatus.END);
             }
@@ -50,8 +50,8 @@ public class AdService {
             MainAd ad = (MainAd) adRepository.findOne(adForm.getId());
             ad.setName(adForm.getName());
             if(adForm.getImagePath() != null) ad.setImagePath(adForm.getImagePath());
-            ad.setStartDate(LocalDate.parse(adForm.getStart(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            ad.setEndDate(LocalDate.parse(adForm.getEnd(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            ad.setStartDate(LocalDate.parse(adForm.getStartDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            ad.setEndDate(LocalDate.parse(adForm.getEndDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             if(ad.getEndDate().isBefore(LocalDate.now())) {
                 ad.setStatus(AdStatus.END);
             }

@@ -43,7 +43,7 @@
                 <td>
                     <div>
                         <p th:text="'광고명 : '+${ad.name}"></p>
-                        <p th:text="'광고 기한 : '+${ad.start}+' - '+${ad.end}"></p>
+                        <p th:text="'광고 기한 : '+${ad.startDate}+' - '+${ad.endDate}"></p>
                     </div>
                 </td>
                 <td>
@@ -85,11 +85,11 @@
                         </div>
                         <div class="flex-row">
                             <label>광고 시작</label>
-                            <input class="form-control" type="date" id="updateStart" th:field="*{start}" placeholder="광고 시작 날짜를 선택해주세요">
+                            <input class="form-control" type="date" id="updateStart" th:field="*{startDate}" placeholder="광고 시작 날짜를 선택해주세요">
                         </div>
                         <div class="flex-row">
                             <label>광고 종료</label>
-                            <input class="form-control" type="date" id="updateEnd" th:field="*{end}" placeholder="광고 종료 날짜를 선택해주세요" onchange="updateEndSelected()">
+                            <input class="form-control" type="date" id="updateEnd" th:field="*{endDate}" placeholder="광고 종료 날짜를 선택해주세요" onchange="updateEndSelected()">
                         </div>
                         <div class="flex-row">
                             <label>광고 유형 선택</label>
@@ -143,11 +143,11 @@
                         </div>
                         <div class="flex-row">
                             <label>광고 시작</label>
-                            <input class="form-control" type="date" id="start" th:field="*{start}" placeholder="광고 시작 날짜를 선택해주세요" onchange="addStartSelected()">
+                            <input class="form-control" type="date" id="start" th:field="*{startDate}" placeholder="광고 시작 날짜를 선택해주세요" onchange="addStartSelected()">
                         </div>
                         <div class="flex-row">
                             <label>광고 종료</label>
-                            <input class="form-control" type="date" id="end" th:field="*{end}" placeholder="광고 종료 날짜를 선택해주세요" onchange="addEndSelected()">
+                            <input class="form-control" type="date" id="end" th:field="*{endDate}" placeholder="광고 종료 날짜를 선택해주세요" onchange="addEndSelected()">
                         </div>
                         <div class="flex-row">
                             <label>광고 유형 선택</label>
@@ -373,8 +373,8 @@
             success: function(data) {
                 document.getElementById("updateId").value = data.id;
                 document.getElementById("updateName").value = data.name;
-                document.getElementById("updateStart").value = data.start;
-                document.getElementById("updateEnd").value = data.end;
+                document.getElementById("updateStart").value = data.startDate;
+                document.getElementById("updateEnd").value = data.endDate;
                 document.getElementById("updateType").value = data.type;
                 document.getElementById("updateStatus").value = data.status;
                 document.getElementById("updateHref").value = data.href;
