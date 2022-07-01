@@ -11,7 +11,7 @@ import javax.persistence.*;
 public class DeliveryInfo {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "delivery_info_id")
     private Long id;
 

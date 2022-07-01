@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @DiscriminatorColumn(name = "dtype")
 public abstract class Ad {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ad_id")
     private Long id;
 

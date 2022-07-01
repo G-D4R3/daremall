@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity @Getter @Setter
 public class LikeItem {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="like_item_id")
     private Long id;
 
