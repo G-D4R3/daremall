@@ -1,5 +1,8 @@
 version: "3"
 services:
+  web:
+    build: ./
+    image: newflw1223/dare_mall:daremall_app
   db:
     container_name: h2
     image: oscarfonts/h2:latest
@@ -19,16 +22,25 @@ services:
     volumes:
       - ./data/:/data
   app:
+    image: newflw1223/dare_mall:daremall_app
     build:
       context: .
       dockerfile: Dockerfile
     container_name: daremall_app
     ports:
       - 8080:8080
+    tty: true
     environment:
-      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2:1521/test
+      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2:1521/test;MODE=MySQL;
       SPRING_DATASOURCE_USERNAME: sa
       SPRING_DATASOURCE_PASSWORD:
     depends_on:
       - db
       - redis
+  #migration:
+  #  image: boxfuse/flyway
+  #  command: -url=jdbc:h2:tcp://h2:1521/test -user=sa -password= -connectRetries=60 migrate
+  #  volumes:
+  #    - .:/flyway/h2
+  #  depends_on:
+  #    - db

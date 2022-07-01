@@ -5,8 +5,9 @@ spring:
   freemarker:
     cache: false
   datasource:
-    #url: jdbc:h2:tcp://localhost:1521/daremall
-    url: jdbc:h2:tcp://localhost:1521/test
+    url: jdbc:h2:tcp://localhost:1521/daremall;MODE=MySQL;
+    #url: jdbc:h2:tcp://localhost/~/test;MODE=MySQL;
+    #url : jdbc:mysql//jsw5258@35.203.149.95:3306/daremall
     username: sa
     password:
     driver-class-name: org.h2.Driver
@@ -21,6 +22,7 @@ spring:
         default_batch_fetch_size: 100
   #mvc:
     #static-path-pattern: /webapp/**
+    generate-ddl: false
 logging:
   level:
     org.hibernate.SQL: debug
