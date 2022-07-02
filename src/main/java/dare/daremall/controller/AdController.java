@@ -3,7 +3,6 @@ package dare.daremall.controller;
 import dare.daremall.controller.admin.AdForm;
 import dare.daremall.domain.ad.Ad;
 import dare.daremall.domain.ad.MainAd;
-import dare.daremall.repository.AdRepository;
 import dare.daremall.service.AdService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -59,7 +58,7 @@ public class AdController {
     @PostMapping(value = "/findAd")
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody AdForm findAd(@RequestParam("adId") Long adId) {
-        Ad ad =  adService.find(adId);
+        Ad ad =  adService.findOne(adId);
         AdForm adForm = new AdForm();
         adForm.setId(ad.getId());
         adForm.setName(ad.getName());

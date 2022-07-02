@@ -4,6 +4,7 @@ import dare.daremall.controller.admin.AdForm;
 import dare.daremall.domain.ad.Ad;
 import dare.daremall.domain.ad.AdStatus;
 import dare.daremall.domain.ad.MainAd;
+import dare.daremall.exception.CannotAddNewAdException;
 import dare.daremall.repository.AdRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,16 @@ public class AdService {
 
     private final AdRepository adRepository;
 
+    public Ad findOne(Long adId) {
+        return adRepository.findOne(adId).get();
+    }
+
     @Transactional
-    public void save(AdForm adForm) {
+    public long save(AdForm adForm) {
+        if(adForm.getName()==null || adForm.getImagePath()==null || adForm.getType()==null
+                || adForm.getStartDate() == null || adForm.getEndDate() == null || adForm.getType() ==null ) {
+            throw new CannotAddNewAdException("광고를 추가할 수 없습니다.");
+        }
         if(adForm.getType().equals("main")) {
             MainAd ad = new MainAd();
             ad.setName(adForm.getName());
@@ -36,7 +45,9 @@ public class AdService {
             else ad.setStatus(AdStatus.valueOf(adForm.getStatus()));
             ad.setHref(adForm.getHref());
             adRepository.save(ad);
+            return ad.getId();
         }
+        return -1; // -1로 리턴했을 때 throw exception
     }
 
     @Transactional
@@ -47,22 +58,18 @@ public class AdService {
     @Transactional
     public void update(AdForm adForm) {
         if(adForm.getType().equals("main")) {
-            MainAd ad = (MainAd) adRepository.findOne(adForm.getId());
-            ad.setName(adForm.getName());
-            if(adForm.getImagePath() != null) ad.setImagePath(adForm.getImagePath());
-            ad.setStartDate(LocalDate.parse(adForm.getStartDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            ad.setEndDate(LocalDate.parse(adForm.getEndDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            MainAd ad = (MainAd) adRepository.findOne(adForm.getId()).get();
+            ad.setName(adForm.getName()==null? ad.getName():adForm.getName());
+            ad.setImagePath(adForm.getImagePath()==null? ad.getImagePath():adForm.getImagePath());
+            ad.setStartDate(adForm.getStartDate()==null? ad.getStartDate():LocalDate.parse(adForm.getStartDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            ad.setEndDate(adForm.getEndDate()==null? ad.getEndDate():LocalDate.parse(adForm.getEndDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             if(ad.getEndDate().isBefore(LocalDate.now())) {
                 ad.setStatus(AdStatus.END);
             }
-            else ad.setStatus(AdStatus.valueOf(adForm.getStatus()));
+            else ad.setStatus(adForm.getStatus()==null? ad.getStatus():AdStatus.valueOf(adForm.getStatus()));
             ad.setHref(adForm.getHref());
             adRepository.save(ad);
         }
-    }
-
-    public Ad find(Long adId) {
-        return adRepository.findOne(adId);
     }
 
     // 메인 화면 표시 광고

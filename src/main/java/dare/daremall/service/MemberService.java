@@ -1,13 +1,12 @@
 package dare.daremall.service;
 
 import dare.daremall.controller.member.auth.MemberSignupRequestDto;
-import dare.daremall.controller.member.mypage.ChangePasswordForm;
 import dare.daremall.controller.member.mypage.DeliveryInfoForm;
 import dare.daremall.controller.member.mypage.UpdateDeliveryInfoForm;
 import dare.daremall.domain.*;
 import dare.daremall.domain.item.Item;
 import dare.daremall.domain.item.ItemStatus;
-import dare.daremall.exception.CannotRegisterMember;
+import dare.daremall.exception.CannotRegisterMemberException;
 import dare.daremall.exception.NotEnoughStockException;
 import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.repository.ItemRepository;
@@ -18,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -72,14 +70,14 @@ public class MemberService {
     private void validateDuplicateMember(MemberSignupRequestDto member) {
         Member dupicateMember = memberRepository.findByLoginId(member.getLoginId()).orElse(null);
         if(dupicateMember!=null) {
-            new CannotRegisterMember("이미 사용중인 아이디입니다.");
+            new CannotRegisterMemberException("이미 사용중인 아이디입니다.");
         }
     }
 
     private void validateNoMoreThan3(MemberSignupRequestDto member) {
         List<Member> loginId = memberRepository.findLoginIdByName(member.getName(), member.getPhone());
         if(loginId.size()>=3) {
-            throw new CannotRegisterMember("같은 이름, 휴대폰 번호 조합으로 3회까지만 회원가입을 시도할 수 있습니다.");
+            throw new CannotRegisterMemberException("같은 이름, 휴대폰 번호 조합으로 3회까지만 회원가입을 시도할 수 있습니다.");
         }
     }
 

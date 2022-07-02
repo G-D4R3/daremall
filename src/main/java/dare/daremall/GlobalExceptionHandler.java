@@ -1,9 +1,9 @@
 package dare.daremall;
 
-import dare.daremall.exception.CannotAddNewItem;
+import dare.daremall.exception.CannotAddNewAdException;
+import dare.daremall.exception.CannotAddNewItemException;
 import dare.daremall.exception.NotEnoughStockException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -26,9 +26,15 @@ public class GlobalExceptionHandler {
         return "error/error";
     }
 
-    @ExceptionHandler(CannotAddNewItem.class)
+    @ExceptionHandler(CannotAddNewItemException.class)
     @ResponseBody
-    public ResponseEntity<String> cannotAddNewItemException(CannotAddNewItem e) {
+    public ResponseEntity<String> cannotAddNewItemException(CannotAddNewItemException e) {
+        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CannotAddNewAdException.class)
+    @ResponseBody
+    public ResponseEntity<String> cannotAddNewAdException(CannotAddNewAdException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

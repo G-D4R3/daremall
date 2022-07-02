@@ -2,7 +2,7 @@ package dare.daremall.service;
 
 import dare.daremall.controller.item.ItemDto;
 import dare.daremall.domain.item.*;
-import dare.daremall.exception.CannotAddNewItem;
+import dare.daremall.exception.CannotAddNewItemException;
 import dare.daremall.repository.BaggedItemRepository;
 import dare.daremall.repository.ItemJpaRepository;
 import dare.daremall.repository.ItemRepository;
@@ -50,7 +50,7 @@ public class ItemService {
             return album.getId();
         }
         else {
-            throw new CannotAddNewItem("상품을 추가할 수 없습니다.");
+            throw new CannotAddNewItemException("상품을 추가할 수 없습니다.");
         }
     }
 

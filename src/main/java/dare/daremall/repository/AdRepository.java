@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,8 +26,8 @@ public class AdRepository {
         }
     }
 
-    public Ad findOne(Long id) {
-        return em.find(Ad.class, id);
+    public Optional<Ad> findOne(Long id) {
+        return Optional.ofNullable(em.find(Ad.class, id));
     }
 
     public List<Ad> findAll() {
