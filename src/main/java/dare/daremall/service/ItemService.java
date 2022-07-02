@@ -66,10 +66,6 @@ public class ItemService {
      * 사용자 상품 조회
      */
 
-    public List<Item> findByName(String name) {
-        return itemRepository.findByName(name);
-    }
-
     public Page<Item> findAllPageable(String name, Pageable pageable) {
         return itemJpaRepository.findItemsByName(name, pageable);
     }
@@ -91,6 +87,7 @@ public class ItemService {
     public List<Item> findItems(ItemSearch itemSearch) {
         return itemRepository.findByName(itemSearch.getName());
     }
+
 /*
     public List<Book> findBooks(ItemSearch itemSearch) {
         return itemRepository.findBookByName(itemSearch.getName());
