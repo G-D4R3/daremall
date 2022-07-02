@@ -153,7 +153,7 @@ public class AdServiceTest {
 
         // when
         List<MainAd> mainAds = adService.findMainAd();
-정
+
         // then
         assertThat(mainAds.size()).isEqualTo(4+1);
 
