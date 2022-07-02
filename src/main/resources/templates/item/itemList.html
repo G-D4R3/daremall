@@ -5,6 +5,9 @@
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
     <div  th:if="${items.getContent().size()>0}">
+        <div th:if="${option!='all'} or ${name!=null}" style="color: dodgerblue; font-size: 16pt">
+            <p th:text="'검색 결과 | 옵션 : '+${option}+' , 이름 : '+${name}"></p>
+        </div>
         <div>
             <table class="table table-striped">
                 <colgroup>

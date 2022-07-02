@@ -21,4 +21,13 @@ public interface ItemJpaRepository extends PagingAndSortingRepository<Item, Long
 
     @Query("select b from Book b where b.itemStatus <> ?1")
     Page<Book> findBookByItemStatus(ItemStatus itemStatus, Pageable pageable);
+
+    @Query("select i from Item i where i.itemStatus <> 'HIDE' and upper(i.name) like upper(?1)")
+    Page<Item> findItemsByName(String name, Pageable pageable);
+
+    @Query("select a from Album a where a.itemStatus <> 'HIDE' and upper(a.name) like upper(?1)")
+    Page<Album> findAlbumsByName(String name, Pageable pageable);
+
+    @Query("select b from Book b where b.itemStatus <> 'HIDE' and upper(b.name) like upper(?1)")
+    Page<Book> findBooksByName(String name, Pageable pageable);
 }

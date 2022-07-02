@@ -24,28 +24,30 @@ public class ItemService {
     private final BaggedItemRepository baggedItemRepository;
 
     @Transactional
-    public void saveItem(ItemDto itemDto) {
+    public long saveItem(ItemDto itemDto) {
         if(itemDto.getType().equals("B")) {
             Book book = new Book();
             book.setName(itemDto.getName());
-            book.setPrice(itemDto.getPrice());
-            book.setStockQuantity(itemDto.getStockQuantity());
+            book.setPrice(Integer.valueOf(itemDto.getPrice())==null? 0:itemDto.getPrice());
+            book.setStockQuantity(Integer.valueOf(itemDto.getStockQuantity())==null? 0:itemDto.getStockQuantity());
             book.setAuthor(itemDto.getAuthor());
             book.setIsbn(itemDto.getIsbn());
             book.setImagePath(itemDto.getImagePath());
-            book.setItemStatus(ItemStatus.valueOf(itemDto.getItemStatus()));
+            book.setItemStatus(itemDto.getItemStatus()==null? ItemStatus.HIDE:ItemStatus.valueOf(itemDto.getItemStatus()));
             itemRepository.save(book);
+            return book.getId();
         }
         else if(itemDto.getType().equals("A")) {
             Album album = new Album();
             album.setName(itemDto.getName());
-            album.setPrice(itemDto.getPrice());
-            album.setStockQuantity(itemDto.getStockQuantity());
+            album.setPrice(Integer.valueOf(itemDto.getPrice())==null? 0:itemDto.getPrice());
+            album.setStockQuantity(Integer.valueOf(itemDto.getStockQuantity())==null? 0:itemDto.getStockQuantity());
             album.setArtist(itemDto.getArtist());
             album.setEtc(itemDto.getEtc());
             album.setImagePath(itemDto.getImagePath());
-            album.setItemStatus(ItemStatus.valueOf(itemDto.getItemStatus()));
+            album.setItemStatus(itemDto.getItemStatus()==null? ItemStatus.HIDE:ItemStatus.valueOf(itemDto.getItemStatus()));
             itemRepository.save(album);
+            return album.getId();
         }
         else {
             throw new CannotAddNewItem("상품을 추가할 수 없습니다.");
@@ -54,6 +56,53 @@ public class ItemService {
 
     public Item findOne(Long id) {
         return itemRepository.findById(id).get();
+    }
+
+    public List<Item> findItems() {
+        return itemRepository.findAll();
+    }
+
+    /**
+     * 사용자 상품 조회
+     */
+
+    public List<Item> findByName(String name) {
+        return itemRepository.findByName(name);
+    }
+
+    public Page<Item> findAllPageable(String name, Pageable pageable) {
+        return itemJpaRepository.findItemsByName(name, pageable);
+    }
+
+    public Page<Album> findAlbumPageable(String name, Pageable pageable) {
+        return itemJpaRepository.findAlbumsByName(name, pageable);
+    }
+
+    public Page<Book> findBookPageable(String name, Pageable pageable) {
+        return itemJpaRepository.findBooksByName(name, pageable);
+    }
+
+
+    /** **/
+
+
+    /** 관리자 페이지 **/
+
+    public List<Item> findItems(ItemSearch itemSearch) {
+        return itemRepository.findByName(itemSearch.getName());
+    }
+/*
+    public List<Book> findBooks(ItemSearch itemSearch) {
+        return itemRepository.findBookByName(itemSearch.getName());
+    }
+
+    public List<Album> findAlbums(ItemSearch itemSearch) {
+        return itemRepository.findAlbumByName(itemSearch.getName());
+    }*/
+
+    @Transactional
+    public void delete(Long itemId) {
+        itemRepository.remove(itemId);
     }
 
     @Transactional
@@ -65,88 +114,30 @@ public class ItemService {
 
         if(findItem!=null) {
             // findItem.change(price, stockQuantity, name); 등 의미있는 메소드로 작성하는 편이 좋다.
-            findItem.setName(itemDto.getName());
-            findItem.setPrice(itemDto.getPrice());
-            findItem.setStockQuantity(itemDto.getStockQuantity());
+            findItem.setName(itemDto.getName()==null? findItem.getName():itemDto.getName());
+            findItem.setPrice(Integer.valueOf(itemDto.getPrice())==null? findItem.getPrice():itemDto.getPrice());
+            findItem.setStockQuantity(Integer.valueOf(itemDto.getStockQuantity())==null? findItem.getStockQuantity() : itemDto.getStockQuantity());
             if(findItem.getClass().equals(Album.class)) {
-                ((Album) findItem).setArtist(itemDto.getArtist());
-                ((Album) findItem).setEtc(itemDto.getEtc());
+                ((Album) findItem).setArtist(itemDto.getArtist()==null? ((Album) findItem).getArtist() : itemDto.getArtist());
+                ((Album) findItem).setEtc(itemDto.getEtc()==null? ((Album) findItem).getEtc() : itemDto.getEtc());
             }
             else if(findItem.getClass().equals(Book.class)) {
-                ((Book) findItem).setAuthor(itemDto.getAuthor());
-                ((Book) findItem).setIsbn(itemDto.getIsbn());
+                ((Book) findItem).setAuthor(itemDto.getAuthor()==null? ((Book) findItem).getAuthor() : itemDto.getAuthor());
+                ((Book) findItem).setIsbn(itemDto.getIsbn()==null? ((Book) findItem).getIsbn() : itemDto.getIsbn());
             }
             if(itemDto.getImagePath()!=null) {
                 findItem.setImagePath(itemDto.getImagePath());
             }
-            findItem.setItemStatus(ItemStatus.valueOf(itemDto.getItemStatus()));
+            findItem.setItemStatus(itemDto.getItemStatus()==null? findItem.getItemStatus():ItemStatus.valueOf(itemDto.getItemStatus()));
         }
         itemRepository.save(findItem);
-        if(ItemStatus.valueOf(itemDto.getItemStatus())!=ItemStatus.FOR_SALE){
+        if(itemDto.getItemStatus()==null || !itemDto.getItemStatus().equals("FOR_SALE")){
             baggedItemRepository.removeByItemId(findItem.getId());
         }
         baggedItemRepository.updateCount(findItem.getId(), itemDto.getStockQuantity());
 
     }
 
-    /**
-     * 사용자 상품 조회
-     */
-
-    public List<Item> findItemsExceptHide() {
-        return itemRepository.findExceptHide();
-    }
-
-    public List<Item> findItems() {
-        return itemRepository.findAll();
-    }
-
-    public List<Item> findByName(String name) {
-        return itemRepository.findByName(name);
-    }
-
-    public List<Album> findAlbums() {
-        return itemRepository.findByType("album");
-    }
-
-    public List<Book> findBooks() {
-        return itemRepository.findByType("book");
-    }
-
     /** **/
 
-
-    /** 관리자 페이지 **/
-
-    public List<Item> findItems(ItemSearch itemSearch) {
-        return itemRepository.findByName(itemSearch.getName());
-    }
-
-    public List<Book> findBooks(ItemSearch itemSearch) {
-        return itemRepository.findBookByName(itemSearch.getName());
-    }
-
-    public List<Album> findAlbums(ItemSearch itemSearch) {
-        return itemRepository.findAlbumByName(itemSearch.getName());
-    }
-
-    @Transactional
-    public void delete(Long itemId) {
-        itemRepository.remove(itemId);
-    }
-
-    /** **/
-
-
-    public Page<Item> findAllPageable(Pageable pageable) {
-        return itemJpaRepository.findByItemStatus(ItemStatus.HIDE, pageable);
-    }
-
-    public Page<Album> findAlbumPageable(Pageable pageable) {
-        return itemJpaRepository.findAlbumByItemStatus(ItemStatus.HIDE, pageable);
-    }
-
-    public Page<Book> findBookPageable(Pageable pageable) {
-        return itemJpaRepository.findBookByItemStatus(ItemStatus.HIDE, pageable);
-    }
 }

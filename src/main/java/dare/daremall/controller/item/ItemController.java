@@ -45,18 +45,38 @@ public class ItemController {
     }*/
 
     @GetMapping(value = "")
-    public String itemList(@RequestParam(value = "page") Optional<Integer> page, Model model) {
+    public String itemList(@RequestParam(value = "page") Optional<Integer> page,
+                           @RequestParam(value = "option", required = false) String option,
+                           @RequestParam(value = "searchName", required = false) String name,
+                           Model model) {
         int mPage =  page.filter(p -> p >= 1)
                 .map(p -> p - 1)
                 .orElse(0);
+        Page<?> items = null;
+        Page<ItemListDto> dtoPage = null;
+        Pager pager = null;
 
-        Page<Item> items = itemService.findAllPageable(PageRequest.of(mPage, 10));
-        Page<ItemListDto> dtoPage = items.map(item -> new ItemListDto(item));
-        Pager pager = new Pager(items.getTotalPages(), items.getNumber(), 5);
+        if(option == null || option.equals("all")) {
+            items = itemService.findAllPageable(name==null? "%":"%"+name+"%", PageRequest.of(mPage, 10));
+            dtoPage = items.map(item -> new ItemListDto((Item) item));
+            pager = new Pager(items.getTotalPages(), items.getNumber(), 5);
+        }
+        else if(option.equals("album")) {
+            items = itemService.findAlbumPageable(name==null? "%":"%"+name+"%", PageRequest.of(mPage, 10));
+            dtoPage = items.map(item -> new ItemListDto((Album) item));
+            pager = new Pager(items.getTotalPages(), items.getNumber(), 5);
+        }
+        else if(option.equals("book")) {
+            items = itemService.findBookPageable(name==null? "%":"%"+name+"%", PageRequest.of(mPage, 10));
+            dtoPage = items.map(item -> new ItemListDto((Book) item));
+            pager = new Pager(items.getTotalPages(), items.getNumber(), 5);
+        }
 
         model.addAttribute("items", dtoPage);
         model.addAttribute("selectedPageSize", 5);
         model.addAttribute("pager", pager);
+        model.addAttribute("option", option==null? "all":option);
+        model.addAttribute("name", name);
 
         return "item/itemList";
     }
@@ -67,7 +87,7 @@ public class ItemController {
                 .map(p -> p - 1)
                 .orElse(0);
 
-        Page<Album> items = itemService.findAlbumPageable(PageRequest.of(mPage, 10));
+        Page<Album> items = itemService.findAlbumPageable("%", PageRequest.of(mPage, 10));
         Page<ItemListDto> dtoPage = items.map(item -> new ItemListDto(item));
         Pager pager = new Pager(items.getTotalPages(), items.getNumber(), 5);
 
@@ -84,7 +104,7 @@ public class ItemController {
                 .map(p -> p - 1)
                 .orElse(0);
 
-        Page<Book> items = itemService.findBookPageable(PageRequest.of(mPage, 10));
+        Page<Book> items = itemService.findBookPageable("%", PageRequest.of(mPage, 10));
         Page<ItemListDto> dtoPage = items.map(item -> new ItemListDto(item));
         Pager pager = new Pager(items.getTotalPages(), items.getNumber(), 5);
 
@@ -123,30 +143,6 @@ public class ItemController {
         }
         model.addAttribute("isLikeItem", "btn-outline-primary");
         return "item/detail";
-    }
-
-    @GetMapping(value = "/search")
-    public String itemSearch(@RequestParam(value = "option") String option,
-                             @RequestParam(value = "searchName") String name,
-                             Model model) {
-
-        List<ItemListDto> items = null;
-        ItemSearch itemSearch = new ItemSearch(name, option);
-
-        if(itemSearch.getOption().equals("all")) {
-            items = itemService.findItems(itemSearch).stream().map(i -> new ItemListDto(i)).collect(Collectors.toList());
-        }
-        else if(itemSearch.getOption().equals("album")) {
-            items = itemService.findAlbums(itemSearch).stream().map(i -> new ItemListDto(i)).collect(Collectors.toList());
-        }
-        else if(itemSearch.getOption().equals("book")) {
-            items = itemService.findBooks(itemSearch).stream().map(i -> new ItemListDto(i)).collect(Collectors.toList());
-        }
-        model.addAttribute("items", items);
-        model.addAttribute("option", option);
-        model.addAttribute("name", name);
-
-        return "item/searchList";
     }
 
     /** ADMIN **/

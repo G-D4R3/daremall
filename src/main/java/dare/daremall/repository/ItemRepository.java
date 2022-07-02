@@ -50,7 +50,6 @@ public class ItemRepository {
     public List<Item> findByName(String name) {
         return em.createQuery("select i from Item i" +
                         " where upper(i.name) like upper(:name)" +
-                        " and i.itemStatus <> 'HIDE'" +
                         " order by i.itemStatus", Item.class)
                 .setParameter("name", "%"+name+"%")
                 .getResultList();
@@ -80,7 +79,6 @@ public class ItemRepository {
         return em.createQuery("select b from Book b" +
                 " where upper(b.name) like upper(:name)" +
                 " or upper(b.author) like upper(:name)" +
-                        " and b.itemStatus <> 'HIDE'" +
                         " order by b.itemStatus", Book.class)
                 .setParameter("name", "%"+name+"%")
                 .getResultList();
@@ -90,7 +88,6 @@ public class ItemRepository {
         return em.createQuery("select a from Album a" +
                 " where upper(a.name) like upper(:name)" +
                 " or upper(a.artist) like upper(:name)" +
-                        " and a.itemStatus <> 'HIDE'" +
                         " order by a.itemStatus", Album.class)
                 .setParameter("name", "%"+name+"%")
                 .getResultList();
