@@ -52,7 +52,7 @@ public class MemberService {
     /** 회원가입 **/
 
     @Transactional
-    public Long join(MemberSignupRequestDto memberDto){
+    public Long join(MemberSignupRequestDto memberDto){ // null check x
         validateDuplicateMember(memberDto);
         validateNoMoreThan3(memberDto);
         Member newMember = new Member(memberDto.getName(),
@@ -68,9 +68,9 @@ public class MemberService {
     }
 
     private void validateDuplicateMember(MemberSignupRequestDto member) {
-        Member dupicateMember = memberRepository.findByLoginId(member.getLoginId()).orElse(null);
-        if(dupicateMember!=null) {
-            new CannotRegisterMemberException("이미 사용중인 아이디입니다.");
+        Member duplicateMember = memberRepository.findByLoginId(member.getLoginId()).orElse(null);
+        if(duplicateMember!=null) {
+            throw new CannotRegisterMemberException("이미 사용중인 아이디입니다.");
         }
     }
 
@@ -87,10 +87,17 @@ public class MemberService {
 
     @Transactional
     public void addShoppingBag(Long itemId, String loginId, int count) {
+        if(count <= 0) {
+            throw new IllegalStateException("상품을 장바구니에 추가할 수 없습니다.");
+        }
+
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 상품입니다."));
 
         if(item.getItemStatus()!= ItemStatus.FOR_SALE) {
             throw new IllegalStateException("판매 중단된 상품은 장바구니에 추가할 수 없습니다.");
+        }
+        if(item.getStockQuantity() < count) {
+            throw new NotEnoughStockException("재고 수량을 초과했습니다.");
         }
 
         Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
@@ -103,13 +110,22 @@ public class MemberService {
     public void removeShoppingBag(String loginId, Long baggedItemId) {
         Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
         BaggedItem baggedItem = baggedItemRepository.findById(baggedItemId);
+        if(baggedItem == null) {
+            throw new NoSuchElementException("이미 장바구니에서 삭제되었습니다.");
+        }
         member.removeBaggedItem(baggedItem);
         baggedItemRepository.remove(baggedItemId);
     }
 
     @Transactional
     public void updateBaggedItemCount(Long bagItemId, int count) {
+        if(count <= 0) {
+            throw new IllegalStateException("장바구니 수량을 변경할 수 없습니다.");
+        }
         BaggedItem item = baggedItemRepository.findById(bagItemId);
+        if(item == null) {
+            throw new NoSuchElementException("상품을 찾을 수 없습니다.");
+        }
         if(item.getItem().getStockQuantity() < count) {
             throw new NotEnoughStockException("재고 수량을 초과했습니다.");
         }
@@ -203,13 +219,11 @@ public class MemberService {
     @Transactional
     public void updateDeliveryInfo(String loginId, UpdateDeliveryInfoForm updateDeliveryInfoForm) {
 
-        System.out.println("is default : "+updateDeliveryInfoForm.getIsDefault());
-
         Member findMember = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
         DeliveryInfo deliveryInfo = memberRepository.findDeliveryinfo(loginId, updateDeliveryInfoForm.getId()).orElse(null);
         DeliveryInfo defaultDeliveryInfo = memberRepository.findDefaultDeliveryInfo(loginId).orElse(null);
 
-        if(defaultDeliveryInfo == null){
+        if(defaultDeliveryInfo == null || deliveryInfo == null){
             throw new IllegalStateException("배송지 수정에 문제가 생겼습니다.");
         }
 
@@ -269,7 +283,7 @@ public class MemberService {
 
     @Transactional
     public void updateRole(String loginId, MemberRole newRole) {
-        Member member = memberRepository.findByLoginId(loginId).orElse(null);
+        Member member = memberRepository.findByLoginId(loginId).get();
         member.setRole(newRole);
         memberRepository.save(member);
 

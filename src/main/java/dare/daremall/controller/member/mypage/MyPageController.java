@@ -122,7 +122,7 @@ public class MyPageController {
 
     @PostMapping(value = "/myAddress/update") @Secured({"ROLE_USER"})
     public @ResponseBody ResponseEntity<String> updateDelivery(@AuthenticationPrincipal LoginUserDetails member,
-                                 UpdateDeliveryInfoForm updateDeliveryInfoForm) {
+                                 @Validated UpdateDeliveryInfoForm updateDeliveryInfoForm) {
         if(member==null) throw new AccessDeniedException("로그인이 필요한 서비스입니다.");
 
         memberService.updateDeliveryInfo(member.getUsername(), updateDeliveryInfoForm);
@@ -133,7 +133,7 @@ public class MyPageController {
 
     @PostMapping(value = "/myInfo/update") @Secured({"ROLE_USER"})
     public @ResponseBody ResponseEntity<?> updateUserInfo(@AuthenticationPrincipal LoginUserDetails member,
-                                 @Validated UpdateMyInfoForm updateForm, BindingResult result) {
+                                 @Valid UpdateMyInfoForm updateForm, BindingResult result) {
 
         if(member==null) throw new AccessDeniedException("로그인이 필요한 서비스입니다.");
         if(result.hasErrors()) {

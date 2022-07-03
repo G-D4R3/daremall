@@ -24,5 +24,6 @@ public class UpdateDeliveryInfoForm {
     @NotBlank(message = "상세 주소를 입력해주세요")
     private String detail;
 
+    @NotBlank(message = "배송지 유형을 선택해주세요")
     private Boolean isDefault;
 }
