@@ -77,6 +77,11 @@ public class OrderService {
 
     @Transactional
     public Long createOrder(String loginId, OrderForm orderForm, OrderStatus orderStatus, String merchantUid, String impUid) {
+
+        if(orderForm.getPayment().equals("KAKAO") && (merchantUid == null || impUid == null)) {
+            throw new IllegalStateException("결제가 완료되지 않았습니다.");
+        }
+
         Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
 
         Delivery delivery = new Delivery();
@@ -98,12 +103,13 @@ public class OrderService {
         }
 
         List<OrderItem> orderItems = baggedItems.stream().map(bi -> {
-            return OrderItem.createOrderItem(bi.getItem(), bi.getPrice(), bi.getCount());
+            if(orderForm.getPayment().equals("KAKAO")) {
+                return OrderItem.createOrderItem(bi.getItem(), bi.getPrice(), bi.getCount(), true);
+            }
+            else {
+                return OrderItem.createOrderItem(bi.getItem(), bi.getPrice(), bi.getCount(), false);
+            }
         }).collect(Collectors.toList());
-
-        if(orderForm.getPayment().equals("kakao") && merchantUid == null) {
-            throw new IllegalStateException("결제가 완료되지 않았습니다.");
-        }
 
         Order order = Order.createOrder(member, delivery, orderItems, orderStatus, merchantUid, impUid, orderForm.getPayment());
 
@@ -111,17 +117,23 @@ public class OrderService {
 
         orderRepository.save(order);
         memberRepository.save(member);
-        statisticsService.updateOrderStatistics(order);
-        statisticsService.updateItemStatistics(order);
+        if(orderForm.getPayment().equals("KAKAO")) {
+            statisticsService.updateOrderStatistics(order);
+            statisticsService.updateItemStatistics(order);
+        }
         return order.getId();
     }
 
     @Transactional
-    public void cancelOrder(Long orderId) {
-        Order order = orderRepository.findOne(orderId);
+    public void cancelOrder(Long orderId, String loginId) {
+        Order order = orderRepository.findOrder(orderId, loginId).orElseThrow(() -> new NoSuchElementException("일치하는 주문 정보를 찾을 수 없습니다."));
+        OrderStatus status = OrderStatus.valueOf(order.getStatus().toString());
         order.cancel();
         memberRepository.save(order.getMember());
-        statisticsService.updateOrderStatistics(order);
+        if(status.equals(OrderStatus.PAY)) {
+            statisticsService.updateOrderStatistics(order);
+            statisticsService.updateItemStatistics(order);
+        }
     }
 
     @Transactional
@@ -166,21 +178,26 @@ public class OrderService {
     @Transactional
     public void update(UpdateOrderDto updateOrderDto) {
         Order findOrder = orderRepository.findOne(updateOrderDto.getId());
-        if(!findOrder.getStatus().equals(OrderStatus.valueOf(updateOrderDto.getOrderStatus()))
-                && (OrderStatus.valueOf(updateOrderDto.getOrderStatus()).equals(OrderStatus.CANCEL)
-                || OrderStatus.valueOf(updateOrderDto.getOrderStatus()).equals(OrderStatus.ORDER))) {
+
+        // PAY -> CANCEL
+        if(findOrder.getStatus().equals(OrderStatus.PAY)
+                && OrderStatus.valueOf(updateOrderDto.getOrderStatus()).equals(OrderStatus.CANCEL)) {
+            findOrder.setStatus(OrderStatus.valueOf(updateOrderDto.getOrderStatus()));
+            statisticsService.updateOrderStatistics(findOrder);
+            statisticsService.updateItemStatistics(findOrder);
+            // send message
+        }
+        // ORDER -> PAY
+        else if (findOrder.getStatus().equals(OrderStatus.ORDER)
+                && OrderStatus.valueOf(updateOrderDto.getOrderStatus()).equals(OrderStatus.PAY)){
             findOrder.setStatus(OrderStatus.valueOf(updateOrderDto.getOrderStatus()));
             statisticsService.updateOrderStatistics(findOrder);
             statisticsService.updateItemStatistics(findOrder);
         }
-        else if (!findOrder.getStatus().equals(OrderStatus.valueOf(updateOrderDto.getOrderStatus()))
-                && OrderStatus.valueOf(updateOrderDto.getOrderStatus()).equals(OrderStatus.PAY) && !findOrder.getStatus().equals(OrderStatus.ORDER)){
-            findOrder.setStatus(OrderStatus.valueOf(updateOrderDto.getOrderStatus()));
-            statisticsService.updateOrderStatistics(findOrder);
-            statisticsService.updateItemStatistics(findOrder);
-        }
+        // ORDER -> CANCEL
         else {
             findOrder.setStatus(OrderStatus.valueOf(updateOrderDto.getOrderStatus()));
+            // send message
         }
         findOrder.getDelivery().setStatus(DeliveryStatus.valueOf(updateOrderDto.getDeliveryStatus()));
         orderRepository.save(findOrder);

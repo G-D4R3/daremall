@@ -72,7 +72,7 @@ public class StatisticsService {
                 orderStatisticsRepository.save(find);
             }
         }
-        if(order.getStatus() == OrderStatus.CANCEL) {
+        else if(order.getStatus() == OrderStatus.CANCEL) {
             if(find!=null) {
                 find.setOrderQuantity(find.getOrderQuantity()-1);
                 find.setRevenue(find.getRevenue() - order.getTotalPrice());
@@ -125,6 +125,7 @@ public class StatisticsService {
         else if(order.getStatus().equals(OrderStatus.CANCEL)) {
             for(OrderItem item : orderItems) {
                 ItemStatistics itemStatistics = itemStatisticsRepository.findStatistics(item.getItem().getId(), order.getOrderDate().toLocalDate()).orElse(null);
+                itemStatistics.setSalesCount(itemStatistics.getSalesCount() - item.getCount());
                 itemStatistics.setRevenue(itemStatistics.getRevenue() - item.getTotalPrice());
                 itemStatisticsRepository.save(itemStatistics);
             }

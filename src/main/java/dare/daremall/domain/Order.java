@@ -75,10 +75,15 @@ public class Order {
     }
 
     public void cancel() {
-        if( delivery.getStatus() == DeliveryStatus.COMP ) {
-            throw new IllegalStateException("이미 배송완료된 상품은 취소가 불가능합니다.");
+        if(this.getStatus() == OrderStatus.CANCEL) {
+            throw new IllegalStateException("이미 취소된 주문입니다.");
         }
-
+        if( delivery.getStatus() == DeliveryStatus.SHIP ){
+            throw new IllegalStateException("배송중인 상품은 취소가 불가능합니다.");
+        }
+        if( delivery.getStatus() == DeliveryStatus.COMP) {
+            throw new IllegalStateException("배송완료된 상품은 취소가 불가능합니다.");
+        }
         this.setStatus(OrderStatus.CANCEL); // JPA가 Entity 수정만으로 바로 db에 업데이트 시켜줘서 밖에서 쿼리를 직접 짜지 않아도 된다.
         for (OrderItem orderItem : this.orderItems) {
             orderItem.cancel();

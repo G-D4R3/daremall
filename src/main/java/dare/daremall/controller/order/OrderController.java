@@ -134,12 +134,14 @@ public class OrderController {
     }
 
     @PostMapping(value = "/cancel") @Secured({"ROLE_USER"})
-    public @ResponseBody ResponseEntity<String> cancelOrder(@AuthenticationPrincipal LoginUserDetails member,
-                              Long orderId) {
+    public @ResponseBody ResponseEntity<String> cancelOrder(@AuthenticationPrincipal LoginUserDetails member, @RequestParam("orderId") Long orderId) {
         if(member==null) throw new AccessDeniedException("로그인이 필요한 서비스입니다.");
         Order findOrder = orderService.findOne(orderId, member.getUsername());
-        if(cancelPayment(findOrder.getMerchantUid()) == 1) {
-            orderService.cancelOrder(orderId);
+        if(findOrder.getPaymentType() == PaymentType.KAKAO && cancelPayment(findOrder.getMerchantUid()) == 1) {
+            orderService.cancelOrder(orderId, member.getUsername());
+        }
+        else if(findOrder.getPaymentType() == PaymentType.DEPOSIT) {
+            orderService.cancelOrder(orderId, member.getUsername());
         }
         else {
             throw new IllegalStateException("환불에 실패했습니다.");

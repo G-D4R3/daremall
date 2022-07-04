@@ -141,5 +141,9 @@ public class MemberRepository {
                 " where m.role = 'ROLE_ADMIN'", Member.class).getResultList();
     }
 
+    public void remove(long memberId) {
+        em.remove(em.find(Member.class, memberId));
+    }
+
     /** **/
 }
