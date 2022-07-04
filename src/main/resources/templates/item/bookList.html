@@ -17,7 +17,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="book : ${books}">
-                    <th:block class="forSale" th:if="${book.itemStatus=='FOR_SALE'}">
+                    <th:block class="forSale" th:if="${book.itemStatus=='FOR_SALE'} and ${book.stockQuantity > 0}">
                         <td>
                             <a th:href="@{/items/detail(itemId=${book.id})}">
                                 <img th:src="@{${book.imageUrl}}">
@@ -26,6 +26,20 @@
                         <td>
                             <div style="padding-top: 3%; padding-bottom: 3%">
                                 <p><a style="font-size: 14pt" th:text="${book.name}" th:href="@{/items/detail(itemId=${book.id})}"></a></p>
+                                <p th:text="'판매가 : '+${book.price}+'원'" style="color: #d82c50; font-weight: bolder; font-size: 12pt"></p>
+                                <p style="color: #777777" th:text="${book.etc}"></p>
+                            </div>
+                        </td>
+                    </th:block>
+                    <th:block class="forSale" th:if="${book.itemStatus=='FOR_SALE'} and ${book.stockQuantity == 0}">
+                        <td>
+                            <a th:href="@{/items/detail(itemId=${book.id})}">
+                                <img class="notForSale-img" th:src="@{${book.imageUrl}}">
+                            </a>
+                        </td>
+                        <td>
+                            <div style="padding-top: 3%; padding-bottom: 3%">
+                                <p><a style="font-size: 14pt" th:text="'[품절] '+${book.name}" th:href="@{/items/detail(itemId=${book.id})}"></a></p>
                                 <p th:text="'판매가 : '+${book.price}+'원'" style="color: #d82c50; font-weight: bolder; font-size: 12pt"></p>
                                 <p style="color: #777777" th:text="${book.etc}"></p>
                             </div>
