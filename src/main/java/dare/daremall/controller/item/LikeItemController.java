@@ -26,8 +26,7 @@ public class LikeItemController {
 
         if(member==null) return "redirect:/members/login";
 
-        Member findMember = memberService.findUser(member.getUsername());
-        List<LikeItemDto> items = findMember.getLikes().stream().map(li -> new LikeItemDto(li)).collect(Collectors.toList());
+        List<LikeItemDto> items = memberService.getLikes(member.getUsername()).stream().map(li -> new LikeItemDto(li)).collect(Collectors.toList());
         model.addAttribute("items", items);
         return "user/likeList";
 

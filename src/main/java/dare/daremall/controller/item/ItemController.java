@@ -4,6 +4,7 @@ import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.domain.LikeItem;
 import dare.daremall.domain.Member;
 import dare.daremall.domain.item.*;
+import dare.daremall.repository.LikeItemRepository;
 import dare.daremall.repository.MemberRepository;
 import dare.daremall.service.ItemService;
 import dare.daremall.service.OrderService;
@@ -36,6 +37,7 @@ public class ItemController {
     private final ItemService itemService;
     private final MemberRepository memberRepository;
     private final OrderService orderService;
+    private final LikeItemRepository likeItemRepository;
 
     /*@GetMapping(value = "")
     public String items(Model model) {
@@ -132,13 +134,10 @@ public class ItemController {
         model.addAttribute("item", item);
 
         if(member!=null) {
-            Member findMember = memberRepository.findByLoginId(member.getUsername()).get();
-            List<LikeItem> likes = findMember.getLikes();
-            for(LikeItem likeItem : likes) {
-                if(likeItem.getItem().getId()==itemId) {
-                    model.addAttribute("isLikeItem", "btn-primary");
-                    return "item/detail";
-                }
+            boolean isLikeItem = !likeItemRepository.findByIds(member.getUsername(), itemId).isEmpty();
+            if(isLikeItem) {
+                model.addAttribute("isLikeItem", "btn-primary");
+                return "item/detail";
             }
         }
         model.addAttribute("isLikeItem", "btn-outline-primary");

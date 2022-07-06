@@ -43,6 +43,7 @@ public class LikeItemRepository {
     // 좋아요 표시를 위한 상품 조회
     public Optional<LikeItem> findByIds(String loginId, Long itemId) {
         return em.createQuery("select li from LikeItem li" +
+                        " join fetch li.member" +
                         " where li.member.loginId = :loginId" +
                         " and li.item.id = :itemId", LikeItem.class)
                 .setParameter("loginId", loginId)

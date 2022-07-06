@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -250,23 +251,31 @@ public class MemberService {
 
 
     /** 상품 좋아요 **/
+
+    public List<LikeItem> getLikes(String loginId) {
+        return memberRepository.getLikes(loginId);
+    }
+
     @Transactional
     public void changeLikeItem(String loginId, Long itemId) {
 
         LikeItem findLikeItem = likeItemRepository.findByIds(loginId, itemId).orElse(null);
-        Item findItem = itemRepository.findById(itemId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 상품입니다."));
-        Member findMember = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
+        //Item findItem = itemRepository.findById(itemId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 상품입니다."));
+        //Member findMember = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
 
         if(findLikeItem==null) {
+            Item findItem = itemRepository.findById(itemId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 상품입니다."));
+            Member findMember = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
+
             LikeItem likeItem = new LikeItem();
             likeItem.setItem(findItem);
             findMember.addLikeItem(likeItem);
         }
         else {
-            findMember.removeLikeItem(findLikeItem);
+            //findMember.removeLikeItem(findLikeItem);
             likeItemRepository.remove(findLikeItem.getId());
         }
-        memberRepository.save(findMember);
+        //memberRepository.save(findMember);
     }
 
 
@@ -288,6 +297,7 @@ public class MemberService {
         memberRepository.save(member);
 
     }
+
     /** **/
 }
 

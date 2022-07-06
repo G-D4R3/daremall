@@ -1,6 +1,7 @@
 package dare.daremall.repository;
 
 import dare.daremall.domain.DeliveryInfo;
+import dare.daremall.domain.LikeItem;
 import dare.daremall.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -111,6 +112,19 @@ public class MemberRepository {
                 .setParameter("loginId", loginId)
                 .getResultList().stream().findAny();
     }
+
+    /**
+     * 찜한 상품 조회
+     */
+    public List<LikeItem> getLikes(String loginId) {
+        return em.createQuery("select li from LikeItem li" +
+                " join fetch li.member" +
+                " where li.member.loginId = :loginId")
+                .setParameter("loginId", loginId)
+                .getResultList();
+    }
+
+
 
     /** **/
 
