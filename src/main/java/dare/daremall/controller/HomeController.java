@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
@@ -15,8 +16,7 @@ import java.util.List;
 public class HomeController {
 
     @Autowired AdService adService;
-
-    @RequestMapping("/")
+    @GetMapping("/")
     public String home(Model model) {
 
         // 메인 화면 광고 배너
