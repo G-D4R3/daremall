@@ -165,7 +165,7 @@ public class ItemController {
             itemDto.setImagePath("/images/item/thumb/" + imgName);
         }
         else {
-            itemDto.setImagePath("/images/default.png");
+            itemDto.setImagePath("/images/item/thumb/default.png");
         }
 
         itemService.saveItem(itemDto);
