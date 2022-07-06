@@ -19,6 +19,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -91,7 +92,7 @@ public class StatisticsService {
             ItemStatistics findStatistics = itemStatisticsRepository.findStatistics(itemId, date).orElse(null);
             if(findStatistics==null) {
                 ItemStatistics newStatistics = new ItemStatistics();
-                newStatistics.setItem(itemRepository.findById(itemId).orElse(null));
+                newStatistics.setItem(itemRepository.findById(itemId).orElseThrow(() -> new NoSuchElementException("상품 정보를 불러오는 데 실패했습니다.")));
                 newStatistics.setDate(date);
                 newStatistics.setSalesCount(0L);
                 newStatistics.setRevenue(0L);
@@ -136,7 +137,7 @@ public class StatisticsService {
     public void deleteOrderItem(List<Order> orders, Long itemId) {
         for(Order order:orders) {
             OrderStatistics orderStatistics = orderStatisticsRepository.findOne(order.getOrderDate().toLocalDate()).orElse(null);
-            OrderItem orderItem = orderRepository.findOrderItem(order.getId(), itemId).orElse(null);
+            OrderItem orderItem = orderRepository.findOrderItem(order.getId(), itemId).orElseThrow(() -> new NoSuchElementException("주문 정보를 불러오는 데 실패했습니다."));
             if(orderItem!=null && orderStatistics!=null) {
                 orderStatistics.setOrderQuantity(orderStatistics.getOrderQuantity()-1);
                 orderStatistics.setRevenue(orderStatistics.getRevenue()-orderItem.getTotalPrice());
