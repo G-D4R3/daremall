@@ -130,7 +130,7 @@ public class OrderService {
         Order order = orderRepository.findOrder(orderId, loginId).orElseThrow(() -> new NoSuchElementException("일치하는 주문 정보를 찾을 수 없습니다."));
         OrderStatus status = OrderStatus.valueOf(order.getStatus().toString());
         order.cancel();
-        memberRepository.save(order.getMember());
+        //memberRepository.save(order.getMember());
         if(status.equals(OrderStatus.PAY)) {
             statisticsService.updateOrderStatistics(order);
             statisticsService.updateItemStatistics(order);

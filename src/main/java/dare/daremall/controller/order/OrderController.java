@@ -9,6 +9,7 @@ import dare.daremall.controller.member.auth.LoginUserDetails;
 import dare.daremall.domain.*;
 import dare.daremall.domain.discountPolicy.DiscountPolicy;
 import dare.daremall.repository.BaggedItemRepository;
+import dare.daremall.repository.MemberRepository;
 import dare.daremall.service.MemberService;
 import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ public class OrderController {
     private final OrderService orderService;
     private final BaggedItemRepository baggedItemRepository;
     private final DiscountPolicy discountPolicy;
+    private final MemberRepository memberRepository;
 
     /** 사용자 기능 **/
 

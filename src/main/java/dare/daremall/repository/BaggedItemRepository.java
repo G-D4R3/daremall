@@ -30,6 +30,7 @@ public class BaggedItemRepository {
     public List<BaggedItem> findSelected(String loginId) {
         return em.createQuery("select bi from BaggedItem bi" +
                         " join fetch bi.member" +
+                        " join fetch bi.item" +
                 " where bi.checked = true" +
                 " and bi.member.loginId = :loginId", BaggedItem.class)
                 .setParameter("loginId", loginId)
@@ -37,9 +38,9 @@ public class BaggedItemRepository {
     }
 
     public void removeSelected(String loginId) {
-        em.createQuery("delete from BaggedItem bi" +
+        em.createQuery("delete from BaggedItem bi"+
                 " where bi.checked = true" +
-                " and bi.member.loginId = :loginId")
+                " and bi.member in (select m from Member m where m.loginId = :loginId)")
                 .setParameter("loginId", loginId)
                 .executeUpdate();
     }

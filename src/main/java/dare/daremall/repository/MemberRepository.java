@@ -1,5 +1,6 @@
 package dare.daremall.repository;
 
+import ch.qos.logback.core.joran.action.IADataForComplexProperty;
 import dare.daremall.domain.DeliveryInfo;
 import dare.daremall.domain.LikeItem;
 import dare.daremall.domain.Member;
@@ -167,6 +168,13 @@ public class MemberRepository {
 
     public void remove(long memberId) {
         em.remove(em.find(Member.class, memberId));
+    }
+
+    public void removeBaggedItem(Long itemId) {
+        em.createQuery("delete from BaggedItem bi" +
+                " where bi.item.id = :itemId")
+                .setParameter("itemId", itemId)
+                .executeUpdate();
     }
 
 

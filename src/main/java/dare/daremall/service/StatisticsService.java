@@ -147,13 +147,7 @@ public class StatisticsService {
                     itemStatistics.setRevenue(itemStatistics.getRevenue() - orderItem.getTotalPrice());
                     itemStatisticsRepository.save(itemStatistics);
                 }
-                else {
-                    throw new IllegalStateException("주문 상품을 취소할 수 없습니다.");
-                }
                 orderStatisticsRepository.save(orderStatistics);
-            }
-            else {
-                throw new IllegalStateException("주문 상품을 취소할 수 없습니다.");
             }
         }
     }

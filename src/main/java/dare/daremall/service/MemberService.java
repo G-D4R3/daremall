@@ -290,6 +290,11 @@ public class MemberService {
 
     }
 
+    @Transactional
+    public void deleteBaggedItem(Long itemId) {
+        memberRepository.removeBaggedItem(itemId);
+    }
+
     /** **/
 }
 

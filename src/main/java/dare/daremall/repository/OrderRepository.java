@@ -30,7 +30,7 @@ public class OrderRepository {
 
     public List<Order> findByLoginId(String loginId) {
         return em.createQuery("select o from Order o" +
-                        " join fetch o.orderItems" +
+                        " join fetch o.member" +
                         " where o.member.loginId = :loginId" +
                         " order by o.orderDate DESC", Order.class)
                 .setParameter("loginId", loginId)
@@ -39,6 +39,8 @@ public class OrderRepository {
 
     public Optional<Order> findOrder(Long orderId, String loginId) {
         return em.createQuery("select o from Order o" +
+                        " join fetch o.orderItems" +
+                        " join fetch o.delivery" +
                 " where o.member.loginId = :loginId" +
                 " and o.id = :orderId", Order.class)
                 .setParameter("loginId", loginId)

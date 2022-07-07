@@ -7,6 +7,7 @@ import dare.daremall.domain.item.*;
 import dare.daremall.repository.LikeItemRepository;
 import dare.daremall.repository.MemberRepository;
 import dare.daremall.service.ItemService;
+import dare.daremall.service.MemberService;
 import dare.daremall.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,7 +36,7 @@ import java.util.stream.Collectors;
 public class ItemController {
 
     private final ItemService itemService;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final OrderService orderService;
     private final LikeItemRepository likeItemRepository;
 
@@ -222,8 +223,9 @@ public class ItemController {
 
         itemService.updateItem(itemDto);
 
-        if(ItemStatus.valueOf(itemDto.getItemStatus())!=ItemStatus.FOR_SALE) {
+        if(!ItemStatus.valueOf(itemDto.getItemStatus()).equals(ItemStatus.FOR_SALE)) {
             orderService.deleteOrderItem(itemDto.getId(), itemDto.getName());
+            memberService.deleteBaggedItem(itemDto.getId());
         }
 
         return new ResponseEntity<>("상품을 성공적으로 수정했습니다.", HttpStatus.OK);
