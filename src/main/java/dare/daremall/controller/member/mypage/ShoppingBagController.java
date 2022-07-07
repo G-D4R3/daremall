@@ -26,8 +26,25 @@ import java.util.stream.Collectors;
 public class ShoppingBagController {
 
     private final MemberService memberService;
-    private final ItemService itemService;
     private final BaggedItemRepository baggedItemRepository;
+
+    @GetMapping("") @Secured({"ROLE_USER"})
+    public String shoppingBag(@AuthenticationPrincipal LoginUserDetails member, Model model) {
+
+        if(member==null) return "redirect:/members/login";
+
+        List<BaggedItemDto> list = baggedItemRepository.findByMember(member.getUsername()).stream().map(b -> new BaggedItemDto(b)).collect(Collectors.toList());
+
+        model.addAttribute("totalPrice", list.stream().mapToInt(i-> {
+            if(i.getChecked()==true) {
+                return i.getTotalPrice();
+            }
+            else return 0;
+        }).sum());
+        model.addAttribute("list", list);
+
+        return "user/shoppingBag";
+    }
 
     @PostMapping(value = "/add") @Secured({"ROLE_USER"})
     public @ResponseBody ResponseEntity<String> addBag(@AuthenticationPrincipal LoginUserDetails member,
@@ -47,7 +64,7 @@ public class ShoppingBagController {
 
         if(member==null) return "redirect:/members/login";
 
-        memberService.removeShoppingBag(member.getUsername(), bagItemId);
+        memberService.removeShoppingBag(bagItemId);
 
         return "redirect:/shop";
     }
@@ -63,26 +80,6 @@ public class ShoppingBagController {
         memberService.updateBaggedItemCount(id, count);
 
         return "redirect:/shop";
-    }
-
-    @GetMapping("") @Secured({"ROLE_USER"})
-    public String shoppingBag(@AuthenticationPrincipal LoginUserDetails member, Model model) {
-
-        if(member==null) return "redirect:/members/login";
-
-        Member findMember = memberService.findUser(member.getUsername());
-        List<BaggedItem> shoppingBag = findMember.getShoppingBag();
-        List<BaggedItemDto> list = shoppingBag.stream().map(b -> new BaggedItemDto(b)).collect(Collectors.toList());
-
-        model.addAttribute("totalPrice", list.stream().mapToInt(i-> {
-            if(i.getChecked()==true) {
-                return i.getTotalPrice();
-            }
-            else return 0;
-        }).sum());
-        model.addAttribute("list", list);
-
-        return "user/shoppingBag";
     }
 
     @PostMapping(value = "/check") @Secured({"ROLE_USER"})

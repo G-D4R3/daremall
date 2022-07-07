@@ -37,6 +37,7 @@ public class BaggedItemRepository {
 
     public List<BaggedItem> findByMember(String loginId) {
         return em.createQuery("select bi from BaggedItem bi" +
+                        " join fetch bi.member" +
                 " where bi.member.loginId = :loginId", BaggedItem.class)
                 .setParameter("loginId", loginId)
                 .getResultList();
@@ -45,8 +46,10 @@ public class BaggedItemRepository {
     // 선택한 item이 있을 때 전체 주문을 위함
     // 이후에 item check는 결제할 당시에만 사용하고, all checked로 사용하기
     public void setAllChecked(String loginId) {
-        List<BaggedItem> baggedItems = findByMember(loginId);
-        for(BaggedItem item : baggedItems) item.setChecked(true);
+        em.createQuery("update BaggedItem bi set bi.checked = TRUE" +
+                " where bi.member in (select m from Member m where m.loginId = :loginId)")
+                .setParameter("loginId", loginId)
+                .executeUpdate();
     }
 
     public void removeByItemId(Long itemId) {

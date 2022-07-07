@@ -291,7 +291,7 @@ public class MemberServiceTest {
         // when
         findMember = memberService.findUser(memberDto.getLoginId()); // em.merge로 save했기 때문에 영속성 관리
         BaggedItem baggedItem = findMember.getShoppingBag().get(0);
-        memberService.removeShoppingBag(findMember.getLoginId(), baggedItem.getId());
+        memberService.removeShoppingBag(baggedItem.getId());
 
         // then
         assertThat(findMember.getShoppingBag().size()).isEqualTo(0);
@@ -330,9 +330,9 @@ public class MemberServiceTest {
         // when
         findMember = memberService.findUser(memberDto.getLoginId()); // em.merge로 save했기 때문에 영속성 관리
         long bagItemId = findMember.getShoppingBag().get(0).getId();
-        memberService.removeShoppingBag(findMember.getLoginId(), bagItemId);
+        memberService.removeShoppingBag(bagItemId);
 
-        NoSuchElementException e = assertThrows(NoSuchElementException.class, () -> memberService.removeShoppingBag(memberDto.getLoginId(), bagItemId));
+        NoSuchElementException e = assertThrows(NoSuchElementException.class, () -> memberService.removeShoppingBag(bagItemId));
 
         // then
         assertThat(e.getMessage()).isEqualTo("이미 장바구니에서 삭제되었습니다.");

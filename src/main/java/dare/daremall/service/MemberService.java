@@ -108,13 +108,11 @@ public class MemberService {
     }
 
     @Transactional
-    public void removeShoppingBag(String loginId, Long baggedItemId) {
-        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
+    public void removeShoppingBag(Long baggedItemId) {
         BaggedItem baggedItem = baggedItemRepository.findById(baggedItemId);
         if(baggedItem == null) {
             throw new NoSuchElementException("이미 장바구니에서 삭제되었습니다.");
         }
-        member.removeBaggedItem(baggedItem);
         baggedItemRepository.remove(baggedItemId);
     }
 
@@ -145,10 +143,7 @@ public class MemberService {
 
     @Transactional
     public void selectAllBagItem(String loginId) {
-        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
-        for(BaggedItem baggedItem:member.getShoppingBag()) {
-            baggedItem.setChecked(true);
-        }
+        baggedItemRepository.setAllChecked(loginId);
     }
 
     /** **/
