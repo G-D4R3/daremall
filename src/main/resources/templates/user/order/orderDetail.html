@@ -114,33 +114,40 @@
 </style>
 <script>
     function cancel(id) {
-        var form = document.createElement("form");
-        form.setAttribute("method", "post");
-        form.setAttribute("action", "/order/cancel");
 
-        var orderId = document.createElement("input");
-        orderId.setAttribute("type","hidden");
-        orderId.setAttribute("name","orderId");
-        orderId.setAttribute("value",id);
-
-        form.appendChild(orderId);
-        document.body.appendChild(form);
-        form.submit();
+        $.ajax({
+            url: '/order/cancel',
+            type: 'post',
+            data : {
+                "orderId": id
+            },
+            success: function(data) {
+                alert(data);
+                window.location.href = '/order/detail?orderId='+id;
+            },
+            error: function(data) {
+                alert(data.responseText);
+                window.location.href = '/order/detail?orderId='+id;
+            }
+        });
     }
 
     function deleteOrder(id) {
-        var form = document.createElement("form");
-        form.setAttribute("method", "post");
-        form.setAttribute("action", "/order/delete");
-
-        var orderId = document.createElement("input");
-        orderId.setAttribute("type","hidden");
-        orderId.setAttribute("name","orderId");
-        orderId.setAttribute("value",id);
-
-        form.appendChild(orderId);
-        document.body.appendChild(form);
-        form.submit();
+        $.ajax({
+            url: '/order/delete',
+            type: 'post',
+            data : {
+                "orderId": id
+            },
+            success: function(data) {
+                alert(data);
+                window.location.href = '/userinfo/orderList';
+            },
+            error: function(data) {
+                alert(data.responseText);
+                window.location.href = '/userinfo/orderList';
+            }
+        });
     }
 </script>
 </html>

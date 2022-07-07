@@ -154,11 +154,11 @@ public class OrderController {
     }
 
     @PostMapping(value = "/delete") @Secured({"ROLE_USER"})
-    public String deleteOrder(@AuthenticationPrincipal LoginUserDetails member,
+    public @ResponseBody ResponseEntity<String> deleteOrder(@AuthenticationPrincipal LoginUserDetails member,
                               Long orderId) {
-        if(member==null) return "redirect:/members/login";
+        if(member==null) throw new AccessDeniedException("로그인이 필요한 서비스입니다.");
         orderService.deleteOrder(orderId, member.getUsername());
-        return "redirect:/userinfo/orderList";
+        return new ResponseEntity<>("주문내역을 삭제했습니다.", HttpStatus.OK);
     }
 
 
