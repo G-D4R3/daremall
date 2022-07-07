@@ -141,7 +141,6 @@ public class OrderService {
     public void deleteOrder(Long orderId, String loginId) {
         Order order = orderRepository.findOrder(orderId, loginId).orElseThrow(() -> new NoSuchElementException("일치하는 주문 정보를 찾을 수 없습니다."));
         if(order.getStatus()==OrderStatus.CANCEL) {
-            order.delete();
             orderRepository.remove(order);
         }
         else {

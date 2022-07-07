@@ -31,6 +31,7 @@ public class OrderRepository {
     public List<Order> findByLoginId(String loginId) {
         return em.createQuery("select o from Order o" +
                         " join fetch o.member" +
+                        " join fetch o.orderItems" +
                         " where o.member.loginId = :loginId" +
                         " order by o.orderDate DESC", Order.class)
                 .setParameter("loginId", loginId)
