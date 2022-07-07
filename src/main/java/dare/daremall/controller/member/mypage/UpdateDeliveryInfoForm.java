@@ -4,6 +4,7 @@ package dare.daremall.controller.member.mypage;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 public class UpdateDeliveryInfoForm {
@@ -24,6 +25,6 @@ public class UpdateDeliveryInfoForm {
     @NotBlank(message = "상세 주소를 입력해주세요")
     private String detail;
 
-    @NotBlank(message = "배송지 유형을 선택해주세요")
+    @NotNull(message = "배송지 유형을 선택해주세요")
     private Boolean isDefault;
 }

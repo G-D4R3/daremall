@@ -19,11 +19,8 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalStateException.class)
-    public String illegalStateException(IllegalStateException e, Model model) {
-
-        model.addAttribute("status", HttpStatus.BAD_REQUEST);
-        model.addAttribute("message", e.getMessage());
-        return "error/error";
+    public @ResponseBody ResponseEntity<String> illegalStateException(IllegalStateException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CannotAddNewItemException.class)

@@ -30,7 +30,8 @@ public class OrderRepository {
 
     public List<Order> findByLoginId(String loginId) {
         return em.createQuery("select o from Order o" +
-                " where o.member.loginId = :loginId" +
+                        " join fetch o.orderItems" +
+                        " where o.member.loginId = :loginId" +
                         " order by o.orderDate DESC", Order.class)
                 .setParameter("loginId", loginId)
                 .getResultList();
@@ -132,6 +133,14 @@ public class OrderRepository {
                 .getResultList().stream().findAny();
     }
 
+    public List<Order> findKakaoPay(String loginId) {
+        return em.createQuery("select o from Order o" +
+                " join fetch o.member" +
+                " where o.member.loginId = :loginId" +
+                " and o.paymentType = 'KAKAO'", Order.class)
+                .setParameter("loginId", loginId)
+                .getResultList();
+    }
 
 
     /** **/

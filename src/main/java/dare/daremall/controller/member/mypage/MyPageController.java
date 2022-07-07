@@ -122,8 +122,12 @@ public class MyPageController {
 
     @PostMapping(value = "/myAddress/update") @Secured({"ROLE_USER"})
     public @ResponseBody ResponseEntity<String> updateDelivery(@AuthenticationPrincipal LoginUserDetails member,
-                                 @Validated UpdateDeliveryInfoForm updateDeliveryInfoForm) {
+                                 @Validated UpdateDeliveryInfoForm updateDeliveryInfoForm, BindingResult result) {
+
+        System.out.println("[update info]");
+
         if(member==null) throw new AccessDeniedException("로그인이 필요한 서비스입니다.");
+        if(result.hasErrors()) return new ResponseEntity<>("다시 입력해주세요", HttpStatus.BAD_REQUEST);
 
         memberService.updateDeliveryInfo(member.getUsername(), updateDeliveryInfoForm);
 

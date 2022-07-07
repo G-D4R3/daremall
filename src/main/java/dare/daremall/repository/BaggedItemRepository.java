@@ -29,10 +29,19 @@ public class BaggedItemRepository {
 
     public List<BaggedItem> findSelected(String loginId) {
         return em.createQuery("select bi from BaggedItem bi" +
+                        " join fetch bi.member" +
                 " where bi.checked = true" +
                 " and bi.member.loginId = :loginId", BaggedItem.class)
                 .setParameter("loginId", loginId)
                 .getResultList();
+    }
+
+    public void removeSelected(String loginId) {
+        em.createQuery("delete from BaggedItem bi" +
+                " where bi.checked = true" +
+                " and bi.member.loginId = :loginId")
+                .setParameter("loginId", loginId)
+                .executeUpdate();
     }
 
     public List<BaggedItem> findByMember(String loginId) {
@@ -62,6 +71,7 @@ public class BaggedItemRepository {
                 .setParameter("itemId", itemId)
                 .executeUpdate();
     }
+
 
     /** **/
 }

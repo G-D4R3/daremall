@@ -41,7 +41,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form id="updateDeliveryForm" method="post" th:object="${updateDeliveryForm}" action="/userinfo/myAddress/update" onsubmit="return checkUpdateForm();">
+                                    <form id="updateDeliveryForm" th:object="${updateDeliveryForm}">
                                         <input type="hidden" id="updateId" th:field="*{id}">
                                         <div class="flex-row">
                                             <label>이름</label>
@@ -71,8 +71,7 @@
                                                    placeholder="상세 주소를 입력해주세요">
                                         </div>
                                         <div class="form-check check-default">
-                                            <input id="updateIsDefault" class="form-check-input" type="checkbox" th:field="*{isDefault}">
-                                            <label>기본 배송지로 설정</label>
+                                            <label><input id="updateIsDefault" class="form-check-input" type="checkbox" th:field="*{isDefault}">기본 배송지로 설정</label>
                                         </div>
                                     </form>
                                 </div>
@@ -97,7 +96,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="addDeliveryForm" th:object="${deliveryInfoForm}" method="post" action="/userinfo/myAddress/add" onsubmit="return checkAddForm();">
+                    <form id="addDeliveryForm" th:object="${deliveryInfoForm}">
                         <div class="flex-row">
                             <label>이름</label>
                             <input class="form-control" type="text" id="name" th:field="*{name}" placeholder="이름을 입력해주세요">
@@ -187,33 +186,39 @@
     });
 
     $('#addDelivery').click( function() {
-        $.ajax({
-            url: '/userinfo/myAddress/add',
-            type: 'POST',
-            data: $('#addDeliveryForm').serialize(),
-            success: function(data) {
-                alert(data);
-                window.location.href = '/userinfo/myAddress';
-            },
-            error: function(data) {
-                alert(data);
-            }
-        });
+        if(checkAddForm()) {
+            $.ajax({
+                url: '/userinfo/myAddress/add',
+                type: 'POST',
+                data: $('#addDeliveryForm').serialize(),
+                success: function(data) {
+                    alert(data);
+                    window.location.href = '/userinfo/myAddress';
+                },
+                error: function(data) {
+                    alert(data);
+                }
+            });
+        }
     });
 
     $('#updateDelivery').click( function() {
-        $.ajax({
-            url: '/userinfo/myAddress/update',
-            type: 'POST',
-            data: $('#updateDeliveryForm').serialize(),
-            success: function(data) {
-                alert(data);
-                window.location.href = '/userinfo/myAddress';
-            },
-            error: function(data) {
-                alert(data);
-            }
-        });
+
+        if(checkUpdateForm()) {
+            document.getElementById("updateIsDefault").value = $('#updateIsDefault').is(':checked');
+            $.ajax({
+                url: '/userinfo/myAddress/update',
+                type: 'POST',
+                data: $('#updateDeliveryForm').serialize(),
+                success: function(data) {
+                    alert(data);
+                    window.location.reload();
+                },
+                error: function(data) {
+                    alert(data.responseText);
+                }
+            });
+        }
     });
 
     var autoHypenPhone = function(str){
@@ -285,10 +290,11 @@
             },
             success: function(data) {
                 alert(data);
-                window.location.href = '/userinfo/myAddress';
+                window.location.reload();
             },
             error: function(data) {
-                alert(data);
+                console.log(data);
+                alert(data.responseText);
             }
         });
     }
@@ -320,14 +326,16 @@
         }
         if($('#isDefault').is(":checked")===true) {
             alert("기본 배송지로 설정합니다");
+            return true;
         }
-        else {
+        else if($('#isDefault').is(":checked")===false){
             alert("새로운 배송지를 추가합니다");
+            return true;
         }
+        return false;
     }
 
     function checkUpdateForm() {
-
         if($('#updateName').val().length===0) {
             alert("이름을 입력해주세요");
             return false;
@@ -353,11 +361,14 @@
             return false;
         }
         if($('#updateIsDefault').is(":checked")===true) {
-            alert("기본 배송지로 설정합니다.");
+            alert("기본 배송지로 설정합니다");
+            return true;
         }
-        else {
-            alert("배송지를 수정합니다.");
+        else if($('#updateIsDefault').is(":checked")===false){
+            alert("배송지를 수정합니다");
+            return true;
         }
+        return false;
     }
 
     // [출처] : https://ws-pace.tistory.com/38

@@ -114,6 +114,16 @@ public class MemberRepository {
     }
 
     /**
+     * 배송지 삭제
+     * @param deliveryId
+     */
+    public void removeDelivery(Long deliveryId) {
+        em.createQuery("delete from DeliveryInfo di where di.id = :deliveryId")
+                .setParameter("deliveryId", deliveryId)
+                .executeUpdate();
+    }
+
+    /**
      * 찜한 상품 조회
      */
     public List<LikeItem> getLikes(String loginId) {
@@ -158,6 +168,7 @@ public class MemberRepository {
     public void remove(long memberId) {
         em.remove(em.find(Member.class, memberId));
     }
+
 
     /** **/
 }

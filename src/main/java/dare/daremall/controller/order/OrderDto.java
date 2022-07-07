@@ -14,15 +14,13 @@ public class OrderDto {
     private String title;
     private int price;
     private String orderDate;
-    private String imgUrl;
     private String status;
 
     public OrderDto(Order order) {
         this.id = order.getId();
         this.title = order.getTitle();
-        this.price = order.getOrderItems().stream().mapToInt(i->i.getTotalPrice()).sum();
+        this.price = order.getTotalPrice();
         this.orderDate = order.getOrderDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
-        this.imgUrl = "/images/"+order.getOrderItems().get(0).getItem().getId()+".png";
         if(order.getStatus()==OrderStatus.PAY) {
             switch (order.getDelivery().getStatus()) {
                 case NONE:

@@ -188,7 +188,7 @@ public class MemberService {
         deliveryInfo.setAddress(new Address(deliveryInfoForm.getZipcode(), deliveryInfoForm.getStreet(), deliveryInfoForm.getDetail()));
         deliveryInfo.setIsDefault(deliveryInfoForm.getIsDefault());
 
-        DeliveryInfo defaultDelivery = memberRepository.findDefaultDeliveryInfo(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
+        DeliveryInfo defaultDelivery = memberRepository.findDefaultDeliveryInfo(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 정보입니다."));
         if(deliveryInfo.getIsDefault() == true) {
             defaultDelivery.setIsDefault(false);
         }
@@ -199,31 +199,27 @@ public class MemberService {
 
     @Transactional
     public void deleteDeliveryInfo(String loginId, Long deliveryId) {
-        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
         DeliveryInfo deliveryInfo = memberRepository.findDeliveryinfo(loginId, deliveryId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 정보입니다."));
 
         if(deliveryInfo!=null) {
             if(deliveryInfo.getIsDefault()==true) {
                 throw new IllegalStateException("기본 배송지는 삭제할 수 없습니다.");
             }
-            else member.removeDelivery(deliveryInfo);
+            else memberRepository.removeDelivery(deliveryId);
         }
-        memberRepository.save(member);
-
     }
 
     @Transactional
     public void updateDeliveryInfo(String loginId, UpdateDeliveryInfoForm updateDeliveryInfoForm) {
 
-        Member findMember = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
+        //Member findMember = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
         DeliveryInfo deliveryInfo = memberRepository.findDeliveryinfo(loginId, updateDeliveryInfoForm.getId()).orElse(null);
-        DeliveryInfo defaultDeliveryInfo = memberRepository.findDefaultDeliveryInfo(loginId).orElse(null);
 
-        if(defaultDeliveryInfo == null || deliveryInfo == null){
+        if(deliveryInfo == null){
             throw new IllegalStateException("배송지 수정에 문제가 생겼습니다.");
         }
 
-        if(defaultDeliveryInfo.getId() == deliveryInfo.getId() && updateDeliveryInfoForm.getIsDefault() == false) {
+        if(deliveryInfo.getIsDefault()==true && updateDeliveryInfoForm.getIsDefault() == false) {
             throw new IllegalStateException("기본 배송지는 삭제할 수 없습니다.");
         }
 
@@ -232,15 +228,16 @@ public class MemberService {
         deliveryInfo.setNickname(updateDeliveryInfoForm.getNickname());
         deliveryInfo.setAddress(new Address(updateDeliveryInfoForm.getZipcode(), updateDeliveryInfoForm.getStreet(), updateDeliveryInfoForm.getDetail()));
 
-        if(defaultDeliveryInfo.getId() != deliveryInfo.getId() && updateDeliveryInfoForm.getIsDefault() == true) {
+        if(deliveryInfo.getIsDefault() == false && updateDeliveryInfoForm.getIsDefault() == true) {
+            DeliveryInfo defaultDeliveryInfo = memberRepository.findDefaultDeliveryInfo(loginId).orElse(null);
             deliveryInfo.setIsDefault(true);
             defaultDeliveryInfo.setIsDefault(false);
         }
-        else if (defaultDeliveryInfo.getId() != deliveryInfo.getId() && updateDeliveryInfoForm.getIsDefault() == false){
+        else if (deliveryInfo.getIsDefault() == false && updateDeliveryInfoForm.getIsDefault() == false){
             deliveryInfo.setIsDefault(false);
         }
 
-        memberRepository.save(findUser(loginId));
+        //memberRepository.save(findMember);
     }
     /** **/
 

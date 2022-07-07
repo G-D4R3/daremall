@@ -53,7 +53,8 @@ public class OrderService {
 
     @Transactional
     public void verifyOrders(String loginId){
-        List<Order> orders = orderRepository.findByLoginId(loginId);
+        //List<Order> orders = orderRepository.findByLoginId(loginId);
+        List<Order> orders = orderRepository.findKakaoPay(loginId);
         IamportClient iamportClient = new IamportClient("7850918775710695", "4c02feb6adbf7e576849ea0abb51c0c5a4ba50d730aa99ef219d0b459a44a5fff88d3b433a45efc0");
         for(Order order : orders) {
             if(order.getPaymentType().equals(PaymentType.KAKAO)) {
@@ -113,7 +114,7 @@ public class OrderService {
 
         Order order = Order.createOrder(member, delivery, orderItems, orderStatus, merchantUid, impUid, orderForm.getPayment());
 
-        for(BaggedItem item:baggedItems) member.removeBaggedItem(item);
+        baggedItemRepository.removeSelected(loginId);
 
         orderRepository.save(order);
         memberRepository.save(member);

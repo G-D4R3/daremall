@@ -69,17 +69,19 @@ public class OrderController {
             return "redirect:/shop";
         }
 
+        Member findMember = memberService.findUser(member.getUsername());
+
         model.addAttribute("items", baggedItem);
         int totalItemPrice = baggedItem.stream().mapToInt(bi->bi.getTotalPrice()).sum();
         int shippingFee = discountPolicy.isDiscountShip(totalItemPrice)==true? 0:2500;
         model.addAttribute("shippingFee", shippingFee);
-        model.addAttribute("myDeliveries", memberService.findUser(member.getUsername()).getDeliveryInfos().stream().map(di -> new DeliveryInfoDto(di)).collect(Collectors.toList()));
+        model.addAttribute("myDeliveries", findMember.getDeliveryInfos().stream().map(di -> new DeliveryInfoDto(di)).collect(Collectors.toList()));
 
         model.addAttribute("totalItemPrice", totalItemPrice);
         model.addAttribute("totalPrice", totalItemPrice+shippingFee);
         model.addAttribute("orderForm", new OrderForm());
 
-        model.addAttribute("paymentForm", new PaymentForm(memberService.findUser(member.getUsername())));
+        model.addAttribute("paymentForm", new PaymentForm(findMember));
         return "user/order/orderForm";
     }
 
