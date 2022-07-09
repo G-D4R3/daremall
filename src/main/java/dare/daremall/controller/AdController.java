@@ -9,12 +9,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
@@ -28,7 +30,12 @@ public class AdController {
 
     @PostMapping(value = "/new")
     @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> newAd(AdForm adForm, MultipartFile imgFile) throws IOException {
+    public @ResponseBody ResponseEntity<String> newAd(@Valid AdForm adForm, MultipartFile imgFile, BindingResult result) throws IOException {
+
+        if(result.hasErrors()) {
+            return new ResponseEntity<>("광고 정보를 입력해주세요", HttpStatus.BAD_REQUEST);
+        }
+
         if(!imgFile.isEmpty()) {
             String oriImgName = imgFile.getOriginalFilename();
             String imgName = "";
@@ -77,7 +84,12 @@ public class AdController {
 
     @PostMapping(value = "/update")
     @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> updateAd(AdForm adForm, MultipartFile imgFile) throws IOException {
+    public @ResponseBody ResponseEntity<String> updateAd(@Valid AdForm adForm, MultipartFile imgFile, BindingResult result) throws IOException {
+
+        if(result.hasErrors()) {
+            return new ResponseEntity<>("광고 정보를 입력해주세요", HttpStatus.BAD_REQUEST);
+        }
+
         if(!imgFile.isEmpty()) {
             String oriImgName = imgFile.getOriginalFilename();
             String imgName = "";
