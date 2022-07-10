@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -291,7 +292,8 @@ public class MemberServiceTest {
         // when
         findMember = memberService.findUser(memberDto.getLoginId()); // em.merge로 save했기 때문에 영속성 관리
         BaggedItem baggedItem = findMember.getShoppingBag().get(0);
-        memberService.removeShoppingBag(baggedItem.getId());
+        memberService.removeShoppingBag(memberDto.getLoginId(), baggedItem.getId());
+        findMember = memberService.findUser(memberDto.getLoginId());
 
         // then
         assertThat(findMember.getShoppingBag().size()).isEqualTo(0);
@@ -330,12 +332,13 @@ public class MemberServiceTest {
         // when
         findMember = memberService.findUser(memberDto.getLoginId()); // em.merge로 save했기 때문에 영속성 관리
         long bagItemId = findMember.getShoppingBag().get(0).getId();
-        memberService.removeShoppingBag(bagItemId);
 
-        NoSuchElementException e = assertThrows(NoSuchElementException.class, () -> memberService.removeShoppingBag(bagItemId));
+        BaggedItem byId = baggedItemRepository.findById(bagItemId).get();
+        memberService.removeShoppingBag(memberDto.getLoginId(), bagItemId);
 
         // then
-        assertThat(e.getMessage()).isEqualTo("이미 장바구니에서 삭제되었습니다.");
+        findMember = memberService.findUser(memberDto.getLoginId());
+        assertThat(findMember.getShoppingBag().contains(byId)).isFalse();
 
     }
 
@@ -373,7 +376,7 @@ public class MemberServiceTest {
         memberService.updateBaggedItemCount(baggedItem.getId(), 5);
 
         // then
-        assertThat(baggedItemRepository.findById(baggedItem.getId()).getCount()).isEqualTo(5);
+        assertThat(baggedItemRepository.findById(baggedItem.getId()).get().getCount()).isEqualTo(5);
 
     }
 

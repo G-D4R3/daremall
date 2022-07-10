@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -13,12 +14,15 @@ public class BaggedItemRepository {
 
     private final EntityManager em;
 
-    public BaggedItem findById(Long baggedItemId) {
-        return em.find(BaggedItem.class, baggedItemId);
+    public Optional<BaggedItem> findById(Long baggedItemId) {
+        return Optional.ofNullable(em.find(BaggedItem.class, baggedItemId));
     }
 
     public void remove(Long id) {
-        em.remove(em.find(BaggedItem.class, id));
+        em.createQuery("delete from BaggedItem bi" +
+                " where bi.id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     /**

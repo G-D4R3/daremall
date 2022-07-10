@@ -64,7 +64,7 @@ public class ShoppingBagController {
 
         if(member==null) return "redirect:/members/login";
 
-        memberService.removeShoppingBag(bagItemId);
+        memberService.removeShoppingBag(member.getUsername(), bagItemId);
 
         return "redirect:/shop";
     }

@@ -155,7 +155,7 @@ public class AdServiceTest {
         List<MainAd> mainAds = adService.findMainAd();
 
         // then
-        assertThat(mainAds.size()).isEqualTo(4+1);
+        assertThat(mainAds.size()).isEqualTo(3+1);
 
     }
 

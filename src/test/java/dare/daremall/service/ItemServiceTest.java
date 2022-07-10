@@ -141,7 +141,7 @@ class ItemServiceTest {
 
        itemService.saveItem(book);
 
-       assertThat(itemService.findItems().size()).isEqualTo(18+2);
+       assertThat(itemService.findItems().size()).isEqualTo(21+2);
    }
 
     @Test
@@ -199,7 +199,7 @@ class ItemServiceTest {
         Page<Item> findAlbumByName = itemService.findAllPageable("album1", PageRequest.of(0, 20));
 
         // then
-        assertThat(items.getTotalElements()).isEqualTo(18+2-1); // HIDE : 1
+        assertThat(items.getTotalElements()).isEqualTo(21+2);
         assertThat(findBookByName.getContent().contains(itemService.findOne(bookId))).isTrue();
         assertThat(findAlbumByName.getContent().contains(itemService.findOne(albumId))).isTrue();
     }

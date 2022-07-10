@@ -39,16 +39,16 @@ public class Member {
     private Address address;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LikeItem> likes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BaggedItem> shoppingBag = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DeliveryInfo> deliveryInfos = new ArrayList<>();
 
 
@@ -85,7 +85,7 @@ public class Member {
 
     public void removeLikeItem(LikeItem likeItem) {
         likes.remove(likeItem);
-        likeItem.setMember(null);
+        //likeItem.setMember(null);
     }
 
     public void addBaggedItem(BaggedItem baggedItem) {
@@ -101,7 +101,7 @@ public class Member {
 
     public void removeBaggedItem(BaggedItem baggedItem) {
         shoppingBag.remove(baggedItem);
-        baggedItem.setMember(null);
+        //baggedItem.setMember(null);
     }
 
     public void addDelivery(DeliveryInfo deliveryInfo) {
@@ -111,7 +111,7 @@ public class Member {
 
     public void removeDelivery(DeliveryInfo deliveryInfo) {
         deliveryInfos.remove(deliveryInfo);
-        deliveryInfo.setMember(null);
+        //deliveryInfo.setMember(null);
     }
 
 }

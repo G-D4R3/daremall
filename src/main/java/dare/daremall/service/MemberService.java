@@ -108,12 +108,13 @@ public class MemberService {
     }
 
     @Transactional
-    public void removeShoppingBag(Long baggedItemId) {
-        BaggedItem baggedItem = baggedItemRepository.findById(baggedItemId);
-        if(baggedItem == null) {
-            throw new NoSuchElementException("이미 장바구니에서 삭제되었습니다.");
-        }
-        baggedItemRepository.remove(baggedItemId);
+    public void removeShoppingBag(String loginId, Long baggedItemId) {
+        Member member = memberRepository.findByLoginId(loginId).get();
+        BaggedItem baggedItem = baggedItemRepository.findById(baggedItemId).orElseThrow(() -> new NoSuchElementException("이미 장바구니에서 삭제되었습니다."));
+
+        member.removeBaggedItem(baggedItem);
+        memberRepository.save(member);
+        //baggedItemRepository.remove(baggedItemId);
     }
 
     @Transactional
@@ -121,10 +122,7 @@ public class MemberService {
         if(count <= 0) {
             throw new IllegalStateException("장바구니 수량을 변경할 수 없습니다.");
         }
-        BaggedItem item = baggedItemRepository.findById(bagItemId);
-        if(item == null) {
-            throw new NoSuchElementException("상품을 찾을 수 없습니다.");
-        }
+        BaggedItem item = baggedItemRepository.findById(bagItemId).orElseThrow(() -> new NoSuchElementException("상품을 찾을 수 없습니다."));
         if(item.getItem().getStockQuantity() < count) {
             throw new NotEnoughStockException("재고 수량을 초과했습니다.");
         }
@@ -133,7 +131,7 @@ public class MemberService {
 
     @Transactional
     public void updateBaggedItemCheck(Long bagItemId) {
-        BaggedItem item = baggedItemRepository.findById(bagItemId);
+        BaggedItem item = baggedItemRepository.findById(bagItemId).orElseThrow(() -> new NoSuchElementException("상품을 찾을 수 없습니다."));
         item.setChecked(!item.getChecked());
     }
 
@@ -205,7 +203,11 @@ public class MemberService {
             if(deliveryInfo.getIsDefault()==true) {
                 throw new IllegalStateException("기본 배송지는 삭제할 수 없습니다.");
             }
-            else memberRepository.removeDelivery(deliveryId);
+            else {
+                Member member = memberRepository.findByLoginId(loginId).get();
+                member.removeDelivery(deliveryInfo);
+                memberRepository.save(member);
+            }
         }
     }
 
@@ -253,21 +255,20 @@ public class MemberService {
 
         LikeItem findLikeItem = likeItemRepository.findByIds(loginId, itemId).orElse(null);
         //Item findItem = itemRepository.findById(itemId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 상품입니다."));
-        //Member findMember = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
+        Member findMember = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
 
         if(findLikeItem==null) {
             Item findItem = itemRepository.findById(itemId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 상품입니다."));
-            Member findMember = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
 
             LikeItem likeItem = new LikeItem();
             likeItem.setItem(findItem);
             findMember.addLikeItem(likeItem);
         }
         else {
-            //findMember.removeLikeItem(findLikeItem);
-            likeItemRepository.remove(findLikeItem.getId());
+            findMember.removeLikeItem(findLikeItem);
+            //likeItemRepository.remove(findLikeItem.getId());
         }
-        //memberRepository.save(findMember);
+        memberRepository.save(findMember);
     }
 
 
