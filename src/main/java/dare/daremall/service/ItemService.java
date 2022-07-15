@@ -24,7 +24,8 @@ public class ItemService {
     private final BaggedItemRepository baggedItemRepository;
 
     @Transactional
-    public long saveItem(ItemDto itemDto) {
+    public long
+    saveItem(ItemDto itemDto) {
         if(itemDto.getType().equals("B")) {
             Book book = new Book();
             book.setName(itemDto.getName());

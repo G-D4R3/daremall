@@ -209,10 +209,6 @@ public class ItemController {
 
             String projectPath = System.getProperty("user.dir") + "/src/main/resources/static/images/item/thumb/";
 
-            // UUID 를 이용하여 파일명 새로 생성
-            // UUID - 서로 다른 객체들을 구별하기 위한 클래스
-            //UUID uuid = UUID.randomUUID();
-            //String savedFileName = uuid + "_" + oriImgName; // 파일명 -> imgName
             String savedFileName = oriImgName;
             imgName = savedFileName;
             File saveFile = new File(projectPath, imgName);

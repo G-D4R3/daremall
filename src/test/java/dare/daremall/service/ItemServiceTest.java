@@ -128,7 +128,7 @@ class ItemServiceTest {
        album.setEtc("etc1");
        album.setItemStatus("FOR_SALE");
 
-       itemService.saveItem(album);
+       long albumId = itemService.saveItem(album);
 
        ItemDto book = new ItemDto();
        book.setName("book1");
@@ -139,9 +139,13 @@ class ItemServiceTest {
        book.setIsbn("111-111-1111");
        book.setItemStatus("FOR_SALE");
 
-       itemService.saveItem(book);
+       long bookId = itemService.saveItem(book);
 
-       assertThat(itemService.findItems().size()).isEqualTo(21+2);
+       Item findAlbum = itemService.findOne(albumId);
+       Item findBook = itemService.findOne(bookId);
+
+       assertThat(itemService.findItems().contains(findAlbum)).isTrue();
+       assertThat(itemService.findItems().contains(findBook)).isTrue();
    }
 
     @Test
@@ -199,7 +203,6 @@ class ItemServiceTest {
         Page<Item> findAlbumByName = itemService.findAllPageable("album1", PageRequest.of(0, 20));
 
         // then
-        assertThat(items.getTotalElements()).isEqualTo(21+2);
         assertThat(findBookByName.getContent().contains(itemService.findOne(bookId))).isTrue();
         assertThat(findAlbumByName.getContent().contains(itemService.findOne(albumId))).isTrue();
     }

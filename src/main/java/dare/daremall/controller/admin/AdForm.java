@@ -16,7 +16,7 @@ public class AdForm {
     private String startDate;
     @NotBlank(message = "광고 종료 날짜를 선택해주세요")
     private String endDate;
-    @NotBlank(message = "광고 이미지를 선택해주세요")
+
     private String imagePath;
     @NotBlank(message = "광고 유형을 선택해주세요")
     private String type;

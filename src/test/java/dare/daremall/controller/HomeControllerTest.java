@@ -34,7 +34,7 @@ class HomeControllerTest {
 
         mockMvc.perform(get("/")
                 .accept(MediaType.parseMediaType("application/html;charset=UTF-8")))
-                .andExpect(model().attribute("ads", hasSize(2)))
+                /*.andExpect(model().attribute("ads", hasSize(2)))
                 .andExpect(model().attribute("ads", hasItem(
                         allOf(
                             hasProperty("imagePath", is("/images/ad/main/summer.png")),
@@ -46,7 +46,7 @@ class HomeControllerTest {
                                 hasProperty("imagePath", is("/images/ad/main/agile.png")),
                                 hasProperty("href", is("/items/detail?itemId=981"))
                                 )
-                )))
+                )))*/
                 .andExpect(view().name("home"));
     }
 

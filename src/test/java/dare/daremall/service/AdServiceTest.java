@@ -133,9 +133,10 @@ public class AdServiceTest {
 
         // when
         List<MainAd> mainAdNow = adService.findMainAdNow();
+        MainAd findAd = (MainAd) adService.findOne(adId);
 
         // then
-        assertThat(mainAdNow.size()).isEqualTo(2+1);
+        assertThat(mainAdNow.contains(findAd)).isTrue();
 
     }
 
@@ -153,9 +154,10 @@ public class AdServiceTest {
 
         // when
         List<MainAd> mainAds = adService.findMainAd();
+        MainAd findAd = (MainAd) adService.findOne(adId);
 
         // then
-        assertThat(mainAds.size()).isEqualTo(3+1);
+        assertThat(mainAds.contains(findAd)).isTrue();
 
     }
 
