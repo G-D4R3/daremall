@@ -65,7 +65,8 @@ public class OrderRepository {
     public List<Order> findByItemId(Long itemId) {
         return em.createQuery("select o from Order o, OrderItem oi " +
                 " where oi.order = o" +
-                " and oi.item.id = :itemId", Order.class)
+                " and oi.item.id = :itemId" +
+                        " and o.status = 'ORDER'", Order.class)
                 .setParameter("itemId", itemId)
                 .getResultList();
     }

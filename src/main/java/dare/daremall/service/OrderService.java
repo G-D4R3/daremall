@@ -157,9 +157,9 @@ public class OrderService {
     public void deleteOrderItem(Long itemId, String itemName) throws CoolsmsException {
         List<Order> orders = orderRepository.findByItemId(itemId);
         List<String> memberPhoneNumbers = orders.stream().map(o -> o.getMember().getPhone()).collect(Collectors.toList());
-        // 주문 상품 취소된 만큼 order 통계 다시 내기
-        statisticsService.deleteOrderItem(orders, itemId);
-        orderRepository.removeOrderItem(itemId);
+        // ORDER에 한해서 orderItem 삭제 => statistics 수정 필요 x
+        // statisticsService.deleteOrderItem(orders, itemId);
+        if(orders.size()>0) orderRepository.removeOrderItem(itemId);
         // certificationService.itemNotSaleOrderCancel(memberPhoneNumbers, itemName); 주문 상품 주문 취소 문자 보내기
     }
 

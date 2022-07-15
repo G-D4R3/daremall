@@ -3,17 +3,17 @@ services:
   web:
     build: ./
     image: newflw1223/dare_mall:daremall_app
-  db:
-    container_name: h2
-    image: oscarfonts/h2:latest
-    ports:
-      - 1521:1521
-      - 8081:81
-    environment:
-      H2_OPTIONS: -ifNotExists
-    volumes:
-      - ./h2/:/opt/h2-data
-    restart: always
+  #db:
+  #  container_name: h2
+  #  image: oscarfonts/h2:latest
+  #  ports:
+  #    - 1521:1521
+  #    - 8081:81
+  #  environment:
+  #    H2_OPTIONS: -ifNotExists
+  #  volumes:
+  #    - ./h2/:/opt/h2-data
+  #  restart: always
   redis:
     container_name: redis-local
     image: redis:alpine

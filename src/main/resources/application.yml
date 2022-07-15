@@ -5,16 +5,18 @@ spring:
   freemarker:
     cache: false
   datasource:
-    url: jdbc:h2:tcp://localhost:1521/daremall;MODE=MySQL;
-    #url: jdbc:h2:tcp://localhost/~/test;MODE=MySQL;
-    #url : jdbc:mysql//jsw5258@35.203.149.95:3306/daremall
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    #url: jdbc:h2:tcp://localhost:1521/daremall;MODE=MySQL;
+    #username: dare
+    #password: Dking81$
+    #driver-class-name: org.h2.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://35.203.149.95:3306/example?serverTimezone=UTC&characterEncoding=UTF-8
+    username: dare
+    password: Dking81$
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         #       show_sql: true sout로 찍는거라 logger로 찍어야 함
