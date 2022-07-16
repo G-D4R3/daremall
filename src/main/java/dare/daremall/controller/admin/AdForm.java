@@ -14,14 +14,18 @@ public class AdForm {
 
     @NotBlank(message = "광고 시작 날짜를 선택해주세요")
     private String startDate;
+
     @NotBlank(message = "광고 종료 날짜를 선택해주세요")
     private String endDate;
 
     private String imagePath;
+
     @NotBlank(message = "광고 유형을 선택해주세요")
     private String type;
+
     @NotBlank(message = "광고 상태를 선택해주세요")
     private String status;
+
     private String href;
 
 }
