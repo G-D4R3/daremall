@@ -1,7 +1,7 @@
 package dare.daremall.member.controllers;
 
 import dare.daremall.member.dtos.authDtos.LoginUserDetails;
-import dare.daremall.member.dtos.BaggedItemDto;
+import dare.daremall.member.dtos.BaggedItemListDto;
 import dare.daremall.member.repositories.BaggedItemRepository;
 import dare.daremall.member.services.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class ShoppingBagController {
 
         if(member==null) return "redirect:/members/login";
 
-        List<BaggedItemDto> list = baggedItemRepository.findByMember(member.getUsername()).stream().map(b -> new BaggedItemDto(b)).collect(Collectors.toList());
+        List<BaggedItemListDto> list = baggedItemRepository.findByLoginId(member.getUsername()).stream().map(b -> new BaggedItemListDto(b)).collect(Collectors.toList());
 
         model.addAttribute("totalPrice", list.stream().mapToInt(i-> {
             if(i.getChecked()==true) {
@@ -50,7 +50,7 @@ public class ShoppingBagController {
 
         if(member==null) throw new AccessDeniedException("로그인이 필요한 서비스입니다.");
 
-        memberService.addShoppingBag(itemId, member.getUsername(), count);
+        memberService.addItemToShoppingBag(itemId, member.getUsername(), count);
         return new ResponseEntity<>("장바구니에 상품을 추가했습니다.", HttpStatus.OK);
     }
 
@@ -61,7 +61,7 @@ public class ShoppingBagController {
 
         if(member==null) return "redirect:/members/login";
 
-        memberService.removeShoppingBag(member.getUsername(), bagItemId);
+        memberService.removeItemFromShoppingBag(member.getUsername(), bagItemId);
 
         return "redirect:/shop";
     }

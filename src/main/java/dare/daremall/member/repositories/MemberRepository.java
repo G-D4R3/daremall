@@ -50,7 +50,7 @@ public class MemberRepository {
      * @param phone
      * @return
      */
-    public List<Member> findLoginIdByName(String name, String phone) {
+    public List<Member> findLoginIdByNameAndPhone(String name, String phone) {
         return em.createQuery("select m from Member m" +
                         " where m.name = :name" +
                         " and m.phone = :phone", Member.class)
@@ -74,7 +74,7 @@ public class MemberRepository {
                 .getResultList().stream().findAny();
     }
 
-    public Optional<DeliveryInfo> findDeliveryinfo(String loginId, Long deliveryId) {
+    public Optional<DeliveryInfo> findDeliveryInfo(String loginId, Long deliveryId) {
         return em.createQuery("select di from DeliveryInfo di" +
                 " where di.id = :deliveryId" +
                 " and di.member.loginId = :loginId", DeliveryInfo.class)
@@ -117,7 +117,7 @@ public class MemberRepository {
      * 배송지 삭제
      * @param deliveryId
      */
-    public void removeDelivery(Long deliveryId) {
+    public void removeDeliveryInfo(Long deliveryId) {
         em.createQuery("delete from DeliveryInfo di where di.id = :deliveryId")
                 .setParameter("deliveryId", deliveryId)
                 .executeUpdate();
@@ -148,7 +148,7 @@ public class MemberRepository {
      * @param search
      * @return
      */
-    public List<Member> findMembers(String search) {
+    public List<Member> findMembersByString(String search) {
         return em.createQuery("select m from Member m" +
                 " where upper(m.name) like upper(:search)" +
                 " or upper(m.loginId) like upper(:search)", Member.class)
@@ -169,7 +169,7 @@ public class MemberRepository {
         em.remove(em.find(Member.class, memberId));
     }
 
-    public void removeBaggedItem(Long itemId) {
+    public void removeBaggedItemByItemId(Long itemId) {
         em.createQuery("delete from BaggedItem bi" +
                 " where bi.item.id = :itemId")
                 .setParameter("itemId", itemId)

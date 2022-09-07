@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @Data
-public class ChangePasswordForm {
+public class PasswordChangeForm {
 
     private String loginId;
     @NotBlank(message = "새 비밀번호를 입력해주세요")
@@ -15,7 +15,7 @@ public class ChangePasswordForm {
     @NotBlank(message = "비밀번호를 확인해주세요")
     private String passwordConfirm;
 
-    public ChangePasswordForm(String loginId) {
+    public PasswordChangeForm(String loginId) {
         this.loginId = loginId;
     }
 }

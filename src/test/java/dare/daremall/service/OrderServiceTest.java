@@ -95,7 +95,7 @@ class OrderServiceTest {
     public void 주문_성공() {
 
         // when
-        memberService.addShoppingBag(albumId, loginId, 3);
+        memberService.addItemToShoppingBag(albumId, loginId, 3);
         OrderForm orderForm = new OrderForm();
         orderForm.setName("지창민");
         orderForm.setPhone("010-1111-2222");
@@ -126,7 +126,7 @@ class OrderServiceTest {
     @Test
     public void 주문_실패() {
         // given
-        memberService.addShoppingBag(albumId, loginId, 3);
+        memberService.addItemToShoppingBag(albumId, loginId, 3);
         OrderForm orderForm = new OrderForm();
         orderForm.setName("지창민");
         orderForm.setPhone("010-1111-2222");
@@ -151,7 +151,7 @@ class OrderServiceTest {
     @Test
     public void 주문_취소() {
         // given
-        memberService.addShoppingBag(albumId, loginId, 3);
+        memberService.addItemToShoppingBag(albumId, loginId, 3);
         OrderForm orderForm = new OrderForm();
         orderForm.setName("지창민");
         orderForm.setPhone("010-1111-2222");
@@ -179,7 +179,7 @@ class OrderServiceTest {
     @Test
     public void 취소된_주문_취소_실패() {
         // given
-        memberService.addShoppingBag(albumId, loginId, 3);
+        memberService.addItemToShoppingBag(albumId, loginId, 3);
         OrderForm orderForm = new OrderForm();
         orderForm.setName("지창민");
         orderForm.setPhone("010-1111-2222");
@@ -202,7 +202,7 @@ class OrderServiceTest {
     @Test
     public void 삭제된_주문_취소_실패() {
         // given
-        memberService.addShoppingBag(albumId, loginId, 3);
+        memberService.addItemToShoppingBag(albumId, loginId, 3);
         OrderForm orderForm = new OrderForm();
         orderForm.setName("지창민");
         orderForm.setPhone("010-1111-2222");
@@ -225,7 +225,7 @@ class OrderServiceTest {
     @Test
     public void 배송중_주문_취소_실패() {
         // given
-        memberService.addShoppingBag(albumId, loginId, 3);
+        memberService.addItemToShoppingBag(albumId, loginId, 3);
         OrderForm orderForm = new OrderForm();
         orderForm.setName("지창민");
         orderForm.setPhone("010-1111-2222");
@@ -252,7 +252,7 @@ class OrderServiceTest {
     @Test
     public void 주문_삭제() {
         // given
-        memberService.addShoppingBag(albumId, loginId, 3);
+        memberService.addItemToShoppingBag(albumId, loginId, 3);
         OrderForm orderForm = new OrderForm();
         orderForm.setName("지창민");
         orderForm.setPhone("010-1111-2222");
@@ -276,7 +276,7 @@ class OrderServiceTest {
     @Test
     public void 주문_삭제_실패() {
         // given
-        memberService.addShoppingBag(albumId, loginId, 3);
+        memberService.addItemToShoppingBag(albumId, loginId, 3);
         OrderForm orderForm = new OrderForm();
         orderForm.setName("지창민");
         orderForm.setPhone("010-1111-2222");

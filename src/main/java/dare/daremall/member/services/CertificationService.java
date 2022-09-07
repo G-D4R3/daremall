@@ -12,7 +12,7 @@ import java.util.Random;
 public class CertificationService {
 
     // 사용자 인증시 사용
-    public String PhoneNumberCheck(String to) throws CoolsmsException {
+    public String phoneNumberCheck(String to) throws CoolsmsException {
 
         String api_key = "NCSAZ5LKT10MKKDR";
         String api_secret = "KBG0V7RWINPSRIQNSAT4X2YUU6ANFEZ8";

@@ -4,7 +4,7 @@ import dare.daremall.member.domains.BaggedItem;
 import lombok.Data;
 
 @Data
-public class BaggedItemDto {
+public class BaggedItemListDto {
 
     private Long id;
     private Long itemId;
@@ -15,7 +15,7 @@ public class BaggedItemDto {
     private int stockQuantity;
     private Boolean checked;
 
-    public BaggedItemDto(BaggedItem item) {
+    public BaggedItemListDto(BaggedItem item) {
         this.id = item.getId();
         this.itemId = item.getItem().getId();
         this.name = item.getItem().getName();

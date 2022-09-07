@@ -116,7 +116,7 @@ public class MyPageController {
     @PostMapping (value = "/myAddress/getDeliveryInfo") @Secured({"ROLE_USER"})
     public @ResponseBody DeliveryInfoDto getDeliveryInfo(@AuthenticationPrincipal LoginUserDetails member,
                                   @RequestParam("deliveryId") Long deliveryId) {
-        return new DeliveryInfoDto(memberRepository.findDeliveryinfo(member.getUsername(), deliveryId).orElse(null));
+        return new DeliveryInfoDto(memberRepository.findDeliveryInfo(member.getUsername(), deliveryId).orElse(null));
     }
 
     @PostMapping(value = "/myAddress/update") @Secured({"ROLE_USER"})
@@ -188,7 +188,7 @@ public class MyPageController {
             return false;
         }
 
-        memberService.passwordChange(member.getUsername(), changePasswordForm.getNewPassword());
+        memberService.changePassword(member.getUsername(), changePasswordForm.getNewPassword());
         return true;
     }
 }

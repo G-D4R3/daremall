@@ -88,7 +88,7 @@ public class OrderService {
         delivery.setAddress(new Address(orderForm.getZipcode(), orderForm.getStreet(), orderForm.getDetail()));
         delivery.setStatus(DeliveryStatus.NONE);
 
-        List<BaggedItem> baggedItems = baggedItemRepository.findSelected(loginId);
+        List<BaggedItem> baggedItems = baggedItemRepository.findSelectedBaggedItem(loginId);
 
         for(BaggedItem baggedItem : baggedItems) {
             if(baggedItem.getCount() > baggedItem.getItem().getStockQuantity()) {
@@ -111,7 +111,7 @@ public class OrderService {
 
         Order order = Order.createOrder(member, delivery, orderItems, orderStatus, merchantUid, impUid, orderForm.getPayment());
 
-        baggedItemRepository.removeSelected(loginId);
+        baggedItemRepository.removeSelectedBaggedItem(loginId);
 
         orderRepository.save(order);
         memberRepository.save(member);

@@ -170,7 +170,7 @@ public class MemberServiceTest {
 
         // when
         Member findMember = memberService.findUser(memberDto.getLoginId());
-        memberService.passwordChange(findMember.getLoginId(), "newPass1234");
+        memberService.changePassword(findMember.getLoginId(), "newPass1234");
 
         // then
         assertThat(passwordEncoder.matches("newPass1234", findMember.getPassword())).isEqualTo(true);
@@ -205,7 +205,7 @@ public class MemberServiceTest {
 
         // when
         Member findMember = memberService.findUser(memberDto.getLoginId());
-        memberService.addShoppingBag(albumId, findMember.getLoginId(), 2);
+        memberService.addItemToShoppingBag(albumId, findMember.getLoginId(), 2);
         Item findItem = itemService.findOne(albumId);
 
         // then
@@ -252,9 +252,9 @@ public class MemberServiceTest {
         long bookId = itemService.saveItem(book);
 
         // when
-        NotEnoughStockException e1 = assertThrows(NotEnoughStockException.class, ()-> memberService.addShoppingBag(albumId, memberDto.getLoginId(), 11));
-        IllegalStateException e2 = assertThrows(IllegalStateException.class, ()-> memberService.addShoppingBag(bookId, memberDto.getLoginId(), 1));
-        IllegalStateException e3 = assertThrows(IllegalStateException.class, ()-> memberService.addShoppingBag(albumId, memberDto.getLoginId(), -1));
+        NotEnoughStockException e1 = assertThrows(NotEnoughStockException.class, ()-> memberService.addItemToShoppingBag(albumId, memberDto.getLoginId(), 11));
+        IllegalStateException e2 = assertThrows(IllegalStateException.class, ()-> memberService.addItemToShoppingBag(bookId, memberDto.getLoginId(), 1));
+        IllegalStateException e3 = assertThrows(IllegalStateException.class, ()-> memberService.addItemToShoppingBag(albumId, memberDto.getLoginId(), -1));
 
 
         // then
@@ -288,12 +288,12 @@ public class MemberServiceTest {
         long albumId = itemService.saveItem(album);
 
         Member findMember = memberService.findUser(memberDto.getLoginId());
-        memberService.addShoppingBag(albumId, findMember.getLoginId(), 2);
+        memberService.addItemToShoppingBag(albumId, findMember.getLoginId(), 2);
 
         // when
         findMember = memberService.findUser(memberDto.getLoginId()); // em.merge로 save했기 때문에 영속성 관리
         BaggedItem baggedItem = findMember.getShoppingBag().get(0);
-        memberService.removeShoppingBag(memberDto.getLoginId(), baggedItem.getId());
+        memberService.removeItemFromShoppingBag(memberDto.getLoginId(), baggedItem.getId());
         findMember = memberService.findUser(memberDto.getLoginId());
 
         // then
@@ -328,14 +328,14 @@ public class MemberServiceTest {
         long albumId = itemService.saveItem(album);
 
         Member findMember = memberService.findUser(memberDto.getLoginId());
-        memberService.addShoppingBag(albumId, findMember.getLoginId(), 2);
+        memberService.addItemToShoppingBag(albumId, findMember.getLoginId(), 2);
 
         // when
         findMember = memberService.findUser(memberDto.getLoginId()); // em.merge로 save했기 때문에 영속성 관리
         long bagItemId = findMember.getShoppingBag().get(0).getId();
 
         BaggedItem byId = baggedItemRepository.findById(bagItemId).get();
-        memberService.removeShoppingBag(memberDto.getLoginId(), bagItemId);
+        memberService.removeItemFromShoppingBag(memberDto.getLoginId(), bagItemId);
 
         // then
         findMember = memberService.findUser(memberDto.getLoginId());
@@ -369,7 +369,7 @@ public class MemberServiceTest {
         long albumId = itemService.saveItem(album);
 
         Member findMember = memberService.findUser(memberDto.getLoginId());
-        memberService.addShoppingBag(albumId, findMember.getLoginId(), 2);
+        memberService.addItemToShoppingBag(albumId, findMember.getLoginId(), 2);
 
         // when
         findMember = memberService.findUser(memberDto.getLoginId()); // em.merge로 save했기 때문에 영속성 관리
@@ -408,7 +408,7 @@ public class MemberServiceTest {
         long albumId = itemService.saveItem(album);
 
         Member findMember = memberService.findUser(memberDto.getLoginId());
-        memberService.addShoppingBag(albumId, findMember.getLoginId(), 2);
+        memberService.addItemToShoppingBag(albumId, findMember.getLoginId(), 2);
 
         findMember = memberService.findUser(memberDto.getLoginId()); // em.merge로 save했기 때문에 영속성 관리
         BaggedItem baggedItem = findMember.getShoppingBag().get(0);
@@ -746,7 +746,7 @@ public class MemberServiceTest {
         memberService.deleteDeliveryInfo(findMember.getLoginId(), deliveryInfoId);
         findMember = memberService.findUser(findMember.getLoginId());
 
-        NoSuchElementException e = assertThrows(NoSuchElementException.class, () -> memberRepository.findDeliveryinfo(memberDto.getLoginId(), deliveryInfoId).get());
+        NoSuchElementException e = assertThrows(NoSuchElementException.class, () -> memberRepository.findDeliveryInfo(memberDto.getLoginId(), deliveryInfoId).get());
 
         // then
         assertThat(findMember.getDeliveryInfos().size()).isEqualTo(1);

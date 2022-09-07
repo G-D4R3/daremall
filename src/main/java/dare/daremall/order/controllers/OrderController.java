@@ -64,7 +64,7 @@ public class OrderController {
             memberService.selectAllBagItem(member.getUsername());
         }
 
-        List<BaggedItemOrderDto> baggedItem = baggedItemRepository.findSelected(member.getUsername())
+        List<BaggedItemOrderDto> baggedItem = baggedItemRepository.findSelectedBaggedItem(member.getUsername())
                 .stream().map(bi -> new BaggedItemOrderDto(bi))
                 .collect(Collectors.toList());
 
@@ -94,7 +94,7 @@ public class OrderController {
                                     @RequestParam(value = "count", required = false, defaultValue = "0") int count) {
         if(member==null) return "redirect:/members/login";
 
-        memberService.addShoppingBag(itemId, member.getUsername(), count);
+        memberService.addItemToShoppingBag(itemId, member.getUsername(), count);
         return "redirect:/order/new/all";
     }
 

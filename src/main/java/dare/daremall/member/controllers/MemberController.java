@@ -2,7 +2,7 @@ package dare.daremall.member.controllers;
 
 import dare.daremall.member.dtos.authDtos.LoginUserDetails;
 import dare.daremall.member.dtos.authDtos.MemberSignupRequestDto;
-import dare.daremall.member.dtos.forgetDtos.ChangePasswordForm;
+import dare.daremall.member.dtos.forgetDtos.PasswordChangeForm;
 import dare.daremall.order.dtos.DeliveryInfoDto;
 import dare.daremall.member.domains.Member;
 import dare.daremall.member.domains.MemberRole;
@@ -70,7 +70,7 @@ public class MemberController {
 
     @PostMapping(value = "/new/loginIdValidation")
     public @ResponseBody ResponseEntity<Boolean> loginIdValidation(String loginId) {
-        if(memberService.findUserAtCreateMember(loginId)==null) return new ResponseEntity<>(true, HttpStatus.OK);
+        if(memberService.validateDuplicateLoginId(loginId)==null) return new ResponseEntity<>(true, HttpStatus.OK);
         else return new ResponseEntity<>(false, HttpStatus.OK);
     }
 
@@ -115,7 +115,7 @@ public class MemberController {
     @PostMapping(value = "/forgetPassword/getCertificate")
     public @ResponseBody String getCertificateNumberByLoginId(String loginId, String phone,
                                                               RedirectAttributes redirectAttributes) throws CoolsmsException {
-        if(memberService.findMemberByLoginId(loginId, phone)==null) return null;
+        if(memberService.findMemberByLoginIdAndPhoneNumber(loginId, phone)==null) return null;
         redirectAttributes.addAttribute("phone", phone);
 
         //return certificationService.PhoneNumberCheck(phone);
@@ -137,14 +137,14 @@ public class MemberController {
     public String changePasswordForm(Model model) {
         String loginId = (String) model.getAttribute("loginId");
 
-        model.addAttribute("changePasswordForm", new ChangePasswordForm(loginId));
+        model.addAttribute("changePasswordForm", new PasswordChangeForm(loginId));
 
         return "user/forget/changePassword";
     }
 
 
     @PostMapping(value = "/forgetPassword/changePassword")
-    public String changePassword(@Validated ChangePasswordForm form, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String changePassword(@Validated PasswordChangeForm form, BindingResult result, RedirectAttributes redirectAttributes) {
 
         if(result.hasErrors()) {
             return "user/forget/chagnePassword";
@@ -153,7 +153,7 @@ public class MemberController {
             return "user/forget/chagnePassword";
         }
 
-        memberService.passwordChange(form.getLoginId(), form.getNewPassword());
+        memberService.changePassword(form.getLoginId(), form.getNewPassword());
         return "redirect:/members/forgetPassword/success";
     }
 
@@ -167,13 +167,13 @@ public class MemberController {
     @PostMapping(value = "/findDeliveryInfo")
     public @ResponseBody DeliveryInfoDto findDeliveryInfo(@AuthenticationPrincipal LoginUserDetails member,
                                                           @RequestParam(name="delivery_id") Long deliveryId) {
-        return new DeliveryInfoDto(memberRepository.findDeliveryinfo(member.getUsername(), deliveryId).orElseThrow(()-> new NoSuchElementException("존재하지 않는 정보입니다.")));
+        return new DeliveryInfoDto(memberRepository.findDeliveryInfo(member.getUsername(), deliveryId).orElseThrow(()-> new NoSuchElementException("존재하지 않는 정보입니다.")));
     }
 
     @PostMapping(value = "/updateRole")
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody ResponseEntity updateRole(@RequestParam("loginId") String loginId, @RequestParam("newRole") String newRole) {
-        memberService.updateRole(loginId, MemberRole.valueOf(newRole));
+        memberService.updateMemberRole(loginId, MemberRole.valueOf(newRole));
         return new ResponseEntity("권한을 성공적으로 수정했습니다.", HttpStatus.OK);
     }
 

@@ -130,9 +130,9 @@ public class ItemService {
         }
         itemRepository.save(findItem);
         if(itemDto.getItemStatus()==null || !itemDto.getItemStatus().equals("FOR_SALE")){
-            baggedItemRepository.removeByItemId(findItem.getId());
+            baggedItemRepository.removeBaggedItemByItemId(findItem.getId());
         }
-        baggedItemRepository.updateCount(findItem.getId(), itemDto.getStockQuantity());
+        baggedItemRepository.updateBaggedItemCount(findItem.getId(), itemDto.getStockQuantity());
 
     }
 

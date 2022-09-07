@@ -1,6 +1,6 @@
 package dare.daremall.member.controllers;
 
-import dare.daremall.member.dtos.LikeItemDto;
+import dare.daremall.member.dtos.LikeItemListDto;
 import dare.daremall.member.dtos.authDtos.LoginUserDetails;
 import dare.daremall.member.services.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class LikeItemController {
 
         if(member==null) return "redirect:/members/login";
 
-        List<LikeItemDto> items = memberService.getLikes(member.getUsername()).stream().map(li -> new LikeItemDto(li)).collect(Collectors.toList());
+        List<LikeItemListDto> items = memberService.getLikes(member.getUsername()).stream().map(li -> new LikeItemListDto(li)).collect(Collectors.toList());
         model.addAttribute("items", items);
         return "user/likeList";
 
@@ -39,7 +39,7 @@ public class LikeItemController {
 
         if(member==null) return "redirect:/members/login";
 
-        memberService.changeLikeItem(member.getUsername(), itemId);
+        memberService.updateLikeItem(member.getUsername(), itemId);
 
         return "redirect:/items/detail?itemId="+itemId;
     }
@@ -51,7 +51,7 @@ public class LikeItemController {
 
         if(member==null) return "redirect:/members/login";
 
-        memberService.changeLikeItem(member.getUsername(), itemId);
+        memberService.updateLikeItem(member.getUsername(), itemId);
 
         return "redirect:/like";
     }

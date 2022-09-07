@@ -134,7 +134,7 @@ public class ItemController {
         model.addAttribute("item", item);
 
         if(member!=null) {
-            boolean isLikeItem = !likeItemRepository.findByIds(member.getUsername(), itemId).isEmpty();
+            boolean isLikeItem = !likeItemRepository.findOne(member.getUsername(), itemId).isEmpty();
             if(isLikeItem) {
                 model.addAttribute("isLikeItem", "btn-primary");
                 return "item/detail";
@@ -220,7 +220,7 @@ public class ItemController {
 
         if(!ItemStatus.valueOf(itemDto.getItemStatus()).equals(ItemStatus.FOR_SALE)) {
             orderService.deleteOrderItem(itemDto.getId(), itemDto.getName());
-            memberService.deleteBaggedItem(itemDto.getId());
+            memberService.deleteBaggedItemByItemId(itemDto.getId());
         }
 
         return new ResponseEntity<>("상품을 성공적으로 수정했습니다.", HttpStatus.OK);

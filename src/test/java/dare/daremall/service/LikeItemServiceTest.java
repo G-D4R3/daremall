@@ -51,7 +51,7 @@ public class LikeItemServiceTest {
 
         Item findItem = itemService.findOne(bookId);
 
-        memberService.changeLikeItem(memberDto.getLoginId(), bookId);
+        memberService.updateLikeItem(memberDto.getLoginId(), bookId);
 
         Member findMember = memberService.findUser(memberDto.getLoginId());
 
@@ -84,11 +84,11 @@ public class LikeItemServiceTest {
         long bookId = itemService.saveItem(book);
 
         Item findItem = itemService.findOne(bookId);
-        memberService.changeLikeItem(memberDto.getLoginId(), bookId); // 좋아요 추가
+        memberService.updateLikeItem(memberDto.getLoginId(), bookId); // 좋아요 추가
         Member findMember = memberService.findUser(memberDto.getLoginId());
 
         // when
-        memberService.changeLikeItem(memberDto.getLoginId(), bookId); // 좋아요 취소
+        memberService.updateLikeItem(memberDto.getLoginId(), bookId); // 좋아요 취소
 
         // then
         assertThat(findMember.getLikes().size()).isEqualTo(0);

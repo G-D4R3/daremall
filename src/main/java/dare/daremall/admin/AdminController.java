@@ -108,7 +108,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public String memberSearch(Model model, @RequestParam("memberSearch") String memberSearch) {
         if(memberSearch.isEmpty()) return "redirect:/admin/member";
-        List<MemberDto> members = memberService.findMembers(memberSearch).stream().map(m->new MemberDto(m)).collect(Collectors.toList());
+        List<MemberDto> members = memberService.findMembersByString(memberSearch).stream().map(m->new MemberDto(m)).collect(Collectors.toList());
         model.addAttribute("members", members);
         model.addAttribute("memberSearch", memberSearch);
         return "admin/member/memberManage";
