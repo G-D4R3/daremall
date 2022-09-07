@@ -1,11 +1,11 @@
 package dare.daremall.service;
 
-import dare.daremall.controller.item.ItemDto;
-import dare.daremall.controller.member.auth.MemberSignupRequestDto;
-import dare.daremall.domain.LikeItem;
-import dare.daremall.domain.Member;
-import dare.daremall.domain.item.Book;
-import dare.daremall.domain.item.Item;
+import dare.daremall.item.dtos.ItemDto;
+import dare.daremall.member.dtos.authDtos.MemberSignupRequestDto;
+import dare.daremall.member.domains.Member;
+import dare.daremall.item.domains.Item;
+import dare.daremall.item.services.ItemService;
+import dare.daremall.member.services.MemberService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @Transactional
 public class LikeItemServiceTest {
 
-    @Autowired ItemService itemService;
-    @Autowired MemberService memberService;
+    @Autowired
+    ItemService itemService;
+    @Autowired
+    MemberService memberService;
 
     @Test
     public void 좋아요() {

@@ -1,7 +1,11 @@
 package dare.daremall.service;
 
-import dare.daremall.controller.item.ItemDto;
-import dare.daremall.domain.item.*;
+import dare.daremall.item.domains.Album;
+import dare.daremall.item.domains.Book;
+import dare.daremall.item.domains.Item;
+import dare.daremall.item.domains.ItemSearch;
+import dare.daremall.item.dtos.ItemDto;
+import dare.daremall.item.services.ItemService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +26,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class ItemServiceTest {
 
-    @Autowired ItemService itemService;
+    @Autowired
+    ItemService itemService;
 
     /** 관리자 기능 **/
 

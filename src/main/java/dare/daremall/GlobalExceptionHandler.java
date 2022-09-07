@@ -1,8 +1,8 @@
 package dare.daremall;
 
-import dare.daremall.exception.CannotAddNewAdException;
-import dare.daremall.exception.CannotAddNewItemException;
-import dare.daremall.exception.NotEnoughStockException;
+import dare.daremall.core.exception.CannotAddNewAdException;
+import dare.daremall.core.exception.CannotAddNewItemException;
+import dare.daremall.core.exception.NotEnoughStockException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

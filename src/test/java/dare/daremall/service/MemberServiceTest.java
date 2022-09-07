@@ -1,18 +1,19 @@
 package dare.daremall.service;
 
-import dare.daremall.controller.item.ItemDto;
-import dare.daremall.controller.member.auth.MemberSignupRequestDto;
-import dare.daremall.controller.member.mypage.DeliveryInfoForm;
-import dare.daremall.controller.member.mypage.UpdateDeliveryInfoForm;
-import dare.daremall.domain.BaggedItem;
-import dare.daremall.domain.DeliveryInfo;
-import dare.daremall.domain.Member;
-import dare.daremall.domain.item.Book;
-import dare.daremall.domain.item.Item;
-import dare.daremall.exception.CannotRegisterMemberException;
-import dare.daremall.exception.NotEnoughStockException;
-import dare.daremall.repository.BaggedItemRepository;
-import dare.daremall.repository.MemberRepository;
+import dare.daremall.item.dtos.ItemDto;
+import dare.daremall.member.dtos.authDtos.MemberSignupRequestDto;
+import dare.daremall.member.dtos.mypageDtos.DeliveryInfoForm;
+import dare.daremall.member.dtos.mypageDtos.UpdateDeliveryInfoForm;
+import dare.daremall.member.domains.BaggedItem;
+import dare.daremall.member.domains.DeliveryInfo;
+import dare.daremall.member.domains.Member;
+import dare.daremall.item.domains.Item;
+import dare.daremall.core.exception.CannotRegisterMemberException;
+import dare.daremall.core.exception.NotEnoughStockException;
+import dare.daremall.item.services.ItemService;
+import dare.daremall.member.repositories.BaggedItemRepository;
+import dare.daremall.member.repositories.MemberRepository;
+import dare.daremall.member.services.MemberService;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,9 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,10 +34,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Transactional
 public class MemberServiceTest {
 
-    @Autowired MemberService memberService;
+    @Autowired
+    MemberService memberService;
     @Autowired PasswordEncoder passwordEncoder;
 
-    @Autowired ItemService itemService;
+    @Autowired
+    ItemService itemService;
     @Autowired BaggedItemRepository baggedItemRepository;
     @Autowired MemberRepository memberRepository;
 

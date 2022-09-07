@@ -1,10 +1,11 @@
 package dare.daremall.service;
 
-import dare.daremall.controller.admin.AdForm;
-import dare.daremall.domain.ad.Ad;
-import dare.daremall.domain.ad.AdStatus;
-import dare.daremall.domain.ad.MainAd;
-import dare.daremall.exception.CannotAddNewAdException;
+import dare.daremall.ad.AdService;
+import dare.daremall.admin.dtos.AdForm;
+import dare.daremall.ad.domains.Ad;
+import dare.daremall.ad.domains.AdStatus;
+import dare.daremall.ad.domains.MainAd;
+import dare.daremall.core.exception.CannotAddNewAdException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 public class AdServiceTest {
 
-    @Autowired AdService adService;
+    @Autowired
+    AdService adService;
 
     /** 관리자 **/
 

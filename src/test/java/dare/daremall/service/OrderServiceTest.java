@@ -1,18 +1,20 @@
 package dare.daremall.service;
 
-import dare.daremall.controller.item.ItemDto;
-import dare.daremall.controller.member.auth.MemberSignupRequestDto;
-import dare.daremall.controller.order.OrderForm;
-import dare.daremall.domain.DeliveryStatus;
-import dare.daremall.domain.Member;
-import dare.daremall.domain.Order;
-import dare.daremall.domain.OrderStatus;
-import dare.daremall.domain.item.Book;
-import dare.daremall.domain.item.Item;
-import dare.daremall.domain.item.ItemStatus;
-import dare.daremall.repository.ItemRepository;
-import dare.daremall.repository.MemberRepository;
-import dare.daremall.repository.OrderRepository;
+import dare.daremall.item.dtos.ItemDto;
+import dare.daremall.member.dtos.authDtos.MemberSignupRequestDto;
+import dare.daremall.order.dtos.OrderForm;
+import dare.daremall.member.domains.DeliveryStatus;
+import dare.daremall.member.domains.Member;
+import dare.daremall.order.domains.Order;
+import dare.daremall.order.domains.OrderStatus;
+import dare.daremall.item.domains.Item;
+import dare.daremall.item.domains.ItemStatus;
+import dare.daremall.item.services.ItemService;
+import dare.daremall.item.repositories.ItemRepository;
+import dare.daremall.member.repositories.MemberRepository;
+import dare.daremall.member.services.MemberService;
+import dare.daremall.order.repositories.OrderRepository;
+import dare.daremall.order.services.OrderService;
 import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +34,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class OrderServiceTest {
 
-    @Autowired MemberService memberService;
-    @Autowired ItemService itemService;
-    @Autowired OrderService orderService;
+    @Autowired
+    MemberService memberService;
+    @Autowired
+    ItemService itemService;
+    @Autowired
+    OrderService orderService;
 
     @Autowired MemberRepository memberRepository;
     @Autowired ItemRepository itemRepository;
